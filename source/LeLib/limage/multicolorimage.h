@@ -32,7 +32,6 @@
 #include <QByteArray>
 
 #include "source/Compiler/errorhandler.h"
-//#include <source/effects/demoeffectraytracer.h>
 
 
 

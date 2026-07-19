@@ -260,15 +260,6 @@ SOURCES += main.cpp \
     source/LeLib/limage/limagevic20.cpp \
     source/LeLib/limage/limagesprites2.cpp \
     source/LeLib/limage/limagecontainer.cpp \
-    source/effects/abstractdemoeffect.cpp \
-    source/effects/demoeffecttwister.cpp \
-    source/effects/demoeffectraytracer.cpp \
-    source/Raytracer/raytracer.cpp \
-    source/Raytracer/rayobject.cpp \
-    source/Raytracer/camera.cpp \
-    source/Raytracer/raytracerglobals.cpp \
-    source/Raytracer/material.cpp \
-    source/effects/demoeffectcharsettwister.cpp \
     source/LeLib/luascript.cpp \
     source/LeLib/objloader/objloader.cpp \
     source/LeLib/limage/compression.cpp \
@@ -278,8 +269,6 @@ SOURCES += main.cpp \
     source/Compiler/systems/systemmos6502.cpp \
     source/Compiler/systems/factorysystem.cpp \
     source/Compiler/systems/systemc64.cpp \
-    source/LeLib/limage/bitmapfont.cpp \
-    source/Raytracer/particles.cpp \
     source/Compiler/sourcebuilder.cpp \
     source/Compiler/projectbuilder.cpp \
     trc.cpp
@@ -429,15 +418,6 @@ HEADERS  += LeLib/Util/tcencode.h \
     source/LeLib/limage/limagevic20.h \
     source/LeLib/limage/limagesprites2.h \
     source/LeLib/limage/limagecontainer.h \
-    source/effects/abstractdemoeffect.h \
-    source/effects/demoeffecttwister.h \
-    source/effects/demoeffectraytracer.h \
-    source/Raytracer/raytracer.h \
-    source/Raytracer/rayobject.h \
-    source/Raytracer/camera.h \
-    source/Raytracer/raytracerglobals.h \
-    source/Raytracer/material.h \
-    source/effects/demoeffectcharsettwister.h \
     source/LeLib/luascript.h \
     source/LeLib/objloader/objloader.h \
     source/LeLib/limage/compression.h \
@@ -447,8 +427,6 @@ HEADERS  += LeLib/Util/tcencode.h \
     source/Compiler/systems/systemmos6502.h \
     source/Compiler/systems/factorysystem.h \
     source/Compiler/systems/systemc64.h \
-    source/LeLib/limage/bitmapfont.h \
-    source/Raytracer/particles.h \
     source/Compiler/sourcebuilder.h \
     source/Compiler/projectbuilder.h \
     trc.h
