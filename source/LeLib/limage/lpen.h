@@ -13,7 +13,9 @@
 #include "source/LeLib/util/util.h"
 #include "source/LeLib/limage/lcolor.h"
 #include <QComboBox>
+#ifndef CLI_VERSION
 #include "source/dialogcolorselect.h"
+#endif
 
 class LPen {
 public:

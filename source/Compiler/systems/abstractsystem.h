@@ -186,9 +186,6 @@ public:
 
 
 
-    virtual QString getTripePointerType() { return "uint64";}
-
-    virtual void AssembleTripe(QString& text, QString file, QString currentDir, QSharedPointer<SymbolTable>  symTab);
 
     bool m_buildSuccess;
 /*    static bool isSupported(System currentSystem, QString list) {

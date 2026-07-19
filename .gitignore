@@ -53,3 +53,11 @@ bin/.asm
 Publish/tutorials/CHIP8/tutorials/test.ras
 themes
 units/CHIP8/system/system.asm
+
+CLAUDE.md
+
+# Compile-test scratch folder build byproducts
+test_projects/*.prg
+test_projects/*.asm
+test_projects/*.sym
+GUI_IDE_REMOVAL_PLAN.md

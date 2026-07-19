@@ -1,0 +1,15 @@
+program TestArithmetic;
+var
+	a : byte = 10;
+	b : byte = 20;
+	sum : byte = 0;
+	prod : integer = 0;
+
+begin
+	sum := a + b;
+	prod := a * b;
+
+	screen_bg_col := black;
+	screen_fg_col := white;
+	loop();
+end.

@@ -1,0 +1,15 @@
+program TestForLoop;
+var
+	i : byte = 0;
+	total : integer = 0;
+
+begin
+	for i := 0 to 200 do
+	begin
+		total := total + i;
+	end;
+
+	screen_bg_col := black;
+	screen_fg_col := white;
+	loop();
+end.

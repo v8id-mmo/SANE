@@ -17,7 +17,6 @@
 #include "source/Compiler/codegen/methods/abstractmethods.h"
 #include "source/Compiler/codegen/methods/factorymethods.h"
 
-#include "source/Compiler/systems/systemcustom.h"
 #include "source/LeLib/util/fc8/FC8Compression.h"
 
 AbstractCodeGen::AbstractCodeGen() {}
@@ -1553,14 +1552,8 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeBuiltinMethod> node) {
   //      qDebug() << m->HexValue();
 
   node->VerifyParams(as);
-  auto system = Syntax::s.m_currentSystem->m_system;
-  if (qSharedPointerDynamicCast<SystemCustom>(Syntax::s.m_currentSystem) !=
-      nullptr) {
-    system = AbstractSystem::SystemFromString(
-        Syntax::s.m_currentSystem->m_alternateMethods);
-  }
   QSharedPointer<AbstractMethods> methods =
-      FactoryMethods::CreateMethods(system);
+      FactoryMethods::CreateMethods(Syntax::s.m_currentSystem->m_system);
   methods->m_node = node;
   //    qDebug() << "BALLE"<<methods << Syntax::s.m_currentSystem->m_system <<
   //    qSharedPointerDynamicCast<Methods6502>(methods);

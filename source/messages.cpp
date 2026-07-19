@@ -141,6 +141,7 @@ void Messages::InitMessages()
 }
 void Messages::DisplayMessage(int message, bool isHelp)
 {
+#ifndef CLI_VERSION
     Message m = m_messages[message];
 
     if (m.m_ignore)
@@ -165,4 +166,5 @@ void Messages::DisplayMessage(int message, bool isHelp)
         dm->SetHelp();
 
     delete dm;
+#endif
 }

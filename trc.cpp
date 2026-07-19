@@ -6,11 +6,9 @@
 
 
 ClascExec::ClascExec(int argc, char *argv[]) {
-    app = new QApplication(argc, argv);
+    app = new QCoreApplication(argc, argv);
     app->setOrganizationDomain("lemonspawn.com");
     app->setApplicationName("TRSE");
- //   core = new QCoreApplication(argc,argv);
-   // this->core = core;
     // first values are "trse" and "-cli", so start at 2
     for (int i=2;i<argc;i++) {
         auto s = QString(argv[i]);

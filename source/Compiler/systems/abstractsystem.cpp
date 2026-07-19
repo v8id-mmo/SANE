@@ -3,10 +3,6 @@
 #include "source/LeLib/util/lz4/lz4hc.h"
 #include "source/LeLib/util/util.h"
 #include "source/OrgAsm/orgasm.h"
-#include "source/OrgAsm/zorgasm.h"
-#include "source/OrgAsm/morgasm.h"
-#include "source/OrgAsm/orgasm68k.h"
-#include <QMessageBox>
 #include "source/LeLib/data.h"
 
 extern "C" {
@@ -392,17 +388,9 @@ void AbstractSystem::AssembleOrgasm(QString& output,QString &text, QString filen
 
 void AbstractSystem::AssembleZOrgasm(QString& output, QString &text, QString filename, QString currentDir, QSharedPointer<SymbolTable> symTab, int orgType)
 {
-    if (orgType==0)
-        m_orgAsm = QSharedPointer<ZOrgasm>(new ZOrgasm());
-    if (orgType==1)
-        m_orgAsm = QSharedPointer<MOrgasm>(new MOrgasm());
-    if (orgType==2) {
-        m_orgAsm = QSharedPointer<MOrgasm>(new MOrgasm());
-        m_orgAsm->m_header = Orgasm::HEADER_DECB;
-    }
-    if (orgType==4)
-        m_orgAsm = QSharedPointer<OrgAsm68k>(new OrgAsm68k());
-
+    // Z80/6809/68000 assembler backends (ZOrgasm/MOrgasm/OrgAsm68k) were
+    // removed under the C64-only scope decision; this is only still called
+    // from non-6502 systems slated for removal in the same pass.
     if (m_orgAsm == nullptr)
         return;
     m_orgAsm->m_cpuFlavor = getCPUFlavorint();
@@ -632,33 +620,6 @@ void AbstractSystem::AcceptDispatcherTick(QString val)
 }
 
 
-void AbstractSystem::AssembleTripe(QString& text, QString file, QString currentDir, QSharedPointer<SymbolTable>  symTab) {
-    if (m_projectIni->getdouble("use_tripe")==0)
-        return;
-
-
-    QString error="";
-    Util::CopyFile(file+".asm",file+".ll");
-    QFile::remove(file+".asm");
-    /*
-    QStringList params  = QStringList() << "-arch" <<"trasm2tripe" << "-i"<< file+"_tripe.asm" << "-o"<<file+".trp";
-    GenericAssemble(m_settingsIni->getString("tripe_location"),params,error,text);
-
-    //    qDebug() << m_settingsIni->getString("tripe_location");
-    //  qDebug() << params;
-
-    //qDebug() << error<<text;
-
-    params  = QStringList() << "-arch" <<"mos6502" << "-i"<< file+".trp" <<"-o"<<file+".asm";
-    GenericAssemble(m_settingsIni->getString("tripe_location"),params,error,text);
-    if (error.contains("error"))
-        m_buildSuccess = false;
-*/
-    //    qDebug() << error;
-
-    //    Util::CopyFile()
-
-}
 /*
 bool AbstractSystem::isSupported(QString currentSystem, QString list) {
     QStringList lst  = list.toLower().trimmed().simplified().split(",");

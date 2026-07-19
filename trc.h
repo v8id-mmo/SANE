@@ -17,10 +17,9 @@ public:
     QHash<QString,QStringList> m_options;
     SourceBuilder* m_builder = nullptr;
     QString m_outputFile = "";
-    QApplication* app = nullptr;
+    QCoreApplication* app = nullptr;
     bool m_hasError = false;
     int m_failure = 0;
-    //QCoreApplication* core = nullptr;
     ClascExec(int argc, char *argv[]);
 
     void RequireParam(QString param);
