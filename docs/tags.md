@@ -23,9 +23,7 @@ and all, and SANE hasn't changed it (yet).
 
 Inherited from upstream TRSE, but SANE's compiler has **actually been
 changed** so it behaves differently now, typically because a known bug
-was really fixed in code, not just documented. This is named as a variant
-of `TRSE` (not `SANE (fixed)`) on purpose: it's about *origin* first
-(this feature comes from TRSE) and *behavior difference* second.
+was really fixed in code, not just documented.
 
 ## `SANE`
 
@@ -53,8 +51,7 @@ removed if it's no longer relevant).
 ## How the tag is decided
 
 Every tag is decided by comparing SANE's actual compiler behavior against
-an unmodified upstream `leuat/TRSE` checkout, never from memory or
-assumption. In order:
+an unmodified upstream `leuat/TRSE` checkout. In order:
 
 1. Does this exist in upstream TRSE at all? If no, it's `SANE`, done.
 2. If yes, does SANE's actual codegen for it currently differ from

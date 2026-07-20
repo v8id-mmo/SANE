@@ -1,12 +1,12 @@
 # SANE / TRSE Documentation
 
-**SANE** is a Commodore 64-only, CLI-only fork of
+**SANE** is a **Commodore 64-only**, **CLI-only** fork of
 [TRSE (Turbo Rascal Syntax Error)](https://github.com/leuat/TRSE), a
 Pascal-like compiler for 8-bit systems. The language itself is
-99.99% TRSE-compatible, since this site documents the language and
-standard library as SANE's compiler actually implements them today,
-cross-checked directly against the compiler source rather than copied
-from memory or from TRSE's own (incomplete) docs.
+99.99% TRSE-compatible. This site documents the language and standard
+library as SANE's compiler actually implements them today, cross-checked
+directly against the compiler source rather than copied from memory or
+from TRSE's own (incomplete) docs.
 
 If you already know TRSE: almost everything here works exactly as it does
 upstream. Every page is tagged so you can tell at a glance whether it's
@@ -35,3 +35,12 @@ unchanged from TRSE, changed in SANE, or new to SANE. See
 This is scoped to the Commodore 64 target only. SANE has dropped every
 other system TRSE supports (VIC20, PET, C128, NES, Apple II, Atari, Amiga,
 Z80/MSX/Spectrum, x86, and others).
+
+---
+
+*This documentation site was generated with the assistance of Claude Code,
+under human review and direction rather than as a fully automated
+process. Every keyword, builtin, operator, and type page is cross-checked
+against the compiler source, and every example is compiled with the real
+CLI tool before publishing, per the accuracy rules this project holds itself
+to. If you spot an error, please open an issue.*
