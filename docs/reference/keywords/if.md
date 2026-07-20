@@ -8,13 +8,19 @@ false.
 
 ## Syntax
 
+If with 1 command:
+
     if <condition> then
         <statement>;
+
+If with 1 commands in each branch:
 
     if <condition> then
         <statement>
     else
         <statement>;
+
+If with multiple commands in each branch:
 
     if <condition> then
     begin
@@ -36,7 +42,7 @@ false.
 program IfDemo;
 
 var
-	score : byte = 10;
+	score : byte = 10;  // change this and rerun
 
 begin
 	if score > 5 then

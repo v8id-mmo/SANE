@@ -1,0 +1,7 @@
+program SetValueDemo;
+
+@setvalue "exomizer_toggle" 0
+
+begin
+	loop();
+end.

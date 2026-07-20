@@ -6,6 +6,9 @@ Overrides a project setting directly from source code, the same settings
 that would otherwise come from the project's own configuration file. Lets
 a single `.ras` file carry a setting override with it, rather than
 requiring every project that uses it to remember to set it up separately.
+Only a small, curated set of friendly setting names is recognized here;
+see [`@setvalue`](setvalue.md) for setting an arbitrary raw configuration
+key by its exact internal name instead.
 
 ## Syntax
 

@@ -117,6 +117,14 @@ nav:
           - "@raisewarning": reference/keywords/raisewarning.md
           - repeat: reference/keywords/repeat.md
           - repend: reference/keywords/repend.md
+          - "@requirefile": reference/keywords/requirefile.md
+          - return: reference/keywords/return.md
+          - "@setcompressionweights": reference/keywords/setcompressionweights.md
+          - "@setvalue": reference/keywords/setvalue.md
+          - signed: reference/keywords/signed.md
+          - sizeof: reference/keywords/sizeof.md
+          - "@sparklefile": reference/keywords/sparklefile.md
+          - "@splitfile": reference/keywords/splitfile.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

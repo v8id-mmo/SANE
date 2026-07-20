@@ -1,0 +1,19 @@
+program SparkleFileDemo;
+
+@sparklefile
+
+"
+<< main file
+
+<<ZP: 80
+<<Header: sparkleme
+<<name: sparklefiledemo
+<<Start:		1000
+Tracks:		40
+
+File:	sparklefile.prg
+"
+
+begin
+	loop();
+end.

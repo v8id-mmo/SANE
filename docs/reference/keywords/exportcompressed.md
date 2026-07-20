@@ -20,8 +20,12 @@ comes from.
 - `<output file>`: base name; the compiler appends `_screen.bin`,
   `_charset.bin`, and `_color.bin` to it for the three actual output files.
 - `<x>`, `<y>`, `<w>`, `<h>`: region of the source image to export.
-- `<compression>`: compression mode passed through to the underlying
-  charset compressor; `0` for the default.
+- `<compression>`: a similarity threshold, `0`-`100`, for merging
+  near-identical characters into one reused entry; `0` only merges exact
+  duplicates, higher values merge increasingly different-looking
+  characters together to save space. See
+  [`@setcompressionweights`](setcompressionweights.md) to tune how that
+  similarity is scored.
 
 ## Example
 

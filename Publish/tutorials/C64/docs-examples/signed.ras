@@ -1,0 +1,12 @@
+program SignedDemo;
+var
+	dx : signed byte;
+
+begin
+	dx := -5;
+	if (dx < 0) then
+		screen_bg_col := black
+	else
+		screen_bg_col := white;
+	loop();
+end.

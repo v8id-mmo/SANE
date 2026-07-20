@@ -1,0 +1,10 @@
+program SizeofDemo;
+var
+	scores : array[10] of integer;
+	byteSize : integer;
+
+begin
+	byteSize := sizeof(scores);
+	screen_bg_col := lo(byteSize);
+	loop();
+end.

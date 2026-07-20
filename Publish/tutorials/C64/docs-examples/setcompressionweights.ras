@@ -1,0 +1,9 @@
+program SetCompressionWeightsDemo;
+
+@setcompressionweights 100 100 100
+
+@exportcompressed "sample_sprite.flf" "sample_sprite_compressed.bin" 0 0 8 8 25
+
+begin
+	loop();
+end.

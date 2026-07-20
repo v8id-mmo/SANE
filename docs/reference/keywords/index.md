@@ -139,3 +139,20 @@
   least once, paired with `until`.
 - [`repend`](repend.md): closes an inline-assembler `repeat N` unrolling
   block.
+- [`@requirefile`](requirefile.md): aborts compilation with a custom
+  message if a required file doesn't exist.
+- [`return`](return.md): exits the current procedure or function
+  immediately.
+- [`@setcompressionweights`](setcompressionweights.md): tunes the
+  similarity check `@exportcompressed` uses to merge near-identical
+  characters.
+- [`@setvalue`](setvalue.md): sets a raw project/settings configuration
+  key directly by name.
+- [`signed`](signed.md): marks a numeric variable as holding a signed
+  value, see its Known limitations.
+- [`sizeof`](sizeof.md): the size of a variable in bytes, as a
+  compile-time constant.
+- [`@sparklefile`](sparklefile.md): embeds a Sparkle 3 disk-authoring
+  script for building a D64 image.
+- [`@splitfile`](splitfile.md): splits a binary file into two files at a
+  given byte offset.

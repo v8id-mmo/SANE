@@ -1,0 +1,18 @@
+program ReturnDemo;
+var
+	value : byte;
+
+procedure CheckValue(v : byte);
+begin
+	if (v = 0) then begin
+		screen_bg_col := black;
+		return;
+	end;
+	screen_bg_col := white;
+end;
+
+begin
+	value := 0;
+	CheckValue(value);
+	loop();
+end.

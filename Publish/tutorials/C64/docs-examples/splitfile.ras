@@ -1,0 +1,7 @@
+program SplitFileDemo;
+
+@splitfile "sample_data.bin" "sample_data_part1.bin" "sample_data_part2.bin" 4
+
+begin
+	loop();
+end.

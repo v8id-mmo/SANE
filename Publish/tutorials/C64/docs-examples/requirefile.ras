@@ -1,0 +1,7 @@
+program RequireFileDemo;
+
+@requirefile "requirefile_data.bin" "Please run the required build step before compiling this program."
+
+begin
+	loop();
+end.
