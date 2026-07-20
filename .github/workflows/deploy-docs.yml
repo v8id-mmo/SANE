@@ -25,6 +25,7 @@ jobs:
       - run: pip install mkdocs-material
       - name: Copy example sources into docs assets
         run: |
+          mkdir -p Publish/tutorials/C64/docs-examples
           mkdir -p docs/assets/examples
           cp -r Publish/tutorials/C64/docs-examples/. docs/assets/examples/
       - run: mkdocs build
