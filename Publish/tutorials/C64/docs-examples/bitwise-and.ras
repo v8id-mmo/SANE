@@ -1,0 +1,13 @@
+program BitwiseAndDemo;
+var
+	a : byte = $F3;
+	mask : byte = $0F;
+	result : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	result := a & mask;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(result,3);
+	loop();
+end.

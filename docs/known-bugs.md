@@ -429,3 +429,54 @@ unrelated assembler feature causes the failure.
 
 *Reference pages:* [`repeat`](reference/keywords/repeat.md),
 [`repend`](reference/keywords/repend.md)
+
+## Bitwise operators
+
+### Signed right shift is always a logical shift, never arithmetic
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Shifting a negative signed value right with `shr`/`>>` gives a wrong
+(positive) result instead of preserving the sign. The shift always fills
+the vacated high bits with `0`, the same way it would for an unsigned
+value, rather than replicating the sign bit the way a proper arithmetic
+right shift needs to. Confirmed by compiling a small test and reading the
+generated code directly: a `signed byte` holding `-8`, shifted right by
+one, produces `124` instead of the mathematically correct `-4`.
+
+*Reference page:* [`shr`](reference/operators/shift-right.md)
+
+### `long` bitwise AND/OR/XOR silently miscompute the result with a non-trivial right-hand operand
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`&`, `|`, and `xor`/`^` between two 24-bit `long` values work correctly
+when the right-hand side is a plain variable. As soon as the right-hand
+side is a more complex expression (an addition, for example), two
+separate things go wrong at once: the top byte of the result isn't
+combined with the operator at all, it's simply overwritten with the
+right-hand expression's own top byte; and the middle byte can come out
+one off from the correct value, because of leftover state from evaluating
+the right-hand expression bleeding into the result. Confirmed by
+compiling both a plain-variable and a complex-expression version of the
+same expression and comparing the generated code.
+
+*Reference pages:* [`&`](reference/operators/bitwise-and.md),
+[`|`](reference/operators/bitwise-or.md), [`xor`](reference/operators/xor.md)
+
+### `xor` used to combine two conditions always evaluates true
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Writing `xor` between two parenthesized conditions, like
+`(a>5) xor (b<3)`, compiles without any error, but the resulting
+condition always behaves as true, no matter what either side actually
+evaluates to; the `else` branch of an `if` using this pattern becomes
+unreachable. Both conditions are evaluated correctly, but the step that's
+supposed to combine them with `xor` and branch on the result is missing:
+only `and`/`or` are actually wired up to combine two conditions this way.
+Plain bitwise `xor`/`^` between two numeric values is unaffected and
+works correctly; this only affects `xor` written between two parenthesized
+conditions.
+
+*Reference page:* [`xor`](reference/operators/xor.md)

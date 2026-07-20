@@ -160,6 +160,11 @@ nav:
           - "-": reference/operators/subtraction.md
           - "*": reference/operators/multiplication.md
           - "/": reference/operators/division.md
+          - "&": reference/operators/bitwise-and.md
+          - "|": reference/operators/bitwise-or.md
+          - "xor / ^": reference/operators/xor.md
+          - "shl / <<": reference/operators/shift-left.md
+          - "shr / >>": reference/operators/shift-right.md
       - Types: reference/types.md
       - Constants: reference/constants.md
   - Examples: examples/index.md

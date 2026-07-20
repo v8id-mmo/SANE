@@ -1,0 +1,13 @@
+program BitwiseOrDemo;
+var
+	a : byte = $F0;
+	b : byte = $0F;
+	result : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	result := a | b;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(result,3);
+	loop();
+end.

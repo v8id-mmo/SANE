@@ -25,5 +25,15 @@ because most of the compiler's known signed-arithmetic bugs live here.
 - [`/`](division.md): divides the left value by the right value, keeping
   only the integer part.
 
-The remaining categories (bitwise, logical, assignment) are planned for a
-later batch.
+## Bitwise
+
+- [`&`](bitwise-and.md): clears bits where either input has a `0`, keeps
+  bits where both inputs have a `1`.
+- [`|`](bitwise-or.md): sets bits where either input has a `1`.
+- [`xor` / `^`](xor.md): sets bits where exactly one input has a `1`,
+  toggling bits.
+- [`shl` / `<<`](shift-left.md): shifts bits left, filling with `0`.
+- [`shr` / `>>`](shift-right.md): shifts bits right, filling with `0`.
+
+The remaining categories (logical, assignment) are planned for a later
+batch.

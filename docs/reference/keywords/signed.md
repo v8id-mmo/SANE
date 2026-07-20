@@ -79,10 +79,16 @@ once:
   pattern represents (`$FF` becomes `$00FF`, i.e. 255). This affects
   addition, subtraction, and multiplication between a `signed byte` and a
   wider type.
+- **Signed right shift ([`shr`/`>>`](../operators/shift-right.md)) always
+  fills in `0`s instead of preserving the sign.** Shifting a negative
+  signed value right gives a wrong, positive result rather than a proper
+  arithmetic shift; a `signed byte` holding `-8`, shifted right by one,
+  comes out as `124` instead of `-4`. Shifting a non-negative signed value
+  is unaffected.
 
 None of the above needs the buggy path to be avoided entirely: unsigned
 usage, positive-only signed values, and 16-bit `<`/`<=` comparisons all
 work correctly. It's specifically negative-operand multiplication,
-any signed division, mixed-width arithmetic with a negative byte, and
-every signed 16-bit comparison other than `<`/`<=` that currently produce
-wrong results.
+any signed division, mixed-width arithmetic with a negative byte, signed
+right shift of a negative value, and every signed 16-bit comparison other
+than `<`/`<=` that currently produce wrong results.

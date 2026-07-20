@@ -1,0 +1,12 @@
+program ShiftLeftDemo;
+var
+	a : byte = 5;
+	result : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	result := a << 3;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(result,3);
+	loop();
+end.
