@@ -1,0 +1,6 @@
+program ProgramDemo;
+
+begin
+	screen_bg_col := black;
+	loop();
+end.

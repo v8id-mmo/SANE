@@ -124,3 +124,18 @@
   noise data.
 - [`private`](private.md): a class/record visibility keyword with no
   working implementation, see its Known limitations.
+- [`procedure`](procedure.md): a named, callable block of statements.
+- [`program`](program.md): opens a source file and names the compiled
+  program.
+- [`@projectsettings`](projectsettings.md): overrides a project setting
+  from within source code.
+- [`public`](public.md): a class/record visibility keyword with no
+  working implementation, see its Known limitations.
+- [`@raiseerror`](raiseerror.md): aborts compilation immediately with a
+  custom error message.
+- [`@raisewarning`](raisewarning.md): emits a custom compile-time warning
+  without stopping compilation.
+- [`repeat`](repeat.md): a post-condition loop that runs its body at
+  least once, paired with `until`.
+- [`repend`](repend.md): closes an inline-assembler `repeat N` unrolling
+  block.

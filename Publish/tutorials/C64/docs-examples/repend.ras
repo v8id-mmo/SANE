@@ -1,0 +1,16 @@
+program RependDemo;
+var
+	count : byte;
+
+begin
+	asm
+		ldx #0
+		repeat 5
+			inx
+		repend
+		stx count
+	end;
+
+	screen_bg_col := count;
+	loop();
+end.

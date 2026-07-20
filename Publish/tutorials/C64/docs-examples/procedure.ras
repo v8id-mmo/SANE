@@ -1,0 +1,11 @@
+program ProcedureDemo;
+
+procedure SetBorder(c : byte);
+begin
+	screen_bg_col := c;
+end;
+
+begin
+	SetBorder(black);
+	loop();
+end.

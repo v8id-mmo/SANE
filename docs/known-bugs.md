@@ -207,6 +207,20 @@ with the identical, valid address values fails to compile.
 
 *Reference page:* [`krillsloader`](reference/keywords/krillsloader.md)
 
+### `@raisewarning`'s message never shows up when compiling from the command line
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The directive itself runs and compilation finishes normally, but the
+warning text is never printed anywhere: not to the terminal, not into the
+compiled output. It was only ever wired up to be read by the old
+graphical editor's own output pane, which no longer exists in this
+command-line-only fork. `@raiseerror`, by contrast, does still show its
+message and stop compilation, since aborting works through a different
+mechanism.
+
+*Reference page:* [`@raisewarning`](reference/keywords/raisewarning.md)
+
 ## Compression
 
 ### `compressed`/`@compress` output can't be decompressed at runtime
@@ -313,3 +327,25 @@ out too large produces a broken branch with no warning.
 
 *Reference pages:* [`onpage`](reference/keywords/onpage.md),
 [`offpage`](reference/keywords/offpage.md)
+
+## Inline assembler
+
+### A program, procedure, or variable name starting with "repeat" can trigger an unrelated unrolling error
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The inline-assembler unrolling feature (`repeat N` / `repend`) is
+detected by scanning the generated assembly line by line for anything
+that starts with the word "repeat", rather than checking for the actual
+"repeat, followed by a number" shape. A program, procedure, or variable
+whose name happens to start with those same letters (`RepeatDemo`, for
+example) produces a line in the generated assembly that starts the same
+way, so it gets mistaken for the start of an unrolling block. Compilation
+then fails with a count-parsing error that has nothing to do with the
+actual source, even in a project that never uses `repeat`/`repend`
+unrolling at all. The ordinary Pascal `repeat...until` loop is unaffected
+by this and works correctly on its own; only the name collision with the
+unrelated assembler feature causes the failure.
+
+*Reference pages:* [`repeat`](reference/keywords/repeat.md),
+[`repend`](reference/keywords/repend.md)

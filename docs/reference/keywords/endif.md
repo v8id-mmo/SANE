@@ -17,7 +17,7 @@ in the compiled program if the condition holds.
 ```pascal
 program EndIfDemo;
 
-@define usemsg 1
+@define usemsg 1	// try deleting this row and rerun
 
 var
 	i : byte = 0;

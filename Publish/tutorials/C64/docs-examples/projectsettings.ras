@@ -1,0 +1,8 @@
+program ProjectSettingsDemo;
+
+@projectsettings "startaddress" $0900
+
+begin
+	screen_bg_col := black;
+	loop();
+end.

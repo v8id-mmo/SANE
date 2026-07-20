@@ -1,0 +1,7 @@
+program RaiseWarningDemo;
+
+@raisewarning "This is a compile-time warning, not an error."
+
+begin
+	loop();
+end.

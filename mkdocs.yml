@@ -109,6 +109,14 @@ nav:
           - "@pbmexport": reference/keywords/pbmexport.md
           - "@perlinnoise": reference/keywords/perlinnoise.md
           - private: reference/keywords/private.md
+          - procedure: reference/keywords/procedure.md
+          - program: reference/keywords/program.md
+          - "@projectsettings": reference/keywords/projectsettings.md
+          - public: reference/keywords/public.md
+          - "@raiseerror": reference/keywords/raiseerror.md
+          - "@raisewarning": reference/keywords/raisewarning.md
+          - repeat: reference/keywords/repeat.md
+          - repend: reference/keywords/repend.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md
