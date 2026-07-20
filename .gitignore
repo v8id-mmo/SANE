@@ -56,8 +56,14 @@ units/CHIP8/system/system.asm
 
 CLAUDE.md
 
+
 # Compile-test scratch folder build byproducts
 test_projects/*.prg
 test_projects/*.asm
 test_projects/*.sym
-GUI_IDE_REMOVAL_PLAN.md
+test_projects/README.md
+
+# Docs site build output and the copy-step-generated examples folder
+# (see DOCS_SITE_GUIDE.md at /home/dey/.claude/projects/-home-dey-SANE/)
+site/
+docs/assets/examples/

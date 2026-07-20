@@ -1,0 +1,41 @@
+site_name: SANE / TRSE Documentation
+site_description: Language reference and examples for SANE, a TRSE-compatible Pascal-like compiler for the Commodore 64.
+repo_url: https://github.com/v8id-mmo/SANE
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+plugins:
+  - search
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Reference:
+      - Keywords: reference/keywords/index.md
+      - Builtins: reference/builtins/index.md
+      - Operators: reference/operators/index.md
+      - Types: reference/types.md
+      - Constants: reference/constants.md
+  - Examples: examples/index.md
+  - Platform Notes: platform-notes.md
+  - Compatibility Tags: tags.md
