@@ -1,0 +1,7 @@
+program Bin2IncDemo;
+
+@bin2inc "sample_data.bin" "sample_data.inc" mySampleData
+
+begin
+	loop();
+end.

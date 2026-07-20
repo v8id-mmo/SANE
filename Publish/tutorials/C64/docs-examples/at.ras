@@ -1,0 +1,8 @@
+program AtDemo;
+var
+	borderColor : byte at $d020;
+
+begin
+	borderColor := 0;
+	loop();
+end.

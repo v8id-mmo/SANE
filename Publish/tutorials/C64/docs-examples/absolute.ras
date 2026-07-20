@@ -1,0 +1,8 @@
+program AbsoluteDemo;
+var
+	backgroundColor : byte absolute $d021;
+
+begin
+	backgroundColor := 6;
+	loop();
+end.

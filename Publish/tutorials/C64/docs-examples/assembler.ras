@@ -1,0 +1,13 @@
+program AssemblerDemo;
+
+procedure SetBorderBlack(); assembler;
+asm("
+        lda #$00
+        sta $d020
+        rts
+");
+
+begin
+	SetBorderBlack();
+	loop();
+end.

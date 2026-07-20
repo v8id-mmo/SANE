@@ -1,0 +1,14 @@
+program AsmDemo;
+
+begin
+	asm("  lda #$01");
+	asm("
+        lda #$10
+        sta $fb
+mylabel dec $fb
+        lda $fb
+        cmp #$05
+        bcs mylabel
+");
+	loop();
+end.

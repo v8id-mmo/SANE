@@ -22,16 +22,31 @@ theme:
         name: Switch to light mode
 markdown_extensions:
   - admonition
+  - attr_list
   - tables
   - toc:
       permalink: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 plugins:
   - search
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
   - Reference:
-      - Keywords: reference/keywords/index.md
+      - Keywords:
+          - Overview: reference/keywords/index.md
+          - absolute: reference/keywords/absolute.md
+          - "@addcpmheader": reference/keywords/addcpmheader.md
+          - "@addemulatorparam": reference/keywords/addemulatorparam.md
+          - "@addmonitorcommand": reference/keywords/addmonitorcommand.md
+          - asm: reference/keywords/asm.md
+          - assembler: reference/keywords/assembler.md
+          - at: reference/keywords/at.md
+          - begin: reference/keywords/begin.md
+          - "@bin2inc": reference/keywords/bin2inc.md
+          - break: reference/keywords/break.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

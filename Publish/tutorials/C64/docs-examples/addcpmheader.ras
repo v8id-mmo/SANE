@@ -1,0 +1,8 @@
+program AddCpmHeaderDemo;
+
+@copyfile "sample_data.bin" "sample_data_hdr.bin"
+@addcpmheader "sample_data_hdr.bin"
+
+begin
+	loop();
+end.

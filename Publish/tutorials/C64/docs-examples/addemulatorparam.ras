@@ -1,0 +1,7 @@
+program AddEmulatorParamDemo;
+
+@addemulatorparam "-nothrottle"
+
+begin
+	loop();
+end.

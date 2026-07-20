@@ -1,0 +1,7 @@
+program AddMonitorCommandDemo;
+
+@addmonitorcommand "print \"hello from the vice monitor\""
+
+begin
+	loop();
+end.
