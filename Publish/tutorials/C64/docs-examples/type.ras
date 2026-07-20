@@ -1,0 +1,19 @@
+program TypeDemo;
+
+var
+	type TByteArray = array[4] of byte;
+
+	scores : TByteArray;
+	total : byte = 0;
+	i : byte;
+
+begin
+	scores[0] := 10;
+	scores[1] := 20;
+	scores[2] := 30;
+	scores[3] := 40;
+	for i:=0 to 4 do
+		total := total + scores[i];
+	screen_bg_col := total;
+	loop();
+end.

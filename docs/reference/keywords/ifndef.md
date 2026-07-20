@@ -12,6 +12,8 @@ The inverted form of [`@ifdef`](ifdef.md): includes the code between
         <code, only compiled if <name> was NOT @defined>
     @endif
 
+@ifndef with @else branch:
+
     @ifndef <name>
         <code, only compiled if <name> was NOT @defined>
     @else

@@ -1,0 +1,11 @@
+program UseDemo;
+@use "mathhelper"
+
+var
+	total : byte = 0;
+
+begin
+	total := MathHelper::Double(21);
+	screen_bg_col := total;
+	loop();
+end.

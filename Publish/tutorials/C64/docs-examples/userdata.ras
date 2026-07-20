@@ -1,0 +1,12 @@
+program UserDataDemo;
+
+@userdata "$c000" "$c100" "Reserved data block"
+
+var
+	total : byte = 0;
+
+begin
+	total := total + 1;
+	screen_bg_col := total;
+	loop();
+end.

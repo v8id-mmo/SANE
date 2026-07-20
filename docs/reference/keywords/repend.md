@@ -4,7 +4,8 @@
 (see Known limitations below).
 
 Closes a `repeat N` inline-assembler unrolling block. This is a separate
-feature from the Pascal-level [`repeat`](repeat.md)/`until` loop: it
+feature from the Pascal-level [`repeat`](repeat.md)/[`until`](until.md)
+loop: it
 operates on raw text inside an [`asm`](asm.md) block, duplicating a
 sequence of assembler lines a fixed number of times instead of using a
 real runtime loop, useful for hand-optimized, branch-free hot code.

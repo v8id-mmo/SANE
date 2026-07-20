@@ -114,7 +114,7 @@ builtin silently doesn't work (for example, `sine[angle]` always returning
 `0`). The workaround is to add one real, uncommented reference to the
 same pattern in the main file too.
 
-*Reference page: pending.*
+*Reference page:* [`@use`](reference/keywords/use.md)
 
 ## Loops
 
@@ -131,6 +131,20 @@ value, running far more times than intended.
 
 *Reference pages:* [`for`](reference/keywords/for.md),
 [`fori`](reference/keywords/fori.md)
+
+### `unroll` always treats a `fori` loop's end value as exclusive
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Adding `unroll` to a `for` loop expands it into repeated, literal copies
+of the body at compile time instead of a runtime loop. On a `fori` loop,
+which is normally inclusive of its end value, `unroll` silently switches
+it back to `for`'s exclusive behavior: `fori i:=0 to 3 unroll do ...`
+only emits copies for `i = 0, 1, 2`, dropping the `i = 3` pass a
+non-unrolled `fori` loop always runs. A plain, non-unrolled `fori` loop is
+unaffected and correctly includes the end value.
+
+*Reference page:* [`unroll`](reference/keywords/unroll.md)
 
 ## Preprocessor directives
 
@@ -169,6 +183,18 @@ to generate it with one compile first, then `@include` it from a separate
 compile.
 
 *Reference page:* [`@bin2inc`](reference/keywords/bin2inc.md)
+
+### `@vbmcompilechunk`'s own output can't be `@include`d in the same compile
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The same issue as `@bin2inc` above, confirmed separately for this
+directive: a file that both runs `@vbmcompilechunk` and `@include`s the
+file it just generated fails on a clean build, even though
+`@vbmcompilechunk` runs first. The workaround is the same: generate the
+file with one compile first, then `@include` it from a separate compile.
+
+*Reference page:* [`@vbmcompilechunk`](reference/keywords/vbmcompilechunk.md)
 
 ### `@donotprefix <symbol>` never compiles
 

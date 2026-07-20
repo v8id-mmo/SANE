@@ -133,6 +133,14 @@ nav:
           - step: reference/keywords/step.md
           - then: reference/keywords/then.md
           - to: reference/keywords/to.md
+          - type: reference/keywords/type.md
+          - unit: reference/keywords/unit.md
+          - unroll: reference/keywords/unroll.md
+          - until: reference/keywords/until.md
+          - "@use": reference/keywords/use.md
+          - "@userdata": reference/keywords/userdata.md
+          - var: reference/keywords/var.md
+          - "@vbmcompilechunk": reference/keywords/vbmcompilechunk.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

@@ -1,0 +1,11 @@
+program UntilDemo;
+var
+	i : byte = 0;
+
+begin
+	repeat
+		i := i + 1;
+	until (i = 5);
+	screen_bg_col := i;
+	loop();
+end.

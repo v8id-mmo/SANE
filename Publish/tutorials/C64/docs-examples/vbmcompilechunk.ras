@@ -1,0 +1,7 @@
+program VbmCompileChunkDemo;
+
+@vbmcompilechunk "sample_sprite.flf" "sample_sprite_chunk.inc" "DrawChunk" "myPtr" "" 0 4 4 0
+
+begin
+	loop();
+end.

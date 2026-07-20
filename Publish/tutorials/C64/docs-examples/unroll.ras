@@ -1,0 +1,11 @@
+program UnrollDemo;
+var
+	i : byte;
+	total : byte = 0;
+
+begin
+	for i:=0 to 4 unroll do
+		total := total + 1;
+	screen_bg_col := total;
+	loop();
+end.

@@ -4,7 +4,8 @@
 (see Known limitations below).
 
 A post-condition loop, Pascal-style: the body always runs at least once,
-then the loop repeats until the paired `until` condition becomes true.
+then the loop repeats until the paired [`until`](until.md) condition
+becomes true.
 
 ## Syntax
 

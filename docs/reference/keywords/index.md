@@ -171,3 +171,17 @@
   counter.
 - [`then`](then.md): separates an `if` condition from its true branch.
 - [`to`](to.md): separates a `for` loop's start value from its end value.
+- [`type`](type.md): declares a named alias for a type expression, inside
+  a `var` block.
+- [`unit`](unit.md): declares a `.tru` file as a reusable unit of code
+  pulled in with `@use`.
+- [`unroll`](unroll.md): expands a `for`/`fori` loop at compile time
+  instead of generating a runtime loop.
+- [`until`](until.md): closes a `repeat` loop with its exit condition.
+- [`@use`](use.md): pulls a unit's procedures, functions, and variables
+  into the current compile.
+- [`@userdata`](userdata.md): reserves a fixed memory range so the
+  compiler's allocator never touches it.
+- [`var`](var.md): opens a block of variable declarations.
+- [`@vbmcompilechunk`](vbmcompilechunk.md): generates self-drawing
+  procedures from a region of an image asset.

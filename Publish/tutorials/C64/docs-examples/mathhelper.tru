@@ -1,0 +1,10 @@
+unit MathHelper;
+
+var
+
+function Double(x : byte) : byte;
+begin
+	Double := x * 2;
+end;
+
+end.

@@ -1,0 +1,14 @@
+program VarDemo;
+
+var
+	score : byte = 0;
+	lives, hitPoints : byte;
+	highScore : integer = 1000;
+
+begin
+	lives := 3;
+	hitPoints := 100;
+	score := score + 1;
+	screen_bg_col := score;
+	loop();
+end.
