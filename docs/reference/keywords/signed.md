@@ -47,10 +47,13 @@ the modifier that switches a variable into all of those code paths at
 once:
 
 - **Signed comparison is incomplete for 16-bit values.** For a `signed
-  word`/`integer`, only `<` and `<=` are implemented; every other
-  comparison operator (`>`, `>=`, `=`, `<>`) throws a compile error
-  instead of producing wrong code. Signed comparison for a `signed long`
-  isn't implemented at all, any comparison operator errors out.
+  word`/`integer`, only [`<`](../operators/less-than.md) and
+  [`<=`](../operators/less-or-equal.md) are implemented; every other
+  comparison operator ([`>`](../operators/greater-than.md),
+  [`>=`](../operators/greater-or-equal.md), [`=`](../operators/equal.md),
+  [`<>`](../operators/not-equal.md)) throws a compile error instead of
+  producing wrong code. Signed comparison for a `signed long` isn't
+  implemented at all, any comparison operator errors out.
 - **Byte-level signed comparison is suspected wrong at the extremes**,
   such as comparing `-128` and `127`, because the generated code doesn't
   correct for 6502 signed-overflow the way the 16-bit `<`/`<=` case does.

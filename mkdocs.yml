@@ -148,7 +148,14 @@ nav:
           - wedge: reference/keywords/wedge.md
           - while: reference/keywords/while.md
       - Builtins: reference/builtins/index.md
-      - Operators: reference/operators/index.md
+      - Operators:
+          - Overview: reference/operators/index.md
+          - "<": reference/operators/less-than.md
+          - "<=": reference/operators/less-or-equal.md
+          - ">": reference/operators/greater-than.md
+          - ">=": reference/operators/greater-or-equal.md
+          - "=": reference/operators/equal.md
+          - "<>": reference/operators/not-equal.md
       - Types: reference/types.md
       - Constants: reference/constants.md
   - Examples: examples/index.md

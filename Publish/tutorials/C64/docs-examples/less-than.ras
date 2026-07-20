@@ -1,0 +1,20 @@
+program LessThanDemo;
+var
+	a : byte = 5;
+	b : byte = 10;
+	msgTrue : cstring = "A < B IS TRUE";
+	msgFalse : cstring = "A < B IS FALSE";
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(a,3);
+	moveto(0,4,hi(screen_char_loc));
+	printdecimal(b,3);
+	moveto(0,6,hi(screen_char_loc));
+	if (a<b) then
+		printstring(msgTrue,0,40)
+	else
+		printstring(msgFalse,0,40);
+	loop();
+end.

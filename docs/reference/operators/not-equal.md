@@ -1,0 +1,68 @@
+# `<>` (Not Equal)
+
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
+(see Known limitations below).
+
+Compares two values and is true if they're different. Used anywhere a
+condition is expected: `if`, `while`, `until`, `case`, and similar
+constructs.
+
+## Syntax
+
+    <a> <> <b>
+
+## Parameters
+
+- `<a>`, `<b>`: numeric values of the same declared type (`byte`,
+  `word`/`integer`, or `long`), either both unsigned or both `signed`.
+
+## Returns
+
+A boolean result (true or false), usable directly wherever a condition is
+expected.
+
+## Example
+
+```pascal
+program NotEqualDemo;
+var
+	a : byte = 7;
+	b : byte = 9;
+	msgTrue : cstring = "A <> B IS TRUE";
+	msgFalse : cstring = "A <> B IS FALSE";
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(a,3);
+	moveto(0,4,hi(screen_char_loc));
+	printdecimal(b,3);
+	moveto(0,6,hi(screen_char_loc));
+	if (a<>b) then
+		printstring(msgTrue,0,40)
+	else
+		printstring(msgFalse,0,40);
+	loop();
+end.
+```
+
+[:material-download: Download this example](../../assets/examples/not-equal.ras){ .md-button download }
+
+## Known limitations
+
+This operator works correctly for unsigned `byte`, `word`/`integer`, and
+`long` values. Unlike the ordering operators (`<`, `<=`, `>`, `>=`), it
+also works correctly on a **`signed byte`** at every value, including
+right at the `-128`/`127` boundary: equality/inequality only cares whether
+two bit patterns match, not how the sign bit is interpreted, so it isn't
+affected by the boundary-value risk that applies to signed byte ordering
+comparisons.
+
+- **On a `signed word`/`integer` or `signed long`, this operator isn't
+  implemented, for the same reason the ordering operators (other than
+  `<`/`<=`) aren't: the compiler currently only allows `<`/`<=` on a
+  signed 16-bit value, and nothing at all on a signed 24-bit value.**
+  Writing `if (signedWord <> 0) then ...` fails to compile even though
+  inequality doesn't inherently need any sign-aware logic; this is a gap
+  in what's currently wired up rather than a fundamental limitation of the
+  operator itself.
