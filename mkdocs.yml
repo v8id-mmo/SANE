@@ -47,6 +47,16 @@ nav:
           - begin: reference/keywords/begin.md
           - "@bin2inc": reference/keywords/bin2inc.md
           - break: reference/keywords/break.md
+          - buildsinetable: reference/keywords/buildsinetable.md
+          - buildtable: reference/keywords/buildtable.md
+          - buildtable2d: reference/keywords/buildtable2d.md
+          - case: reference/keywords/case.md
+          - "@compress": reference/keywords/compress.md
+          - compressed: reference/keywords/compressed.md
+          - const: reference/keywords/const.md
+          - continue: reference/keywords/continue.md
+          - "@copyfile": reference/keywords/copyfile.md
+          - "@define": reference/keywords/define.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

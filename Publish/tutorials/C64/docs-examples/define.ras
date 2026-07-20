@@ -1,0 +1,11 @@
+program DefineDemo;
+
+@define borderColorValue 6
+
+var
+	i : byte = 0;
+
+begin
+	screen_bg_col := @borderColorValue;
+	loop();
+end.

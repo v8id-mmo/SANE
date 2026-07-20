@@ -1,0 +1,12 @@
+program ContinueDemo;
+var
+	i : byte = 0;
+
+begin
+	for i := 0 to 20 do
+	begin
+		if (i&1=1) then continue; // skip odd numbers
+		screen_bg_col := i;
+	end;
+	loop();
+end.

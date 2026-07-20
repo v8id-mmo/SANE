@@ -1,0 +1,11 @@
+program CompressedDemo;
+var
+	packedData : array[32] of byte compressed = (
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	);
+
+begin
+	screen_bg_col := packedData[0];
+	loop();
+end.

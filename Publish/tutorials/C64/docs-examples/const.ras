@@ -1,0 +1,12 @@
+program ConstDemo;
+var
+	const maxLives : byte = 3;
+	const startAddress : address = $c000;
+
+	lives : byte = 0;
+
+begin
+	lives := maxLives;
+	screen_bg_col := lives;
+	loop();
+end.

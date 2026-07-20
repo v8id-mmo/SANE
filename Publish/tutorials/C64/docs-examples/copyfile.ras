@@ -1,0 +1,7 @@
+program CopyFileDemo;
+
+@copyfile "sample_data.bin" "sample_data_copy.bin"
+
+begin
+	loop();
+end.

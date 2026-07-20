@@ -1,0 +1,7 @@
+program CompressDemo;
+
+@compress "sample_data.bin" "sample_data.lz4"
+
+begin
+	loop();
+end.

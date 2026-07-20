@@ -1,0 +1,13 @@
+program BuildTableDemo;
+var
+	// Lookup table for division by 16
+	lookupDiv16 : array[256] of byte = buildtable("i/16");
+	i : byte = 0;
+
+begin
+	for i := 0 to 255 do
+	begin
+		screen_bg_col := lookupDiv16[i]&15;
+	end;
+	loop();
+end.

@@ -1,0 +1,13 @@
+program BuildTable2DDemo;
+var
+	// 8x8 table where each cell holds i+j*8
+	grid : array[64] of byte = buildtable2d(8, 8, "i+j*8");
+	i : byte = 0;
+
+begin
+	for i := 0 to 63 do
+	begin
+		screen_bg_col := grid[i]&15;
+	end;
+	loop();
+end.
