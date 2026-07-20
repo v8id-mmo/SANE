@@ -14,7 +14,7 @@ constructs.
 ## Parameters
 
 - `<a>`, `<b>`: numeric values of the same declared type (`byte`,
-  `word`/`integer`, or `long`), either both unsigned or both `signed`.
+  `integer`, or `long`), either both unsigned or both `signed`.
 
 ## Returns
 
@@ -50,7 +50,7 @@ end.
 
 ## Known limitations
 
-This operator works correctly for unsigned `byte`, `word`/`integer`, and
+This operator works correctly for unsigned `byte`, `integer`, and
 `long` values. Unlike the ordering operators (`<`, `<=`, `>`, `>=`), it
 also works correctly on a **`signed byte`** at every value, including
 right at the `-128`/`127` boundary: equality/inequality only cares whether
@@ -58,7 +58,7 @@ two bit patterns match, not how the sign bit is interpreted, so it isn't
 affected by the boundary-value risk that applies to signed byte ordering
 comparisons.
 
-- **On a `signed word`/`integer` or `signed long`, this operator isn't
+- **On a `signed integer` or `signed long`, this operator isn't
   implemented, for the same reason the ordering operators (other than
   `<`/`<=`) aren't: the compiler currently only allows `<`/`<=` on a
   signed 16-bit value, and nothing at all on a signed 24-bit value.**

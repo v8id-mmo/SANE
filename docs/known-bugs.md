@@ -21,26 +21,34 @@ the latter.
 
 **Status:** Open · **Fixed in:** not yet fixed
 
-For signed `word`/`integer` values, only the `<` and `<=` operators work.
-`>`, `>=`, `=`, and `<>` all fail to compile in the signed case. Signed
-`long` (24-bit) comparisons aren't implemented at all, for any operator.
+For signed `integer` (16-bit) values, only the `<` and `<=` operators
+work. `>`, `>=`, `=`, and `<>` all fail to compile in the signed case.
+Signed `long` (24-bit) comparisons aren't implemented at all, for any
+operator.
 
-*Reference page: pending (comparison operators haven't been documented
-yet).*
+*Reference pages:* [`<`](reference/operators/less-than.md),
+[`<=`](reference/operators/less-or-equal.md),
+[`>`](reference/operators/greater-than.md),
+[`>=`](reference/operators/greater-or-equal.md),
+[`=`](reference/operators/equal.md),
+[`<>`](reference/operators/not-equal.md)
 
 ### Byte-level signed comparison is suspected to be wrong at the boundaries
 
 **Status:** Suspected, not yet confirmed by testing · **Fixed in:** not
 yet fixed
 
-Unlike the word/integer signed comparison path, the byte-level signed
-comparison is missing a correction step that's needed to get the right
-answer near the boundary between positive and negative values (comparisons
-like `-128` against `127`). This has been traced through the code but not
-yet actually run and confirmed; it's listed here as a strong suspicion,
-not a confirmed bug, until it's been tested for real.
+Unlike the 16-bit signed comparison path, the byte-level signed comparison
+is missing a correction step that's needed to get the right answer near
+the boundary between positive and negative values (comparisons like
+`-128` against `127`). This has been traced through the code but not yet
+actually run and confirmed; it's listed here as a strong suspicion, not a
+confirmed bug, until it's been tested for real.
 
-*Reference page: pending.*
+*Reference pages:* [`<`](reference/operators/less-than.md),
+[`<=`](reference/operators/less-or-equal.md),
+[`>`](reference/operators/greater-than.md),
+[`>=`](reference/operators/greater-or-equal.md)
 
 ### Signed multiplication silently gives the wrong result
 
@@ -53,7 +61,7 @@ unsigned case. A correct signed multiply routine already exists elsewhere
 in the compiler's bundled code, it just isn't connected to the `*`
 operator.
 
-*Reference page: pending.*
+*Reference page:* [`*`](reference/operators/multiplication.md)
 
 ### Signed division isn't implemented at all
 
@@ -63,20 +71,23 @@ Division always uses unsigned arithmetic, regardless of whether either
 operand is a negative signed value. There's no signed-aware division
 routine anywhere in the compiler yet to fall back on.
 
-*Reference page: pending.*
+*Reference page:* [`/`](reference/operators/division.md)
 
-### Mixing a signed byte with a word/integer drops the sign
+### Mixing a signed byte with an integer drops the sign
 
 **Status:** Open · **Fixed in:** not yet fixed
 
-When a `byte` value is combined with a `word`/`integer` value (addition,
+When a `byte` value is combined with an `integer` (16-bit) value (addition,
 subtraction, multiplication), the byte's value should be sign-extended
 when it's negative (so `-1` becomes `$FFFF`, not `$00FF`). Right now it's
 always zero-extended instead, so any negative byte mixed into a wider
 expression produces a wrong result. Confirmed in at least two separate
 spots in the code generator; there may be more not yet found.
 
-*Reference page: pending.*
+*Reference pages:* [`signed`](reference/keywords/signed.md),
+[`+`](reference/operators/addition.md),
+[`-`](reference/operators/subtraction.md),
+[`*`](reference/operators/multiplication.md)
 
 ## Procedures & functions
 

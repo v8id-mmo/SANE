@@ -156,6 +156,10 @@ nav:
           - ">=": reference/operators/greater-or-equal.md
           - "=": reference/operators/equal.md
           - "<>": reference/operators/not-equal.md
+          - "+": reference/operators/addition.md
+          - "-": reference/operators/subtraction.md
+          - "*": reference/operators/multiplication.md
+          - "/": reference/operators/division.md
       - Types: reference/types.md
       - Constants: reference/constants.md
   - Examples: examples/index.md

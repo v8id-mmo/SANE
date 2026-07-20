@@ -18,8 +18,8 @@ The modifier goes before the base type in the declaration.
 
 ## Parameters
 
-- `<type>`: the numeric base type being marked signed, typically `byte`,
-  `word`, or `integer`.
+- `<type>`: the numeric base type being marked signed: `byte`, `integer`
+  (16-bit), or `long` (24-bit).
 
 ## Example
 
@@ -47,7 +47,7 @@ the modifier that switches a variable into all of those code paths at
 once:
 
 - **Signed comparison is incomplete for 16-bit values.** For a `signed
-  word`/`integer`, only [`<`](../operators/less-than.md) and
+  integer`, only [`<`](../operators/less-than.md) and
   [`<=`](../operators/less-or-equal.md) are implemented; every other
   comparison operator ([`>`](../operators/greater-than.md),
   [`>=`](../operators/greater-or-equal.md), [`=`](../operators/equal.md),
@@ -62,21 +62,23 @@ once:
   signed byte comparison right at the type's boundary values without
   testing it yourself first. The example above (`dx < 0`) sits well away
   from that boundary and is unaffected.
-- **Signed multiplication (`*`) silently gives the wrong result for a
-  negative operand.** The multiply routine actually wired up behind `*`
-  is always the unsigned one, regardless of whether either operand is
-  `signed`. It happens to give the right answer when both operands are
-  positive, since the bit pattern matches the unsigned case, but is wrong
-  as soon as either one is negative, with no warning or error.
-- **Signed division (`/`) isn't implemented at all.** Division always
-  uses unsigned arithmetic, ignoring the `signed` modifier entirely.
-- **Mixing a `signed byte` into a wider expression (word/integer) always
+- **Signed multiplication ([`*`](../operators/multiplication.md)) silently
+  gives the wrong result for a negative operand.** The multiply routine
+  actually wired up behind `*` is always the unsigned one, regardless of
+  whether either operand is `signed`. It happens to give the right answer
+  when both operands are positive, since the bit pattern matches the
+  unsigned case, but is wrong as soon as either one is negative, with no
+  warning or error.
+- **Signed division ([`/`](../operators/division.md)) isn't implemented at
+  all.** Division always uses unsigned arithmetic, ignoring the `signed`
+  modifier entirely.
+- **Mixing a `signed byte` into a wider expression (`integer`) always
   zero-extends instead of sign-extending.** A negative signed byte widened
-  to a word should keep its negative value (e.g. `-1` becomes `$FFFF`),
-  but instead comes out as the small positive value the raw bit pattern
-  represents (`$FF` becomes `$00FF`, i.e. 255). This affects addition,
-  subtraction, and multiplication between a `signed byte` and a wider
-  type.
+  to a 16-bit value should keep its negative value (e.g. `-1` becomes
+  `$FFFF`), but instead comes out as the small positive value the raw bit
+  pattern represents (`$FF` becomes `$00FF`, i.e. 255). This affects
+  addition, subtraction, and multiplication between a `signed byte` and a
+  wider type.
 
 None of the above needs the buggy path to be avoided entirely: unsigned
 usage, positive-only signed values, and 16-bit `<`/`<=` comparisons all

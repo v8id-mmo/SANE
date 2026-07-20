@@ -1,0 +1,13 @@
+program AdditionDemo;
+var
+	a : byte = 200;
+	b : byte = 100;
+	sum : integer;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	sum := a + b;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(sum,5);
+	loop();
+end.

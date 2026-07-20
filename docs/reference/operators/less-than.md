@@ -14,7 +14,7 @@ right-hand value. Used anywhere a condition is expected: `if`, `while`,
 ## Parameters
 
 - `<a>`, `<b>`: numeric values of the same declared type (`byte`,
-  `word`/`integer`, or `long`), either both unsigned or both `signed`.
+  `integer`, or `long`), either both unsigned or both `signed`.
 
 ## Returns
 
@@ -50,9 +50,9 @@ end.
 
 ## Known limitations
 
-This operator works correctly for unsigned `byte`, `word`/`integer`, and
+This operator works correctly for unsigned `byte`, `integer`, and
 `long` values, and is one of only two comparison operators (along with
-`<=`) implemented for `signed word`/`integer` values.
+`<=`) implemented for `signed integer` values.
 
 - **On a `signed byte`, this operator is accepted without a compile
   error, but is suspected to give the wrong answer right at the extreme
@@ -65,6 +65,6 @@ This operator works correctly for unsigned `byte`, `word`/`integer`, and
   trusted without testing it yourself first. Away from the extremes (as in
   the example above), it behaves correctly.
 - **On a `signed long`, this operator isn't implemented at all.** Unlike
-  `signed word`/`integer` (where `<` is one of the two operators that do
+  `signed integer` (where `<` is one of the two operators that do
   work), a signed 24-bit comparison fails to compile no matter which
   operator is used, this one included.

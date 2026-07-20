@@ -1,0 +1,13 @@
+program MultiplicationDemo;
+var
+	a : byte = 20;
+	b : byte = 20;
+	product : integer;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	product := a * b;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(product,5);
+	loop();
+end.

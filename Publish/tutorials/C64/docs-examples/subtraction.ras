@@ -1,0 +1,13 @@
+program SubtractionDemo;
+var
+	a : byte = 10;
+	b : byte = 4;
+	diff : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	diff := a - b;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(diff,3);
+	loop();
+end.

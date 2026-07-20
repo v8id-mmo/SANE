@@ -14,7 +14,7 @@ expected: `if`, `while`, `until`, and similar constructs.
 ## Parameters
 
 - `<a>`, `<b>`: numeric values of the same declared type (`byte`,
-  `word`/`integer`, or `long`), either both unsigned or both `signed`.
+  `integer`, or `long`), either both unsigned or both `signed`.
 
 ## Returns
 
@@ -50,7 +50,7 @@ end.
 
 ## Known limitations
 
-This operator works correctly for unsigned `byte`, `word`/`integer`, and
+This operator works correctly for unsigned `byte`, `integer`, and
 `long` values.
 
 - **On a `signed byte`, this operator is accepted without a compile
@@ -63,7 +63,7 @@ This operator works correctly for unsigned `byte`, `word`/`integer`, and
   enough risk that a `signed byte` comparison near its type boundary
   shouldn't be trusted without testing it yourself first. Away from the
   extremes (as in the example above), it behaves correctly.
-- **On a `signed word`/`integer`, this operator isn't implemented at
+- **On a `signed integer`, this operator isn't implemented at
   all.** Only `<` and `<=` are currently implemented for a signed 16-bit
   comparison; writing `if (signedWord >= 0) then ...` fails to compile,
   even though restructuring the condition to use `<`/`<=` instead does

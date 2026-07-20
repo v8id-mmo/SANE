@@ -1,0 +1,13 @@
+program DivisionDemo;
+var
+	a : byte = 17;
+	b : byte = 5;
+	quotient : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	quotient := a / b;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(quotient,3);
+	loop();
+end.

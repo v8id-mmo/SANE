@@ -17,5 +17,13 @@ because most of the compiler's known signed-arithmetic bugs live here.
 - [`=`](equal.md): true if the two values are exactly equal.
 - [`<>`](not-equal.md): true if the two values are different.
 
-The remaining categories (arithmetic, bitwise, logical, assignment) are
-planned for a later batch.
+## Arithmetic
+
+- [`+`](addition.md): adds two values.
+- [`-`](subtraction.md): subtracts the right value from the left value.
+- [`*`](multiplication.md): multiplies two values.
+- [`/`](division.md): divides the left value by the right value, keeping
+  only the integer part.
+
+The remaining categories (bitwise, logical, assignment) are planned for a
+later batch.
