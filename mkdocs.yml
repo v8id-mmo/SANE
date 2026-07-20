@@ -36,7 +36,9 @@ extra_css:
   - stylesheets/extra.css
 nav:
   - Home: index.md
+  - Project Goals: goals.md
   - Getting Started: getting-started.md
+  - Known Bugs: known-bugs.md
   - Reference:
       - Keywords:
           - Overview: reference/keywords/index.md
@@ -105,7 +107,6 @@ nav:
       - Constants: reference/constants.md
   - Examples: examples/index.md
   - Platform Notes: platform-notes.md
-  - Known Bugs: known-bugs.md
-  - Project Goals: goals.md
-  - Changelog: changelog.md
   - Compatibility Tags: tags.md
+  - Changelog: changelog.md
+
