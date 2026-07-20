@@ -255,3 +255,61 @@ this happens, the build just quietly produces nothing useful.
 *Reference pages:*
 [`@exportblackwhite`](reference/keywords/exportblackwhite.md),
 [`@exportframe`](reference/keywords/exportframe.md)
+
+### `@pathtool` never compiles, in any configuration
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The directive's own work (fitting a curve through the input points and
+writing the three output files) runs successfully, but something
+afterward leaves the parser out of sync with the rest of the file. The
+resulting error is reported far from the actual problem, worded as if a
+`begin` were missing rather than pointing at the `@pathtool` line. This
+happens no matter where the directive is placed.
+
+*Reference page:* [`@pathtool`](reference/keywords/pathtool.md)
+
+### `@perlinnoise`'s exported data isn't clamped, but its preview image is
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+With a high enough amplitude/power setting, the raw noise bytes written to
+the output file can wrap or truncate outside the normal 0-255 range at
+some pixels, while the `.png` preview saved alongside it is clamped and
+looks completely clean at those same pixels. The preview can't be trusted
+to catch an out-of-range setting; only the actual exported data can.
+
+*Reference page:* [`@perlinnoise`](reference/keywords/perlinnoise.md)
+
+## Object model
+
+### `private`/`public` are reserved but completely non-functional
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Both keywords are reserved (so a field or method can't be named `private`
+or `public`), but neither is actually read anywhere while parsing a
+`class`/`record` body. Writing a visibility section the way the keywords'
+names suggest fails to compile immediately, rather than being accepted
+and ignored. Every class/record member is effectively public; there is
+currently no way to mark one private.
+
+*Reference page:* [`private`](reference/keywords/private.md)
+
+## Branch optimization
+
+### `onpage`/`offpage` have gaps on `case` and `repeat...until`, and no safety net when forcing `onpage`
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`onpage`/`offpage` on a `case` statement parse without error but have no
+effect on the generated code either way. Neither keyword can be used on a
+`repeat...until` loop at all: writing one there desyncs the parser instead
+of applying the override, even though the code generator has full,
+working support for both directions in that spot. And on `if`/`while`/
+`for`, forcing `onpage` (the short-branch direction) skips the size check
+that normally decides automatically, so forcing it on a block that turns
+out too large produces a broken branch with no warning.
+
+*Reference pages:* [`onpage`](reference/keywords/onpage.md),
+[`offpage`](reference/keywords/offpage.md)

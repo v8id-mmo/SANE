@@ -1,0 +1,7 @@
+program PbmExportDemo;
+
+@pbmexport "sample_sprite.flf" "sample_sprite_pbm.bin" 0 8 8 1
+
+begin
+	loop();
+end.

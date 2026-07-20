@@ -1,0 +1,12 @@
+program NoTermDemo;
+var
+	rawBytes : cstring = ("A","B","C") no_term;
+	i : byte;
+
+begin
+	for i := 0 to 2 do
+	begin
+		screen_bg_col := rawBytes[i];
+	end;
+	loop();
+end.

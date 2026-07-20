@@ -1,0 +1,10 @@
+program PerlinNoiseDemo;
+var
+
+@perlinnoise "noise.bin" 40 25 2 1 1 170 140
+	noiseData : incbin("noise.bin");
+	i : byte;
+
+begin
+	loop();
+end.

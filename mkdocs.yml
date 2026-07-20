@@ -101,6 +101,14 @@ nav:
           - krillsloader: reference/keywords/krillsloader.md
           - length: reference/keywords/length.md
           - "@macro": reference/keywords/macro.md
+          - no_term: reference/keywords/no_term.md
+          - of: reference/keywords/of.md
+          - offpage: reference/keywords/offpage.md
+          - onpage: reference/keywords/onpage.md
+          - "@pathtool": reference/keywords/pathtool.md
+          - "@pbmexport": reference/keywords/pbmexport.md
+          - "@perlinnoise": reference/keywords/perlinnoise.md
+          - private: reference/keywords/private.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

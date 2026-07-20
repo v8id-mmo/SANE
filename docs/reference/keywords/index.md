@@ -108,3 +108,19 @@
   size) as a compile-time constant.
 - [`@macro`](macro.md): defines a JavaScript-based, compile-time TRSE
   source generator.
+- [`no_term`](no_term.md): suppresses the automatic terminator byte on a
+  `string`/`cstring` declaration.
+- [`of`](of.md): links an array's bound (or a pointer's) to its element
+  type, and separates a `case` expression from its branches.
+- [`offpage`](offpage.md): forces a long jump instead of a short branch
+  for a conditional's generated code.
+- [`onpage`](onpage.md): forces a short relative branch for a
+  conditional's generated code, with no size safety check.
+- [`@pathtool`](pathtool.md): meant to sample a fitted curve into position
+  data files; currently broken, see its Known limitations.
+- [`@pbmexport`](pbmexport.md): converts a bitmap graphic into PET Bitmap
+  Mode block data.
+- [`@perlinnoise`](perlinnoise.md): fills a binary file with 2D coherent
+  noise data.
+- [`private`](private.md): a class/record visibility keyword with no
+  working implementation, see its Known limitations.

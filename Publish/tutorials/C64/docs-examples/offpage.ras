@@ -1,0 +1,14 @@
+program OffpageDemo;
+var
+	i : byte;
+
+begin
+	for i := 0 to 255 do
+	begin
+		if i = 128 offpage then
+		begin
+			screen_bg_col := white;
+		end;
+	end;
+	loop();
+end.
