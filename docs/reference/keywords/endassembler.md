@@ -3,7 +3,8 @@
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Appends a raw line of text to the very end of the generated assembly
-source. The counterpart to `@startassembler`, which prepends text to the
+source. The counterpart to [`@startassembler`](startassembler.md), which
+prepends text to the
 very start. Typically used to inject assembler-specific header/footer
 text (segment directives, end-of-file markers) that a particular target
 assembler expects.

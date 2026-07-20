@@ -14,6 +14,8 @@ compiled program at all, not even as dead code.
         <code, only compiled if <name> was @defined>
     @endif
 
+@ifdef with @else brach:
+
     @ifdef <name>
         <code, only compiled if <name> was @defined>
     @else

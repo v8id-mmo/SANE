@@ -2,7 +2,8 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Closes a fixed-address memory region opened by `@startblock`. Everything
+Closes a fixed-address memory region opened by
+[`@startblock`](startblock.md). Everything
 declared between `@startblock <address> "<name>"` and `@endblock` is
 placed starting at that fixed address, instead of wherever the compiler
 would otherwise put it.

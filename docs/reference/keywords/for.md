@@ -17,9 +17,9 @@ inclusive variant.
         <statements>;
     end;
 
-`step`, `unroll`, `loopx`, `loopy`, `onpage`, and `offpage` modifiers can
-appear between the `to <end>` and `do`, for example
-`for i:=0 to 10 step 2 do ...`.
+[`step`](step.md), `unroll`, `loopx`, `loopy`, [`onpage`](onpage.md), and
+[`offpage`](offpage.md) modifiers can appear between the `to <end>` and
+`do`, for example `for i:=0 to 10 step 2 do ...`.
 
 ## Parameters
 

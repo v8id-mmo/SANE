@@ -221,6 +221,19 @@ mechanism.
 
 *Reference page:* [`@raisewarning`](reference/keywords/raisewarning.md)
 
+### `@startblock` doesn't notice a missing or nested `@endblock`
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Opening a new `@startblock` region while a previous one is still open
+(no `@endblock` in between) is accepted silently: the active
+fixed-address region just switches to the new one, with no error or
+warning. The reverse mistake, an `@endblock` with nothing open to close,
+does raise a clear error, so this asymmetry is easy to trust past its
+actual safety.
+
+*Reference page:* [`@startblock`](reference/keywords/startblock.md)
+
 ## Compression
 
 ### `compressed`/`@compress` output can't be decompressed at runtime
@@ -269,6 +282,20 @@ this happens, the build just quietly produces nothing useful.
 *Reference pages:*
 [`@exportblackwhite`](reference/keywords/exportblackwhite.md),
 [`@exportframe`](reference/keywords/exportframe.md)
+
+### `@spritecompiler` never produces any output
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The directive compiles cleanly and validates that its input file exists,
+but never actually generates anything: on a C64 build the underlying
+image-processing step it calls is an empty stub, and even on the handful
+of other targets where that step does generate something, the result is
+computed and then thrown away internally rather than making it into the
+compiled output. There is currently no target this fork ships with where
+`@spritecompiler` does anything useful.
+
+*Reference page:* [`@spritecompiler`](reference/keywords/spritecompiler.md)
 
 ### `@pathtool` never compiles, in any configuration
 

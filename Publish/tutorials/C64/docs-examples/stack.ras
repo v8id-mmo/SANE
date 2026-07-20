@@ -1,0 +1,23 @@
+program StackDemo;
+
+var
+	i,j,k : byte;
+
+function Factorial(p : byte stack) : byte;
+begin
+	if (p>1) then
+		p:=p*Factorial(p-1);
+	Factorial:=p;
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(5,3,hi(screen_char_loc));
+	for j:=1 to 6 do
+	begin
+		k:=Factorial(j);
+		printdecimal(k,2);
+		screenmemory += screen_width*2;
+	end;
+	loop();
+end.

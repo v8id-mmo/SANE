@@ -125,6 +125,14 @@ nav:
           - sizeof: reference/keywords/sizeof.md
           - "@sparklefile": reference/keywords/sparklefile.md
           - "@splitfile": reference/keywords/splitfile.md
+          - "@spritecompiler": reference/keywords/spritecompiler.md
+          - "@spritepacker": reference/keywords/spritepacker.md
+          - stack: reference/keywords/stack.md
+          - "@startassembler": reference/keywords/startassembler.md
+          - "@startblock": reference/keywords/startblock.md
+          - step: reference/keywords/step.md
+          - then: reference/keywords/then.md
+          - to: reference/keywords/to.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

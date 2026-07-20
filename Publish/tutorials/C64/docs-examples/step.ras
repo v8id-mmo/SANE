@@ -1,0 +1,12 @@
+program StepDemo;
+
+var
+	i : byte;
+	total : byte = 0;
+
+begin
+	for i:=0 to 10 step 2 do
+		total := total + i;
+	screen_bg_col := total;
+	loop();
+end.

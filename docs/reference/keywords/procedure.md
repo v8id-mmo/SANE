@@ -29,7 +29,7 @@ A [`function`](function.md) is the same thing with a return value: add
       storage before the call, ordinary by-value semantics.
     - [`global`](global.md): the parameter aliases an existing global
       variable of the same name instead of getting its own storage.
-    - `stack`: the parameter lives on a real runtime stack (pushed before
+    - [`stack`](stack.md): the parameter lives on a real runtime stack (pushed before
       the call, popped after) instead of a fixed memory address. Only
       `byte` parameters are currently allowed with this flag.
 

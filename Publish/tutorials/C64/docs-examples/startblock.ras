@@ -1,0 +1,14 @@
+program StartBlockDemo;
+
+// Place these variables at a fixed address
+@startblock $f000 "FixedVars"
+
+var
+	fixedCounter : byte = 0;
+
+@endblock
+
+begin
+	fixedCounter := 1;
+	loop();
+end.

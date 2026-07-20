@@ -156,3 +156,18 @@
   script for building a D64 image.
 - [`@splitfile`](splitfile.md): splits a binary file into two files at a
   given byte offset.
+- [`@spritecompiler`](spritecompiler.md): intended to generate
+  sprite-drawing code from an image region; produces no output on this
+  fork's target.
+- [`@spritepacker`](spritepacker.md): packs an image into a Game Boy or
+  SNES sprite format; not usable for C64.
+- [`stack`](stack.md): passes a `byte` parameter through the hardware
+  stack instead of a fixed address, enabling recursion.
+- [`@startassembler`](startassembler.md): prepends a raw line of text to
+  the start of the generated assembly source.
+- [`@startblock`](startblock.md): pins declarations/code between it and
+  `@endblock` to a fixed memory address.
+- [`step`](step.md): sets the increment amount for a `for`/`fori` loop
+  counter.
+- [`then`](then.md): separates an `if` condition from its true branch.
+- [`to`](to.md): separates a `for` loop's start value from its end value.
