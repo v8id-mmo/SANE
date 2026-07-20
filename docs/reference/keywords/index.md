@@ -185,3 +185,15 @@
 - [`var`](var.md): opens a block of variable declarations.
 - [`@vbmcompilechunk`](vbmcompilechunk.md): generates self-drawing
   procedures from a region of an image asset.
+- [`@vbmexport`](vbmexport.md): exports a linear run of characters from an
+  image asset as raw bitmap data.
+- [`@vbmexportchunk`](vbmexportchunk.md): exports a rectangular region of
+  an image asset as raw bitmap data.
+- [`@vbmexportcolor`](vbmexportcolor.md): exports the per-character color
+  data from a region of an image asset.
+- [`volatile`](volatile.md): stops the optimizer from removing accesses
+  to a variable that changes outside normal program flow.
+- [`wedge`](wedge.md): declares an interrupt-return procedure, currently
+  identical to `interrupt`.
+- [`while`](while.md): a pre-condition loop, checked before each pass
+  through the body.

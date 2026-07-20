@@ -94,8 +94,24 @@ into a plain local variable first, and pass that instead. This is
 confirmed specifically for `inline` procedures; regular (non-inline)
 procedures use a different, unaffected mechanism.
 
-*Reference page: pending (`inline` and `procedure` haven't been
-documented yet).*
+*Reference pages:* [`inline`](reference/keywords/inline.md),
+[`procedure`](reference/keywords/procedure.md)
+
+### `wedge` compiles to exactly the same code as `interrupt`
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Declaring a procedure with `wedge` instead of `interrupt` produces
+identical generated assembly: same body, same trailing interrupt-return
+instruction. In standard C64 terminology, a "wedge" specifically means
+chaining a new routine onto an already-installed interrupt vector rather
+than replacing it, but nothing about the `wedge` declaration keyword
+itself does that; the compiler's actual interrupt-vector-chaining
+behavior lives entirely in a separate, unrelated set of builtin functions
+(`rasterirqwedge()` and friends), usable regardless of which keyword
+declared the procedure they're chaining.
+
+*Reference page:* [`wedge`](reference/keywords/wedge.md)
 
 ## Builtin auto-initialization
 

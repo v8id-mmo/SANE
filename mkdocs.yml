@@ -141,6 +141,12 @@ nav:
           - "@userdata": reference/keywords/userdata.md
           - var: reference/keywords/var.md
           - "@vbmcompilechunk": reference/keywords/vbmcompilechunk.md
+          - "@vbmexport": reference/keywords/vbmexport.md
+          - "@vbmexportchunk": reference/keywords/vbmexportchunk.md
+          - "@vbmexportcolor": reference/keywords/vbmexportcolor.md
+          - volatile: reference/keywords/volatile.md
+          - wedge: reference/keywords/wedge.md
+          - while: reference/keywords/while.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

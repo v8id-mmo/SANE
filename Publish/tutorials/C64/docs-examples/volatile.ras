@@ -1,0 +1,13 @@
+program VolatileDemo;
+var
+	frameCounter : volatile byte = 0;
+
+interrupt UpdateFrame();
+begin
+	frameCounter := frameCounter + 1;
+end;
+
+begin
+	screen_bg_col := frameCounter;
+	loop();
+end.

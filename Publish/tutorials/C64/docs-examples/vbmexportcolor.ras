@@ -1,0 +1,7 @@
+program VbmExportColorDemo;
+
+@vbmexportcolor "sample_sprite.flf" "sample_sprite_vbmcolor.bin" 0 4 4 8
+
+begin
+	loop();
+end.

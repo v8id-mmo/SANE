@@ -1,0 +1,12 @@
+program WhileDemo;
+var
+	i : byte = 0;
+
+begin
+	while (i < 10) do
+	begin
+		screen_bg_col := i;
+		i := i + 1;
+	end;
+	loop();
+end.

@@ -1,0 +1,7 @@
+program VbmExportDemo;
+
+@vbmexport "sample_sprite.flf" "sample_sprite_vbm.bin" 0 4 8 0
+
+begin
+	loop();
+end.

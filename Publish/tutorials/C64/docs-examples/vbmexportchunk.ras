@@ -1,0 +1,7 @@
+program VbmExportChunkDemo;
+
+@vbmexportchunk "sample_sprite.flf" "sample_sprite_vbmchunk.bin" 0 4 4 0
+
+begin
+	loop();
+end.
