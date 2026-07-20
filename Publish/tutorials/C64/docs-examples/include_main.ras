@@ -1,0 +1,6 @@
+program IncludeDemo;
+
+begin
+	@include "include_snippet.ras"
+	loop();
+end.

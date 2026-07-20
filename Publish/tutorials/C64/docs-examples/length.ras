@@ -1,0 +1,10 @@
+program LengthDemo;
+var
+	scores : array[10] of byte;
+	scoreCount : byte = 0;
+
+begin
+	scoreCount := length(scores);
+	screen_bg_col := scoreCount;
+	loop();
+end.

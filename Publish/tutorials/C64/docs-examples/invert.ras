@@ -1,0 +1,8 @@
+program InvertDemo;
+var
+	message : cstring invert = "HELLO WORLD";
+
+begin
+	printstring(message,0,0);
+	loop();
+end.

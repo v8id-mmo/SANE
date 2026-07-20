@@ -1,0 +1,7 @@
+program ImportCharDemo;
+
+@importchar "sample_char.bin" "sample_scene.flf" 0 0
+
+begin
+	loop();
+end.

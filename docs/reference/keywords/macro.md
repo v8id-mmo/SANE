@@ -1,12 +1,11 @@
-# `@endmacro`
+# `@macro`
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Closes a [`@macro`](macro.md) block. `@macro`/`@endmacro` define a
-compile-time text generator written in **JavaScript**, not TRSE itself: the
-code between them runs once, at compile time, and produces real TRSE
-source text, which the compiler then parses as if it had been typed there
-directly.
+Defines a compile-time text generator written in **JavaScript**, not TRSE
+itself. The code between `@macro` and [`@endmacro`](endmacro.md) runs once,
+at compile time, and produces real TRSE source text, which the compiler
+then parses as if it had been typed there directly.
 
 ## Syntax
 
@@ -27,13 +26,10 @@ directly.
   `text` (plus a newline for `writeln`) to the TRSE source the compiler will
   parse next, right where the macro was invoked.
 
-`@endmacro` itself takes no argument; it just marks where the JavaScript
-body ends.
-
 ## Example
 
 ```pascal
-program EndMacroDemo;
+program MacroDemo;
 
 @macro "setbgcolor" 1
 	writeln('screen_bg_col := '+p0+';');
@@ -48,4 +44,4 @@ begin
 end.
 ```
 
-[:material-download: Download this example](../../assets/examples/endmacro.ras){ .md-button download }
+[:material-download: Download this example](../../assets/examples/macro.ras){ .md-button download }

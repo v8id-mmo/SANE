@@ -1,0 +1,7 @@
+program KrillsLoaderDemo;
+
+@use KrillsLoader $0200 $2000 $3000
+
+begin
+	loop();
+end.

@@ -91,6 +91,14 @@ nav:
           - "@ifndef": reference/keywords/ifndef.md
           - "@ignoremethod": reference/keywords/ignoremethod.md
           - "@ignoresystemheaders": reference/keywords/ignoresystemheaders.md
+          - "@importchar": reference/keywords/importchar.md
+          - "@include": reference/keywords/include.md
+          - inline: reference/keywords/inline.md
+          - interrupt: reference/keywords/interrupt.md
+          - invert: reference/keywords/invert.md
+          - krillsloader: reference/keywords/krillsloader.md
+          - length: reference/keywords/length.md
+          - "@macro": reference/keywords/macro.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

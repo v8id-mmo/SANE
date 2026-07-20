@@ -38,7 +38,5 @@ end.
 
 `absolute` is accepted for plain byte/word/array/string variable
 declarations, but **not** for pointer declarations (`^byte`/`^integer` at
-a fixed address). The parser only checks for the `at` keyword in the
-pointer-declaration branches, not `absolute` (confirmed in
-`parser.cpp`'s `TypeSpec`). Use `at` instead of `absolute` when declaring
-a pointer at a fixed address.
+a fixed address). Use `at` instead of `absolute` when declaring a pointer
+at a fixed address.

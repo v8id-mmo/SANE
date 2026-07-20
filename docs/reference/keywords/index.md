@@ -92,3 +92,19 @@
   initialization.
 - [`@ignoresystemheaders`](ignoresystemheaders.md): intended to suppress
   automatic system header content (currently has no effect).
+- [`@importchar`](importchar.md): copies a single character/tile from one
+  image asset into another.
+- [`@include`](include.md): splices the contents of another file directly
+  into the source.
+- [`inline`](inline.md): requests that a procedure's code be inserted
+  directly at each call site instead of a real call.
+- [`interrupt`](interrupt.md): declares a procedure as an interrupt
+  handler instead of an ordinary procedure.
+- [`invert`](invert.md): sets the high bit on every character of a
+  `cstring`, for reverse-video PETSCII text.
+- [`krillsloader`](krillsloader.md): sets up Krill's C64 loader, an
+  argument to `@use`.
+- [`length`](length.md): returns an array's element count (or a string's
+  size) as a compile-time constant.
+- [`@macro`](macro.md): defines a JavaScript-based, compile-time TRSE
+  source generator.

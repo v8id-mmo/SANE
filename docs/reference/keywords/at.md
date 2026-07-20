@@ -38,11 +38,9 @@ end.
 ## Known limitations
 
 On a pointer declaration (`^byte at <address>`), `at` pins the pointer
-**variable's own** storage slot to `<address>` (confirmed in
-`codegen_6502.cpp`'s `DeclarePointer`, which emits the pointer's zero-page
-symbol as `<name> = <address>`). It does **not** make the pointer point
-*at* that address: a `^byte` variable still starts out pointing nowhere
-in particular and must be assigned a target with real code after
-declaration, same as any other pointer on the 6502 target. Also note that
-only `at` is recognized on pointer declarations; [`absolute`](absolute.md)
-is not (see its own Known limitations section).
+**variable's own** storage slot to `<address>`. It does **not** make the
+pointer point *at* that address: a `^byte` variable still starts out
+pointing nowhere in particular and must be assigned a target with real
+code after declaration, same as any other pointer on the 6502 target.
+Also note that only `at` is recognized on pointer declarations;
+[`absolute`](absolute.md) is not (see its own Known limitations section).

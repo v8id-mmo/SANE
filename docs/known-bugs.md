@@ -193,6 +193,20 @@ compiled output in any observable way.
 *Reference page:*
 [`@ignoresystemheaders`](reference/keywords/ignoresystemheaders.md)
 
+### `@use KrillsLoader` requires one exact casing/spacing, or it fails
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+After parsing the directive's three address values, the compiler
+regenerates what it considers the "correct" textual form of the line and
+checks whether that exact string appears verbatim in the source file. In
+practice this means the directive name has to be written exactly
+`KrillsLoader` (capitalized just so), even though every other directive in
+the language is matched case-insensitively; a lowercase `krillsloader`
+with the identical, valid address values fails to compile.
+
+*Reference page:* [`krillsloader`](reference/keywords/krillsloader.md)
+
 ## Compression
 
 ### `compressed`/`@compress` output can't be decompressed at runtime
@@ -213,7 +227,19 @@ loading it with `decrunch()`, not `compressed`/`@compress`.
 *Reference pages:* [`compressed`](reference/keywords/compressed.md),
 [`@compress`](reference/keywords/compress.md)
 
-## Image/asset export directives
+## Image/asset import/export directives
+
+### `@importchar` never actually copies the character it's asked to
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`@importchar` compiles without error and both the source and destination
+assets load successfully, but the actual step that copies one character's
+data across is unimplemented for every asset type this fork can produce.
+The destination file is saved back to disk completely unchanged. Only one
+unrelated, non-C64 asset type has a working implementation of this step.
+
+*Reference page:* [`@importchar`](reference/keywords/importchar.md)
 
 ### `@exportblackwhite`/`@exportframe` only work for one asset type each
 

@@ -8,16 +8,11 @@ version number. That will likely change once the project is stable enough
 for real release tags; when it does, this file switches to that format
 instead.
 
-Bug fixes are cross-referenced with the Known Bugs page in the
-documentation site (`docs/known-bugs.md`): once a bug listed there is
-actually fixed in the compiler, both this file and that page get updated
-together, with the date (and, eventually, version) of the fix.
-
 ## Unreleased
 
 Nothing pending right now.
 
-## 2026-07-20
+## 20 July 2026
 
 ### Documentation
 
@@ -32,7 +27,7 @@ Nothing pending right now.
   trying to accomplish and what it deliberately isn't.
 - Added this changelog.
 
-## 2026-07-19
+## 19 July 2026
 
 ### Removed
 

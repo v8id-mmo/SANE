@@ -49,13 +49,10 @@ the same folder)
 
 ## Known limitations
 
-**Only actually implemented for level-editor assets.** Confirmed by
-reading the source: `ImageLevelEditor::ExportFrame`
-(`imageleveleditor.cpp`) is a real implementation, and is what the example
-above uses. But the charset-family implementation,
-`CharsetImage::ExportFrame` (`charsetimage.cpp`), is a dead stub: it
-declares an output buffer, never appends anything to it, and writes that
-empty buffer to the output file. Since `CharsetImage` is the base class
-for most other `.flf` asset types (sprite sheets included), pointing
-`@exportframe` at anything other than a level-editor asset compiles
-without error but silently produces a zero-byte output file.
+**Only actually implemented for level-editor assets**, which is what the
+example above uses. For every other `.flf` asset type (charset, sprite
+sheets included), the export step is a dead stub: it builds an output
+buffer, never fills it with anything, and writes that empty buffer to the
+output file. Pointing `@exportframe` at anything other than a
+level-editor asset compiles without error but silently produces a
+zero-byte output file.

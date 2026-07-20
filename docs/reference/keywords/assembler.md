@@ -19,10 +19,9 @@ argument.
 
 ## Known limitations
 
-An `assembler` procedure does not get the compiler's automatic
-`end_procedure_<name>` epilogue label that normal procedures get
-(confirmed in `abstractcodegen.cpp`), since the assembler body is expected
-to manage its own control flow (typically ending in `rts`). Writing a
+An `assembler` procedure does not get the compiler's automatic epilogue
+label that normal procedures get, since the assembler body is expected to
+manage its own control flow (typically ending in `rts`). Writing a
 procedure body that falls through without an explicit `rts` will fall
 through into whatever code follows it in memory.
 

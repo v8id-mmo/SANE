@@ -1,0 +1,11 @@
+program InlineDemo;
+
+procedure SetBorder(c : byte) inline;
+begin
+	screen_bg_col := c;
+end;
+
+begin
+	SetBorder(6);
+	loop();
+end.

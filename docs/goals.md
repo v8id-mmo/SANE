@@ -11,13 +11,24 @@ target (the Commodore 64), one workflow (the command line, driven from
 whatever editor you already use), and a small, concrete list of things to
 actually get right.
 
+To be specific about where this actually came from: I needed a compiler I
+could rely on for my own C64 projects, not a general-purpose tool for a
+wide audience. The bugs, the IDE-only workflow, and the gaps in the
+official documentation kept getting in my way often enough that fixing
+them for myself was worth the effort on its own. Once it was in reasonable
+shape, it seemed like it could plausibly help at least a handful of other
+people hitting the same walls, so making it public was an easy call from
+there. The documentation site in particular started out as notes for
+myself, and turned out broad and accurate enough to be useful to anyone
+working with TRSE or SANE, not just to me.
+
 ## What SANE is trying to do
 
 - **Be a CLI tool, not an IDE.** No bundled editor, no bundled image/
   sprite/level editor, no bundled emulator, no GUI framework overhead in
   the build at all. Just a compiler you invoke from a terminal (or from a
   script, or from another editor's build task), that takes source files
-  in and produces a `.prg` out.
+  in and produces a prg/d64/etc out.
 - **Have a real VS Code integration.** Syntax highlighting, a build task
   that jumps straight to the offending line on a compile error, and
   eventually proper project/settings configuration from inside the
@@ -88,5 +99,5 @@ writing down so they don't get lost:
 Everything above is written from SANE's own point of view, but it's worth
 repeating what the front page already says: since SANE is still deeply
 TRSE-compatible, most of what's built here (documentation, bug fixes)
-directly benefits anyone using plain upstream TRSE too, not just SANE
+directly **benefits anyone using plain classic TRSE too**, not just SANE
 users. See the [homepage](index.md) for what that means in practice.

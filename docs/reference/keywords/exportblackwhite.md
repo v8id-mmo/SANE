@@ -38,14 +38,11 @@ in the same folder)
 ## Known limitations
 
 **Only works for one specific `.flf` asset type, and silently produces an
-empty output file (no error) for every other type.** Confirmed by reading
-the source: black & white export is implemented only on the "plain bitmap
-loaded from an ordinary image file" asset class
-(`LImageQImage::ExportBlackWhite`, `limageqimage.cpp`). Every other asset
-type (charset, sprite, multicolor bitmap, level, etc.) inherits the base
-class's implementation, which is an empty, do-nothing stub
-(`LImage::ExportBlackWhite`, `limage.h`) that produces a zero-byte output
-file with no warning or error.
+empty output file (no error) for every other type.** Black & white export
+is only actually implemented for a "plain bitmap loaded from an ordinary
+image file" asset. Every other asset type (charset, sprite, multicolor
+bitmap, level, etc.) falls back to a do-nothing default that produces a
+zero-byte output file with no warning or error.
 
 Worse, that one working asset type appears to be effectively unreachable
 in this fork already: it corresponds to an image imported directly from a

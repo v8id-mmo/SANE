@@ -5,9 +5,7 @@
 Skips the rest of the current loop iteration and jumps straight to the
 next one, in the innermost enclosing loop. In a `for`/`fori` loop this
 still runs the loop's own step/increment before re-testing the loop
-condition, the same way `continue` behaves in most other languages
-(confirmed in `abstractcodegen.cpp`: the label `continue` jumps to sits
-right before the increment-and-compare step, not before it).
+condition, the same way `continue` behaves in most other languages.
 
 ## Syntax
 
