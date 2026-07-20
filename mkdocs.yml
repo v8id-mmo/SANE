@@ -57,6 +57,27 @@ nav:
           - continue: reference/keywords/continue.md
           - "@copyfile": reference/keywords/copyfile.md
           - "@define": reference/keywords/define.md
+          - "@deletefile": reference/keywords/deletefile.md
+          - do: reference/keywords/do.md
+          - "@donotprefix": reference/keywords/donotprefix.md
+          - "@donotprefixunit": reference/keywords/donotprefixunit.md
+          - "@donotremove": reference/keywords/donotremove.md
+          - else: reference/keywords/else.md
+          - end: reference/keywords/end.md
+          - "@endassembler": reference/keywords/endassembler.md
+          - "@endblock": reference/keywords/endblock.md
+          - "@endif": reference/keywords/endif.md
+          - "@endmacro": reference/keywords/endmacro.md
+          - "@error": reference/keywords/error.md
+          - "@execute": reference/keywords/execute.md
+          - "@export": reference/keywords/export.md
+          - "@export_parallax_data": reference/keywords/export_parallax_data.md
+          - "@exportblackwhite": reference/keywords/exportblackwhite.md
+          - "@exportcompressed": reference/keywords/exportcompressed.md
+          - "@exportframe": reference/keywords/exportframe.md
+          - "@exportprg2bin": reference/keywords/exportprg2bin.md
+          - "@exportrgb8palette": reference/keywords/exportrgb8palette.md
+          - "@exportsubregion": reference/keywords/exportsubregion.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md

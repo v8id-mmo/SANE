@@ -1,8 +1,7 @@
 # Getting Started
 
-This page is a placeholder. Full content is planned for a later batch
-(see `DOCS_PROGRESS.md`'s "Platform notes" / getting-started candidate
-topics). For now:
+This page is a placeholder. Full content is planned for a later batch.
+For now:
 
 - SANE compiles from the command line only (`-cli` mode); there is no
   bundled GUI/IDE.

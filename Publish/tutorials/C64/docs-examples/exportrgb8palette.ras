@@ -1,0 +1,7 @@
+program ExportRGB8PaletteDemo;
+
+@exportrgb8palette "sample_sprite.flf" "sample_sprite_palette.bin"
+
+begin
+	loop();
+end.

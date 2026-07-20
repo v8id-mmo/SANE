@@ -1,0 +1,7 @@
+program ExecuteDemo;
+
+@execute "/bin/echo" "hello from execute"
+
+begin
+	loop();
+end.

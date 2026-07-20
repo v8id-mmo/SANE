@@ -1,0 +1,10 @@
+program DoNotRemoveDemo;
+
+@donotremove unusedHelper
+
+var
+	unusedHelper : byte = 0;
+
+begin
+	loop();
+end.

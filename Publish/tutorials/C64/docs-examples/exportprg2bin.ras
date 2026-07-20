@@ -1,0 +1,7 @@
+program ExportPrg2BinDemo;
+
+@exportprg2bin "stub_prg_source.bin" "stub_slice.bin" $0801 $080B
+
+begin
+	loop();
+end.

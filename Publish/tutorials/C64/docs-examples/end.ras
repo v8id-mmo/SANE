@@ -1,0 +1,16 @@
+program EndDemo;
+var
+	i : byte = 0;
+
+procedure SetColor();
+begin
+	screen_bg_col := i;
+end;
+
+begin
+	for i := 0 to 5 do
+	begin
+		SetColor();
+	end;
+	loop();
+end.

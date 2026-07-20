@@ -3,8 +3,8 @@
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Marks the start of a block of statements, in classic Pascal style. A
-`begin` is always closed by a matching `end` (or, for the program's own
-top-level block, `end.` with a trailing period).
+`begin` is always closed by a matching [`end`](end.md) (or, for the
+program's own top-level block, `end.` with a trailing period).
 
 ## Syntax
 

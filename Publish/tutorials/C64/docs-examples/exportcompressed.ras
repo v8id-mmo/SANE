@@ -1,0 +1,7 @@
+program ExportCompressedDemo;
+
+@exportcompressed "sample_sprite.flf" "sample_sprite_compressed.bin" 0 0 8 8 0
+
+begin
+	loop();
+end.

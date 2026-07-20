@@ -1,0 +1,7 @@
+program ExportParallaxDataDemo;
+
+@export_parallax_data "sample_scene.flf" "sample_scene_parallax.bin" 0 0 8 8 0 0 0
+
+begin
+	loop();
+end.

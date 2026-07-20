@@ -56,5 +56,4 @@ confirmed by inspecting the output files directly, `@compress` (which
 runs the external `lz4` tool with the `-l` flag) produces the **legacy**
 LZ4 frame format (magic bytes `$02 $21 $4c $18`), while `compressed`'s
 bundled `CompressLZ4` produces the modern LZ4 frame format (magic bytes
-`$04 $22 $4d $18`). The two aren't interchangeable either. See
-`CLAUDE.md` section 2.11 for the full writeup.
+`$04 $22 $4d $18`). The two aren't interchangeable either.

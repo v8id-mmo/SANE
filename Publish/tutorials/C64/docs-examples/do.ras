@@ -1,0 +1,17 @@
+program DoDemo;
+var
+	i : byte = 0;
+
+begin
+	for i := 0 to 10 do
+	begin
+		screen_bg_col := i;
+	end;
+
+	while (i > 0) do
+	begin
+		i := i - 1;
+	end;
+
+	loop();
+end.

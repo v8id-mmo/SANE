@@ -1,13 +1,5 @@
 # Keywords
 
-One reference page per language keyword. The full list (103 keywords,
-scoped to the C64 target) is tracked in `DOCS_PROGRESS.md`'s "Keywords"
-checklist; pages are written in small batches, verified against the
-compiler source, so this list grows over several sessions rather than all
-at once.
-
-## Written so far
-
 - [`absolute`](absolute.md): places a variable at a fixed memory address
   (a synonym for `at`).
 - [`@addcpmheader`](addcpmheader.md): prepends a 2-byte CP/M-style length
@@ -42,3 +34,44 @@ at once.
   at build time.
 - [`@define`](define.md): defines a compile-time text substitution
   (`@name` becomes its value).
+- [`@deletefile`](deletefile.md): deletes a file within the project
+  directory at build time, if it exists.
+- [`do`](do.md): separates a `for`/`while` loop's header from its body.
+- [`@donotprefix`](donotprefix.md): meant to exempt one symbol from
+  unit-name prefixing; currently broken, see its Known limitations.
+- [`@donotprefixunit`](donotprefixunit.md): disables unit-name prefixing
+  for an entire unit file.
+- [`@donotremove`](donotremove.md): protects a symbol from the unused-
+  symbol removal pass.
+- [`else`](else.md): the optional branch of `if`/`then` (or `case`) that
+  runs when the condition is false.
+- [`end`](end.md): closes a block opened by `begin`, or a `case`
+  statement.
+- [`@endassembler`](endassembler.md): appends raw text to the end of the
+  generated assembly output.
+- [`@endblock`](endblock.md): closes a fixed-address memory region opened
+  by `@startblock`.
+- [`@endif`](endif.md): closes an `@ifdef`/`@ifndef` conditional-
+  compilation block.
+- [`@endmacro`](endmacro.md): closes a `@macro` block (a JavaScript,
+  compile-time TRSE source generator).
+- [`@error`](error.md): aborts compilation immediately with a custom error
+  message.
+- [`@execute`](execute.md): runs an external command-line program at build
+  time and waits for it to finish.
+- [`@export`](export.md): exports a `.flf` image/asset to a raw binary
+  file.
+- [`@export_parallax_data`](export_parallax_data.md): generates pre-shifted
+  charset/screen data for a scrolling parallax layer.
+- [`@exportblackwhite`](exportblackwhite.md): exports a `.flf` image/asset
+  as 1-bit-per-pixel black & white data.
+- [`@exportcompressed`](exportcompressed.md): exports a charset-family
+  `.flf` asset as a screen/charset/colour triplet.
+- [`@exportframe`](exportframe.md): exports one or more frames/levels from
+  a `.flf` asset.
+- [`@exportprg2bin`](exportprg2bin.md): extracts a byte range from an
+  existing compiled `.prg` file into a raw binary slice.
+- [`@exportrgb8palette`](exportrgb8palette.md): exports a `.flf` image/
+  asset's colour palette as raw RGB data.
+- [`@exportsubregion`](exportsubregion.md): exports a rectangular region of
+  a `.flf` image/asset to a raw binary file.

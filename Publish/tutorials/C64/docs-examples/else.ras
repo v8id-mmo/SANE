@@ -1,0 +1,12 @@
+program ElseDemo;
+var
+	i : byte = 0;
+
+begin
+	if (i = 0) then
+		screen_bg_col := black
+	else
+		screen_bg_col := white;
+
+	loop();
+end.

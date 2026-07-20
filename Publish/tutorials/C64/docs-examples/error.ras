@@ -1,0 +1,9 @@
+program ErrorDemo;
+
+@ifdef require_target_c64u
+@error "This example requires @define require_target_c64u to be set."
+@endif
+
+begin
+	loop();
+end.

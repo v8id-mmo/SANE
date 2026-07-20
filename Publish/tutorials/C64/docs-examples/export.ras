@@ -1,0 +1,7 @@
+program ExportDemo;
+
+@export "sample_sprite.flf" "sample_sprite_export.bin" 0
+
+begin
+	loop();
+end.

@@ -1,0 +1,13 @@
+program EndMacroDemo;
+
+@macro "setbgcolor" 1
+	writeln('screen_bg_col := '+p0+';');
+@endmacro
+
+var
+	j : byte;
+
+begin
+	@setbgcolor("black")
+	loop();
+end.

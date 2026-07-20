@@ -1,0 +1,7 @@
+program ExportFrameDemo;
+
+@exportframe "sample_level.flf" "sample_level_frame.bin" 0 1 0 0 0 0 0 0
+
+begin
+	loop();
+end.

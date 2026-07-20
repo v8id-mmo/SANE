@@ -1,0 +1,8 @@
+program EndAssemblerDemo;
+
+@startassembler "; ---- start of custom header ----"
+@endassembler "; ---- end of custom footer ----"
+
+begin
+	loop();
+end.

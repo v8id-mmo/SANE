@@ -1,0 +1,14 @@
+program EndIfDemo;
+
+@define usemsg 1
+
+var
+	i : byte = 0;
+
+begin
+@ifdef usemsg
+	i := 1;
+@endif
+	screen_bg_col := i;
+	loop();
+end.

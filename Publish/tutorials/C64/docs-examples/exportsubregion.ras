@@ -1,0 +1,7 @@
+program ExportSubregionDemo;
+
+@exportsubregion "sample_sprite.flf" "sample_sprite_sub.bin" 0 0 8 8
+
+begin
+	loop();
+end.

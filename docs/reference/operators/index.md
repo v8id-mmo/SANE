@@ -4,6 +4,4 @@ This section will hold one reference page per operator (or per closely
 related group, e.g. all six comparison operators together). This category
 was added on top of the original Keywords/Builtins/Types split
 specifically because most of the compiler's known signed-arithmetic bugs
-live here. See `DOCS_PROGRESS.md`'s "Operators" checklist for the full
-list and the relevant known-limitation cross-references. Content is
-planned for a later batch.
+live here. Content is planned for a later batch.

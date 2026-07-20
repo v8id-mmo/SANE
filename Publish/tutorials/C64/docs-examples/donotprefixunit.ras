@@ -1,0 +1,10 @@
+program DoNotPrefixUnitCheck;
+
+@donotprefixunit
+
+var
+	i : byte = 0;
+
+begin
+	loop();
+end.

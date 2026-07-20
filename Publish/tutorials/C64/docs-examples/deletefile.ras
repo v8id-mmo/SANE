@@ -1,0 +1,8 @@
+program DeleteFileDemo;
+
+@copyfile "sample_data.bin" "sample_data_temp.bin"
+@deletefile "sample_data_temp.bin"
+
+begin
+	loop();
+end.
