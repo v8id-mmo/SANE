@@ -1,0 +1,14 @@
+/* Justify body prose instead of the Material default (ragged-right/left-align).
+   Scoped to plain paragraphs and list items only; code blocks, tables, and
+   headings stay left-aligned since justifying those looks bad. */
+.md-typeset p,
+.md-typeset li {
+  text-align: justify;
+  hyphens: auto;
+}
+
+.md-typeset pre,
+.md-typeset code,
+.md-typeset table {
+  text-align: left;
+}

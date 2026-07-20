@@ -1,0 +1,14 @@
+program IfdefDemo;
+
+@ifdef target_ntsc
+var
+	refreshRate : byte = 60;
+@else
+var
+	refreshRate : byte = 50;
+@endif
+
+begin
+	screen_bg_col := refreshRate;
+	loop();
+end.

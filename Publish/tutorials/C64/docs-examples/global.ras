@@ -1,0 +1,14 @@
+program GlobalDemo;
+
+var
+	c : byte;
+
+procedure SetColor(c : global byte);
+begin
+	screen_bg_col := c;
+end;
+
+begin
+	SetColor(black);
+	loop();
+end.

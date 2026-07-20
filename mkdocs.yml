@@ -23,6 +23,7 @@ theme:
 markdown_extensions:
   - admonition
   - attr_list
+  - md_in_html
   - tables
   - toc:
       permalink: true
@@ -31,6 +32,8 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 plugins:
   - search
+extra_css:
+  - stylesheets/extra.css
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
@@ -78,10 +81,23 @@ nav:
           - "@exportprg2bin": reference/keywords/exportprg2bin.md
           - "@exportrgb8palette": reference/keywords/exportrgb8palette.md
           - "@exportsubregion": reference/keywords/exportsubregion.md
+          - for: reference/keywords/for.md
+          - fori: reference/keywords/fori.md
+          - forward: reference/keywords/forward.md
+          - function: reference/keywords/function.md
+          - global: reference/keywords/global.md
+          - if: reference/keywords/if.md
+          - "@ifdef": reference/keywords/ifdef.md
+          - "@ifndef": reference/keywords/ifndef.md
+          - "@ignoremethod": reference/keywords/ignoremethod.md
+          - "@ignoresystemheaders": reference/keywords/ignoresystemheaders.md
       - Builtins: reference/builtins/index.md
       - Operators: reference/operators/index.md
       - Types: reference/types.md
       - Constants: reference/constants.md
   - Examples: examples/index.md
   - Platform Notes: platform-notes.md
+  - Known Bugs: known-bugs.md
+  - Project Goals: goals.md
+  - Changelog: changelog.md
   - Compatibility Tags: tags.md

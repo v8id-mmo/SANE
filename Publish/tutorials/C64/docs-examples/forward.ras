@@ -1,0 +1,18 @@
+program ForwardDemo;
+
+procedure Ping(); forward;
+
+procedure Pong();
+begin
+	Ping();
+end;
+
+procedure Ping();
+begin
+	screen_bg_col := black;
+end;
+
+begin
+	Pong();
+	loop();
+end.

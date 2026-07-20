@@ -1,0 +1,12 @@
+program IfDemo;
+
+var
+	score : byte = 10;
+
+begin
+	if score > 5 then
+		screen_bg_col := white
+	else
+		screen_bg_col := black;
+	loop();
+end.

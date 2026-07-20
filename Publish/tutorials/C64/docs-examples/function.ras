@@ -1,0 +1,11 @@
+program FunctionDemo;
+
+function Double(x : byte) : byte;
+begin
+	Double := x + x;
+end;
+
+begin
+	screen_bg_col := Double(5);
+	loop();
+end.

@@ -6,6 +6,7 @@ on:
       - "docs/**"
       - "mkdocs.yml"
       - "Publish/tutorials/C64/docs-examples/**"
+      - "CHANGELOG.md"
       - ".github/workflows/deploy-docs.yml"
 permissions:
   contents: read
@@ -28,6 +29,8 @@ jobs:
           mkdir -p Publish/tutorials/C64/docs-examples
           mkdir -p docs/assets/examples
           cp -r Publish/tutorials/C64/docs-examples/. docs/assets/examples/
+      - name: Copy changelog into docs
+        run: cp CHANGELOG.md docs/changelog.md
       - run: mkdocs build
       - uses: actions/upload-pages-artifact@v3
         with:

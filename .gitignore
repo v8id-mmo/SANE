@@ -63,7 +63,8 @@ test_projects/*.asm
 test_projects/*.sym
 test_projects/README.md
 
-# Docs site build output and the copy-step-generated examples folder
+# Docs site build output and the copy-step-generated files
 # (see DOCS_SITE_GUIDE.md at /home/dey/.claude/projects/-home-dey-SANE/)
 site/
 docs/assets/examples/
+docs/changelog.md

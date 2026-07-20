@@ -1,0 +1,12 @@
+program ForiDemo;
+
+var
+	i : byte;
+	total : byte = 0;
+
+begin
+	fori i:=0 to 255 do
+		total := total + 1;
+	screen_bg_col := total;
+	loop();
+end.

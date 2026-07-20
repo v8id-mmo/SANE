@@ -1,0 +1,7 @@
+program IgnoreMethodDemo;
+
+@ignoremethod unusedHelper
+
+begin
+	loop();
+end.

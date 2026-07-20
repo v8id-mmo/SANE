@@ -1,0 +1,11 @@
+program IfndefDemo;
+
+@ifndef skip_greeting
+var
+	greeted : byte = 1;
+@endif
+
+begin
+	screen_bg_col := greeted;
+	loop();
+end.

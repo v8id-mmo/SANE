@@ -75,3 +75,20 @@
   asset's colour palette as raw RGB data.
 - [`@exportsubregion`](exportsubregion.md): exports a rectangular region of
   a `.flf` image/asset to a raw binary file.
+- [`for`](for.md): a counted loop from a start value up to (but not
+  including) an end value.
+- [`fori`](fori.md): the inclusive counted loop, up to and including the
+  end value.
+- [`forward`](forward.md): declares a procedure/function's signature
+  before its real body, for forward/mutual references.
+- [`function`](function.md): a procedure that returns a value.
+- [`global`](global.md): binds a procedure parameter directly to an
+  existing global variable, skipping parameter-passing overhead.
+- [`if`](if.md): the standard conditional statement.
+- [`@ifdef`](ifdef.md): compiles a block only if a symbol was `@define`d.
+- [`@ifndef`](ifndef.md): compiles a block only if a symbol was **not**
+  `@define`d.
+- [`@ignoremethod`](ignoremethod.md): excludes a builtin from automatic
+  initialization.
+- [`@ignoresystemheaders`](ignoresystemheaders.md): intended to suppress
+  automatic system header content (currently has no effect).
