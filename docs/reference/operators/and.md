@@ -1,7 +1,6 @@
 # `and` (Logical AND)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Combines two conditions: true only if both are true. Used inside an
 `if`/`while`/`until` condition to require more than one thing to hold at

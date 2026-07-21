@@ -1,7 +1,6 @@
 # `@spritecompiler`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Intended as a build-time directive that reads a region out of an image
 asset and generates sprite-drawing code for it. Not currently usable on

@@ -1,7 +1,6 @@
 # `repeat`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A post-condition loop, Pascal-style: the body always runs at least once,
 then the loop repeats until the paired [`until`](until.md) condition

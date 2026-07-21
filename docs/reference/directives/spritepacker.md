@@ -1,7 +1,6 @@
 # `@spritepacker`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive that packs a source image into a platform-specific
 sprite/tile format, alongside a separate character-data output. Not

@@ -1,7 +1,6 @@
 # `step`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 An optional modifier on a [`for`](for.md)/[`fori`](fori.md) loop header
 that sets how much the loop counter advances by each pass, instead of the

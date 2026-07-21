@@ -1,7 +1,6 @@
 # `onpage`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A manual override on `if`, `while`, `for`, or `case`, forcing the compiler
 to use a short relative branch for that statement's condition, even if its

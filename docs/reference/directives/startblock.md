@@ -1,7 +1,6 @@
 # `@startblock`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Opens a fixed-address memory region. Everything declared between
 `@startblock <address> "<name>"` and [`@endblock`](endblock.md) is placed

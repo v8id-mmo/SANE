@@ -1,7 +1,6 @@
 # `@include`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive that splices the contents of another file directly
 into the source, at the exact point `@include` appears, as if it had been

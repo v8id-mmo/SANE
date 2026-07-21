@@ -1,7 +1,6 @@
 # `|` (Bitwise OR)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Combines two values bit by bit: each result bit is `1` where either input
 has a `1` in that position. Commonly used to set (turn on) a specific set

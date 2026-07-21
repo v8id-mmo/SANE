@@ -1,7 +1,6 @@
 # `:=` (Assignment)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Stores the value of an expression into a variable.
 

@@ -1,7 +1,6 @@
 # `&` (Bitwise AND)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Combines two values bit by bit: each result bit is `1` only where both
 inputs have a `1` in that position. Commonly used to mask off (clear) a

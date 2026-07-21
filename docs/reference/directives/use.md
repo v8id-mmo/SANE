@@ -1,7 +1,6 @@
 # `@use`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Pulls a [`unit`](../keywords/unit.md) (a `.tru` file) into the current compile. The
 unit's procedures, functions, and variables become reachable through a

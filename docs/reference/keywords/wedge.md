@@ -1,7 +1,6 @@
 # `wedge`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Declares a procedure the same way [`interrupt`](interrupt.md) does: used
 in place of `procedure`, and compiled with an interrupt-return instruction

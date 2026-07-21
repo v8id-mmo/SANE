@@ -1,7 +1,6 @@
 # `@perlinnoise`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive that fills a raw binary file with 2D coherent
 ("Perlin-style") noise, the same kind of compile-time data generation as

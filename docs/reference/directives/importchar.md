@@ -1,7 +1,6 @@
 # `@importchar`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive intended to copy a single character/tile from one
 image asset into another, at a given position in each. See

@@ -1,7 +1,6 @@
 # `ClearBitmap`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Clears a run of bitmap (hi-res graphics) memory to zero, one or more
 256-byte pages at a time.

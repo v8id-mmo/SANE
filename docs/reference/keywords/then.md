@@ -1,7 +1,6 @@
 # `then`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Separates an [`if`](if.md) statement's condition from the branch of code
 that runs when the condition is true.

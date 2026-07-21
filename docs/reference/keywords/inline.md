@@ -1,7 +1,6 @@
 # `inline`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A procedure/function modifier requesting that every call site have the
 body's code inserted directly in place, instead of a real `jsr`/`rts` call.

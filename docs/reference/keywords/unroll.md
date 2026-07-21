@@ -1,7 +1,6 @@
 # `unroll`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A [`for`](for.md)/[`fori`](fori.md) loop modifier that expands the loop at
 compile time instead of generating a runtime loop: the body is emitted

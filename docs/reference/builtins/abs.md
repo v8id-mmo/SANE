@@ -1,7 +1,6 @@
 # `Abs`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Returns the absolute (unsigned magnitude) value of a signed number. A
 negative input becomes positive; a positive input is unchanged.

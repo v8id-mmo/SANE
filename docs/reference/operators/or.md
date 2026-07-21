@@ -1,7 +1,6 @@
 # `or` (Logical OR)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Combines two conditions: true if either one is true. Used inside an
 `if`/`while`/`until` condition to accept more than one possibility.

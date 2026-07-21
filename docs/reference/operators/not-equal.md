@@ -1,7 +1,6 @@
 # `<>` (Not Equal)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Compares two values and is true if they're different. Used anywhere a
 condition is expected: `if`, `while`, `until`, `case`, and similar

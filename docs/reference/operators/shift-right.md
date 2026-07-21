@@ -1,7 +1,6 @@
 # `shr` / `>>` (Shift Right)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Shifts every bit in a value right by a given number of positions, filling
 the vacated high bits with `0`. Each shift by one position is equivalent

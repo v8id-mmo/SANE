@@ -1,7 +1,6 @@
 # `repend`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Closes a `repeat N` inline-assembler unrolling block. This is a separate
 feature from the Pascal-level [`repeat`](repeat.md)/[`until`](until.md)

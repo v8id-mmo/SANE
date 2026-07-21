@@ -1,7 +1,6 @@
 # `Call`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Calls a machine-code routine at a given address and returns to the next
 statement once it executes an `rts`. Unlike calling a TRSE-declared

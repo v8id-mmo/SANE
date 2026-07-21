@@ -1,7 +1,6 @@
 # `bankbyte`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Returns the third byte (bits 16-23, sometimes called the "bank byte") of
 a wide, 24-bit-addressable value. `Lo` and `Hi` are the equivalent

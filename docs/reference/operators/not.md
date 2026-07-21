@@ -1,7 +1,6 @@
 # `not`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Two related uses: negates a boolean value or condition (true becomes
 false and vice versa), and bitwise-complements a numeric value (every bit

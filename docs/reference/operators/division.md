@@ -1,7 +1,6 @@
 # `/` (Division)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Divides the left-hand value by the right-hand value, keeping only the
 integer part of the result (no fractional/remainder value).

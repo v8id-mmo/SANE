@@ -1,7 +1,6 @@
 # `@raisewarning`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Emits a custom compile-time warning without stopping compilation, unlike
 [`@raiseerror`](raiseerror.md)/[`@error`](error.md), which abort. Meant for

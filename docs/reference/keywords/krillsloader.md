@@ -1,7 +1,6 @@
 # `krillsloader`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A C64-only argument to `@use`, not a directive of its own. It sets up
 Krill's loader, a well-known third-party C64 fastloader/installer, bundling

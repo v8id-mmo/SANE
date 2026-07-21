@@ -1,7 +1,6 @@
 # `@vbmcompilechunk`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive that reads a region of an image asset and writes
 out real TRSE source code: one procedure per column, each containing a

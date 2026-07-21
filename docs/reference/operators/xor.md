@@ -1,7 +1,6 @@
 # `xor` / `^` (Bitwise XOR)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Combines two numeric values bit by bit: each result bit is `1` where
 exactly one of the two inputs has a `1` in that position (and `0` where

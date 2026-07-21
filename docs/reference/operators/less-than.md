@@ -1,7 +1,6 @@
 # `<` (Less Than)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Compares two values and is true if the left-hand value is smaller than the
 right-hand value. Used anywhere a condition is expected: `if`, `while`,

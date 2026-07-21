@@ -1,7 +1,6 @@
 # `CopyBytesShift`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Copies a run of bytes from one array to another, shifting or rotating
 every byte by a fixed number of bits along the way.

@@ -1,7 +1,6 @@
 # `offpage`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A manual override on `if`, `while`, `for`, or `case`, forcing the compiler
 to generate a long jump instead of a short relative branch for that

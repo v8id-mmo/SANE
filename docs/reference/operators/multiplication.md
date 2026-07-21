@@ -1,7 +1,6 @@
 # `*` (Multiplication)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Multiplies two numeric values together.
 

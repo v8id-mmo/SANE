@@ -1,7 +1,6 @@
 # `CopyCharsetFromRom`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below, several).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Copies the built-in character ROM font to RAM, so it can be customized
 afterward.

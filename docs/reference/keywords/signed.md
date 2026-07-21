@@ -1,7 +1,6 @@
 # `signed`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A variable declaration modifier that marks a numeric variable as holding a
 signed value (negative numbers allowed), rather than the default
