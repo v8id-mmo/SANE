@@ -1,0 +1,11 @@
+program CopyImageColorDataDemo;
+var
+	// in a real project this would be an actual exported image asset (2
+	// header color bytes + 1024 bytes char data + 1024 bytes color data);
+	// any binary blob compiles here, since CopyImageColorData just reads
+	// whatever bytes are at the given address
+	image_data : incbin("sample_data.bin");
+begin
+	copyimagecolordata(#image_data, 1);
+	loop();
+end.

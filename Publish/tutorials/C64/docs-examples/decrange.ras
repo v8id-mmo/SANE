@@ -1,0 +1,8 @@
+program DecRangeDemo;
+var
+	frame : byte = 0;
+begin
+	// counts 9, 8, 7, ... down to 0, then wraps back to 9 and repeats
+	decrange(frame, 0, 9);
+	loop();
+end.

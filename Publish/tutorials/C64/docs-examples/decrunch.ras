@@ -1,0 +1,10 @@
+program DecrunchDemo;
+var
+	// in a real project, sample_data.bin would be actual data pre-crunched
+	// with the Exomizer tool; any binary blob compiles here, since Decrunch
+	// just needs a valid IncBin block to locate
+	packed_data : incbin("sample_data.bin");
+begin
+	decrunch(#packed_data);
+	loop();
+end.

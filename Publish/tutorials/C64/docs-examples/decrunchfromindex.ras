@@ -1,0 +1,14 @@
+program DecrunchFromIndexDemo;
+var
+	// in a real project each entry would point at an actual Exomizer-crunched
+	// block (e.g. one per level); this demo hardcodes two placeholder
+	// addresses just to show the table layout
+	level_table : array[4] of byte = (
+		$00, $90,  // low/high byte of level 0's crunched data address ($9000)
+		$00, $95   // low/high byte of level 1's crunched data address ($9500)
+	);
+	current_level : byte = 0;
+begin
+	decrunchfromindex(#level_table, current_level);
+	loop();
+end.

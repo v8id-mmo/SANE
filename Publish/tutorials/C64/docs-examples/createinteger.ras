@@ -1,0 +1,7 @@
+program CreateIntegerDemo;
+var
+	value : integer;
+begin
+	value := CreateInteger(10, 20); // value = 10 + 20*256 = 5130
+	loop();
+end.

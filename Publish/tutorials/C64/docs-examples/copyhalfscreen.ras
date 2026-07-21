@@ -1,0 +1,8 @@
+program CopyHalfScreenDemo;
+begin
+	// copy just the top 12 rows from an off-screen buffer to the visible
+	// screen, leaving the bottom 13 rows (e.g. a status bar) untouched
+	copyhalfscreen(^$4400, ^$0400, 12, 0, 0);
+
+	loop();
+end.

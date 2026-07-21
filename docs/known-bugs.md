@@ -440,9 +440,8 @@ Shifting a negative signed value right with `shr`/`>>` gives a wrong
 (positive) result instead of preserving the sign. The shift always fills
 the vacated high bits with `0`, the same way it would for an unsigned
 value, rather than replicating the sign bit the way a proper arithmetic
-right shift needs to. Confirmed by compiling a small test and reading the
-generated code directly: a `signed byte` holding `-8`, shifted right by
-one, produces `124` instead of the mathematically correct `-4`.
+right shift needs to. A `signed byte` holding `-8`, shifted right by one,
+produces `124` instead of the mathematically correct `-4`.
 
 *Reference page:* [`shr`](reference/operators/shift-right.md)
 
@@ -457,9 +456,7 @@ separate things go wrong at once: the top byte of the result isn't
 combined with the operator at all, it's simply overwritten with the
 right-hand expression's own top byte; and the middle byte can come out
 one off from the correct value, because of leftover state from evaluating
-the right-hand expression bleeding into the result. Confirmed by
-compiling both a plain-variable and a complex-expression version of the
-same expression and comparing the generated code.
+the right-hand expression bleeding into the result.
 
 *Reference pages:* [`&`](reference/operators/bitwise-and.md),
 [`|`](reference/operators/bitwise-or.md), [`xor`](reference/operators/xor.md)
@@ -489,10 +486,9 @@ conditions.
 
 `not` on an `integer` or `long` value should flip every bit, but only the
 low byte actually gets flipped; the upper byte(s) pass straight through
-unchanged instead of being complemented too. Confirmed by compiling a
-16-bit example and reading the generated code directly: `not` on an
-`integer` holding `$00FF` should give `$FF00`, but actually gives
-`$0000`. `not` on a plain `byte` is unaffected and works correctly.
+unchanged instead of being complemented too. `not` on an `integer`
+holding `$00FF` should give `$FF00`, but actually gives `$0000`. `not` on
+a plain `byte` is unaffected and works correctly.
 
 *Reference page:* [`not`](reference/operators/not.md)
 
@@ -505,9 +501,9 @@ compile at all. Writing it without the parentheses, `not a > 5`, does
 compile, but silently means something different from what it looks like:
 it computes `not a` (a bitwise complement) first, and only then compares
 that complemented value against `5`, instead of negating the result of
-`a > 5`. Confirmed by compiling both forms and reading the generated
-code: for `a = 10`, this reads as `(not 10) > 5`, which comes out true,
-the opposite of the intended `not (10 > 5)`, which should be false. `not`
+`a > 5`. For `a = 10`, this reads as `(not 10) > 5`, which comes out
+true, the opposite of the intended `not (10 > 5)`, which should be false.
+`not`
 directly in front of a plain boolean value or variable (not a
 comparison), like `if not someFlag then`, is unaffected and works
 correctly.
@@ -521,12 +517,11 @@ correctly.
 **Status:** Open · **Fixed in:** not yet fixed
 
 `bankbyte` correctly returns the third byte (bits 16-23) of a `pointer`
-value. On a `long` value, this fork's other 24-bit type, it produces no
-code at all: confirmed by compiling a test case and reading the generated
-code, the destination variable ends up holding whatever was already in
-the processor's accumulator at that point in the program, not any byte of
-the `long` value. There's no error or warning, the assignment just
-silently does the wrong thing.
+value. On a `long` value, this fork's other 24-bit type, it produces no code at all: the
+destination variable ends up holding whatever was already in the
+processor's accumulator at that point in the program, not any byte of the
+`long` value. There's no error or warning, the assignment just silently
+does the wrong thing.
 
 *Reference page:* [`bankbyte`](reference/builtins/bankbyte.md)
 
@@ -539,8 +534,7 @@ silently does the wrong thing.
 logic: it checks the sign bit of the wrong byte (the low byte instead of
 the high byte, where a 24-bit value's sign actually lives) and, even when
 that happens to trigger, only negates that one byte, leaving the other two
-completely unchanged. Confirmed by compiling a negative `long` test case
-and reading the generated code.
+completely unchanged.
 
 *Reference page:* [`Abs`](reference/builtins/abs.md)
 
@@ -549,14 +543,13 @@ and reading the generated code.
 **Status:** Open · **Fixed in:** not yet fixed
 
 `CopyBytesShift` supports four modes: shift left, shift right, rotate
-left, and rotate right. Rotate left is confirmed correct at any shift
-amount. Rotate right instead silently behaves exactly like plain shift
-right at every shift amount, including a single shift: the bit that
-falls off the bottom is simply discarded and a `0` is always shifted in
-from the top, instead of the discarded bit wrapping back around to the
-top the way a real rotate should. Confirmed by compiling a test case
-(rotating `%10000001` right by one, expected `%11000000`, actual
-`%01000000`) and reading the generated code.
+left, and rotate right. Rotate left works correctly at any shift amount.
+Rotate right instead silently behaves exactly like plain shift right at
+every shift amount, including a single shift: the bit that falls off the
+bottom is simply discarded and a `0` is always shifted in from the top,
+instead of the discarded bit wrapping back around to the top the way a
+real rotate should. Rotating `%10000001` right by one gives `%11000000`
+in a correct rotate, but this builtin gives `%01000000`.
 
 *Reference page:* [`CopyBytesShift`](reference/builtins/copybytesshift.md)
 
@@ -565,19 +558,21 @@ top the way a real rotate should. Confirmed by compiling a test case
 **Status:** Open · **Fixed in:** not yet fixed
 
 Passing a bare numeric address literal (e.g. `$ffea`) directly as an
-argument to `Call`, `ClearBitmap`, or `CopyCharsetFromRom` compiles
-without any error, but fails at the assembly stage right afterward, with
-an "opcode not implemented" error. The generated instruction ends up in
-an invalid form (an addressing mode that doesn't exist for that
-instruction) because the literal gets formatted the same way it would be
-for loading it into a register, not for using it as a memory address.
-Routing the exact same address through a named constant, or through a
-pointer/variable, works correctly for all three. Confirmed by compiling
-both forms directly and comparing the generated code.
+argument to `Call`, `ClearBitmap`, `CopyCharsetFromRom`, `CopyFullScreen`,
+or `CopyHalfScreen` compiles without any error, but fails at the assembly
+stage right afterward, with an "opcode not implemented" error. The
+generated instruction ends up in an invalid form (an addressing mode that
+doesn't exist for that instruction) because the literal gets formatted
+the same way it would be for loading it into a register, not for using it
+as a memory address. Routing the exact same address through a named
+constant, a `^`-prefixed literal, or a pointer/variable works correctly
+in every case.
 
 *Reference pages:* [`Call`](reference/builtins/call.md),
 [`ClearBitmap`](reference/builtins/clearbitmap.md),
-[`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
+[`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md),
+[`CopyFullScreen`](reference/builtins/copyfullscreen.md),
+[`CopyHalfScreen`](reference/builtins/copyhalfscreen.md)
 
 ### `CopyCharsetFromRom` only copies part of the character ROM
 
@@ -589,8 +584,7 @@ each supposed to cover one non-overlapping 256-byte page, but they're
 actually spaced only 100 bytes apart, so they heavily overlap each other
 and the last chunk stops well short of the end. Well over half of the
 character ROM is never copied at all, while the bytes that are covered
-get copied several times over. Confirmed by compiling a test case and
-reading the generated addresses.
+get copied several times over.
 
 *Reference page:*
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
@@ -601,12 +595,39 @@ reading the generated addresses.
 
 `CopyCharsetFromRom` disables interrupts partway through (needed to
 safely bank in the character ROM for reading) but never re-enables them
-afterward. Confirmed by compiling a minimal program that calls it once
-and does nothing else, then checking the entire generated program for an
-interrupt re-enable instruction: there isn't one anywhere. Any program
-that calls this and doesn't separately set up its own interrupt handling
-afterward will silently run with interrupts permanently off from that
-point on, breaking keyboard input and other interrupt-driven behavior.
+afterward. There is no interrupt re-enable instruction anywhere in the
+generated program for a call to this builtin. Any program that calls this
+and doesn't separately set up its own interrupt handling afterward will
+silently run with interrupts permanently off from that point on, breaking
+keyboard input and other interrupt-driven behavior.
 
 *Reference page:*
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
+
+### `CopyImageColorData` silently accepts an invalid bank number
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`CopyImageColorData`'s bank parameter is meant to be 1, 2, or 3. Passing
+any other value (0, or 4 and above) compiles and assembles without any
+error or warning, but silently produces the exact same addresses as bank
+0, not an error and not the (nonexistent) address an out-of-range bank
+number would suggest.
+
+*Reference page:*
+[`CopyImageColorData`](reference/builtins/copyimagecolordata.md)
+
+### `CreateInteger` and `CreatePointer` are the same builtin under two names
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`CreatePointer` sounds like it should build a result usable as a
+`pointer`, distinct from `CreateInteger`. In practice the two compile to
+byte-for-byte identical assembly: both always put the high byte in the Y
+register, and neither ever loads, stores, or touches the X register.
+Assigning the result of `CreatePointer` to a `pointer` variable produces
+exactly the same code as assigning `CreateInteger`'s result to an
+`integer` variable.
+
+*Reference pages:* [`CreateInteger`](reference/builtins/createinteger.md),
+[`CreatePointer`](reference/builtins/createpointer.md)

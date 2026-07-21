@@ -1,0 +1,6 @@
+program DefineScreenDemo;
+begin
+	definescreen(); // creates screenmemory and colormemory as usable labels
+	poke(screenmemory, 0, 1);
+	loop();
+end.

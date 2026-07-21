@@ -42,3 +42,22 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   shifting or rotating each one by a fixed number of bits.
 - [`CopyCharsetFromRom`](copycharsetfromrom.md): copies the character ROM
   font to RAM for customization.
+- [`CopyFullScreen`](copyfullscreen.md): copies an entire 1000-byte text
+  screen (or color RAM) from one address to another.
+- [`CopyHalfScreen`](copyhalfscreen.md): copies a chosen number of
+  40-column rows from one address to another.
+- [`CopyImageColorData`](copyimagecolordata.md): unpacks an exported
+  image asset's char and color data into a chosen VIC bank.
+- [`CreateInteger`](createinteger.md): builds a 16-bit value from
+  separate low/high byte expressions.
+- [`CreatePointer`](createpointer.md): builds a 24-bit-addressable
+  pointer value from separate low/high byte expressions.
+- [`Dec`](dec.md): decreases a variable by 1, in place.
+- [`DecRange`](decrange.md): decreases a variable by 1, wrapping back to
+  a high value once it reaches a low value.
+- [`Decrunch`](decrunch.md): decompresses an Exomizer-crunched block of
+  data in place.
+- [`DecrunchFromIndex`](decrunchfromindex.md): like `Decrunch`, but picks
+  the source address from a table at runtime.
+- [`DefineScreen`](definescreen.md): defines the `screenmemory` and
+  `colormemory` label aliases other builtins rely on.

@@ -1,0 +1,10 @@
+program CopyFullScreenDemo;
+begin
+	// duplicate the visible screen into a second, off-screen char buffer
+	copyfullscreen(^$0400, ^$4400);
+
+	// and its color RAM alongside it
+	copyfullscreen(^$D800, ^$4400+1000);
+
+	loop();
+end.

@@ -212,6 +212,16 @@ nav:
           - CloseIRQWedge: reference/builtins/closeirqwedge.md
           - CopyBytesShift: reference/builtins/copybytesshift.md
           - CopyCharsetFromRom: reference/builtins/copycharsetfromrom.md
+          - CopyFullScreen: reference/builtins/copyfullscreen.md
+          - CopyHalfScreen: reference/builtins/copyhalfscreen.md
+          - CopyImageColorData: reference/builtins/copyimagecolordata.md
+          - CreateInteger: reference/builtins/createinteger.md
+          - CreatePointer: reference/builtins/createpointer.md
+          - Dec: reference/builtins/dec.md
+          - DecRange: reference/builtins/decrange.md
+          - Decrunch: reference/builtins/decrunch.md
+          - DecrunchFromIndex: reference/builtins/decrunchfromindex.md
+          - DefineScreen: reference/builtins/definescreen.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

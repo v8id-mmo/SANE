@@ -1,0 +1,7 @@
+program DecDemo;
+var
+	lives : byte = 3;
+begin
+	dec(lives); // lives = 2
+	loop();
+end.
