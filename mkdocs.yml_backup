@@ -1,81 +1,39 @@
 site_name: SANE / TRSE Documentation
 site_description: Language reference and examples for SANE, a TRSE-compatible Pascal-like compiler for the Commodore 64.
 repo_url: https://github.com/v8id-mmo/SANE
-repo_name: v8id-mmo/SANE
-
 theme:
   name: material
-  icon:
-    repo: fontawesome/brands/github
-  font:
-    text: Inter
-    code: JetBrains Mono
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.sections
-    - navigation.indexes
     - navigation.top
-    - navigation.footer
-    - navigation.instant
-    - navigation.instant.progress
-    - toc.follow
     - search.suggest
     - search.highlight
-    - search.share
     - content.code.copy
-    - content.code.annotate
-    - content.tabs.link
-    - content.tooltips
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: deep purple
-      accent: amber
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: black
-      accent: amber
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-
 markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
   - tables
-  - def_list
-  - footnotes
-  - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.tabbed:
-      alternate_style: true
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
   - toc:
       permalink: true
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-
 plugins:
   - search
-
 extra_css:
   - stylesheets/extra.css
-
 nav:
   - Home: index.md
   - Project Goals: goals.md
@@ -220,3 +178,4 @@ nav:
   - Platform Notes: platform-notes.md
   - Compatibility Tags: tags.md
   - Changelog: changelog.md
+
