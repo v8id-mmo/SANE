@@ -1,51 +1,153 @@
-# TRSE
-![TRSE Logo](resources/images/trse_optic.png)
+<div align="center">
 
-## What is Turbo Rascal Syntax error, “;” expected but “BEGIN”?
+![SANE Logo](resources/images/trse_optic.png)
 
-In a nutshell, Turbo Rascal Syntax error, “;” expected but “BEGIN” is a complete suite for developing games and demos for older computer systems. TRSE is created with Qt (C++), and runs as a stand-alone application that contains various tools for developing and deploying projects for these processors. 
+# SANE
 
-Read more at [Turbo Racal SE Hompage](http://www.turborascal.com).
+*Syntax And Not Errors:* a lean, CLI-only, C64-only fork of TRSE.
 
-## Repository
-Turbo Rascal Syntax Error full repo 
-- C++
-- Qt
+**A Pascal-like language and 6502 compiler for the Commodore 64,
+stripped down to exactly what that means and not one byte more.**
 
-## Prepare
-First, clone this repo to a TRSE directory.
+[![License: GPL v3](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE.txt)
+[![Target: C64](https://img.shields.io/badge/target-Commodore%2064-6c5ce7.svg)](https://en.wikipedia.org/wiki/Commodore_64)
+[![CLI only](https://img.shields.io/badge/interface-CLI--only-2d3436.svg)](#what-is-sane)
+
+[Documentation](https://v8id-mmo.github.io/SANE/) · [Changelog](CHANGELOG.md) · [Known Bugs](CHANGELOG.md)
+
+</div>
+
+---
+
+## What is SANE?
+
+SANE is a personal, internal-use fork of
+[leuat/TRSE](https://github.com/leuat/TRSE) (*Turbo Rascal Syntax Error,
+";" expected but "BEGIN"*), the Pascal-like compiler suite for retro
+8/16-bit systems.
+
+The original TRSE is a full IDE: editor, sprite/charset/level editors, a
+built-in synthesizer, a bundled CHIP-8 emulator, and support for a couple
+dozen target systems from the Apple II to the SNES. SANE deliberately
+throws almost all of that away and keeps exactly one thing: **a compiler
+for the Commodore 64, driven entirely from the command line.**
+
+No GUI. No IDE. No other target systems. Just `trc -cli`, your source
+file, and a `.prg`.
+
+```sh
+./build/trse -cli op=project project=myproj.trse input_file=main.ras \
+    settings=Publish/publish_linux/trse.ini
+```
+
+## Why fork it?
+
+TRSE's IDE is built for the general case: dozens of systems, a built-in
+editor, asset tools for every platform it targets. None of that is needed
+when the workflow is "write `.ras`/`.pas` in VS Code, compile from the
+terminal, test in VICE." Cutting it down means:
+
+- **A binary that's ~5x smaller** (~6.3 MB vs. ~29.5 MB), because the
+  GUI/IDE layer and every non-C64 target system are gone.
+- **A much smaller surface to reason about.** `systems/` / `codegen/` /
+  `compilers/` / `assembler/` / `optimiser/` combined are down to 17
+  `.cpp` files.
+- **One clear entry point.** `-cli` mode (`trc.cpp` / `ClascExec`) is the
+  only way in; `main.cpp` is `-cli`-only.
+
+This is **not** a general-purpose retro-compiler distribution and makes
+no promise of compatibility with upstream TRSE. It exists to compile C64
+programs, well, for one person, from one editor.
+
+## Status
+
+Actively developed, nightly-branch pace, no versioned releases yet. See
+[CHANGELOG.md](CHANGELOG.md) for the running list of changes.
+
+Two structural cleanup items are still open (trimming `units/` to
+C64-only, matching what already happened to `Publish/`), followed by a
+set of confirmed compiler bugs (signed arithmetic, several `@`-directives,
+a handful of builtins) that are tracked, reproduced with regression
+snippets, and fixed one at a time. All of it lives in the shared
+6502/C64 codegen; none of it touches unrelated platforms.
+
+An interactive documentation site (every keyword, every builtin, worked
+examples, known-limitation callouts) is being built alongside the fixes:
+
+**→ [v8id-mmo.github.io/SANE](https://v8id-mmo.github.io/SANE/)**
+
+## Building
+
+SANE currently still builds from `TRSE.pro` (the full GUI project file),
+not `TRSECLI.pro`: the latter is five years stale and references files
+that no longer exist. The resulting `trse` binary still links Qt Widgets
+at build time, but is used purely as a headless CLI compiler in practice.
+A genuinely GUI-less `.pro` is future work.
 
 ### Linux
-- apt-get install qt5base5-dev qt5-qmake qtdeclarative5-dev mesa-common-dev
 
-On windows/macos, you need to download and install the qt libraries, msvc, xcode etc:
+```sh
+sudo apt-get install -y \
+    build-essential \
+    qtbase5-dev qtbase5-dev-tools qt5-qmake \
+    qtdeclarative5-dev qtdeclarative5-dev-tools \
+    libqt5opengl5-dev \
+    mesa-common-dev libgl1-mesa-dev
+
+./compile.sh
+```
+
+This builds out-of-source into `./build`, producing `./build/trse`.
+See the header of [`compile.sh`](compile.sh) for `--clean`, `--debug`,
+and `-jN` options.
 
 ### Windows
-- install MSVC 2019
-- download the Qt framework from https://www.qt.io/download. Install the latest framework of Qt6 (desktop application).
 
-### Macos
-- install Xcode 
-- download the Qt framework from https://www.qt.io/download. Install the latest framework of Qt6 (desktop application).
+- Install MSVC 2019.
+- Install the Qt framework ([qt.io/download](https://www.qt.io/download), Qt6, desktop).
+- `qmake TRSE.pro && make -j8` (or build via Qt Creator).
 
-### ARM chromebook/ARM computers
-- sudo apt install qtbase5-dev qt5-qmake qtbase5-dev-tools qtdeclarative5-dev
+### macOS
 
-## Compiling
-- qmake TRSE.pro
-- make -j8 
+- Install Xcode.
+- Install the Qt framework ([qt.io/download](https://www.qt.io/download), Qt6, desktop).
+- `qmake TRSE.pro && make -j8`.
 
+### After building
 
-Select "Release", and under the qt project/build make sure you set the build directory to be **TRSE/Release**
+A couple of resource directories need to be reachable from the build
+output directory. See `create_symlinks_linux.sh` /
+`create_symlinks_osx.sh` for the exact links (themes, tutorials, units,
+project templates).
 
-## After first compile:
-TRSE uses a couple of directories that needs to be linked with symlinks:
-- Copy the directory "themes" in **TRSE/Publish/source/** to the **TRSE/Release** build directory 
-- Make a symbolic link called "tutorials from your build directory to point to Publish/tutorials to access tutorial projects from the front page 
-- Make a symbolic link called "units from your build directory to point to TRSE/Units to access the TRSE library 
-- Make a symbolic link "project_templates" from your build directory to point to Publish/project_templates in order to access the "New Project" templates
+### Trying it out
 
+```sh
+cd test_projects
+../build/trse -cli op=project project=project.trse input_file=main.ras \
+    settings=../Publish/publish_linux/trse.ini
+```
 
-# Source code information
-A compiler UML diagram can be found here: https://github.com/leuat/TRSE/blob/master/uml/compiler.png
+`test_projects/` (see its own [README](test_projects/README.md)) holds a
+handful of known-working `.ras` snippets for a quick sanity check after
+touching codegen.
 
+## Project layout
+
+```text
+source/            compiler, parser, codegen, assembler, optimiser (Qt/C++)
+Publish/           project templates and C64 tutorials
+units/             shared standard library (@use-able .tru units)
+test_projects/     scratch smoke-test snippets for the CLI pipeline
+docs/              MkDocs source for the documentation site
+```
+
+## License
+
+GPL-3.0, inherited from upstream TRSE. See [LICENSE.txt](LICENSE.txt).
+
+## Credits
+
+Built on top of the excellent work of [leuat/TRSE](https://github.com/leuat/TRSE)
+and the Turbo Rascal community. All C64 codegen, parser, and language
+design originate there; this fork only removes and fixes.
