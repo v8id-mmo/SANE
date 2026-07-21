@@ -141,7 +141,7 @@ builtin silently doesn't work (for example, `sine[angle]` always returning
 `0`). The workaround is to add one real, uncommented reference to the
 same pattern in the main file too.
 
-*Reference page:* [`@use`](reference/keywords/use.md)
+*Reference page:* [`@use`](reference/directives/use.md)
 
 ## Loops
 
@@ -209,7 +209,7 @@ even though `@bin2inc` runs first. The generated file only becomes
 to generate it with one compile first, then `@include` it from a separate
 compile.
 
-*Reference page:* [`@bin2inc`](reference/keywords/bin2inc.md)
+*Reference page:* [`@bin2inc`](reference/directives/bin2inc.md)
 
 ### `@vbmcompilechunk`'s own output can't be `@include`d in the same compile
 
@@ -221,7 +221,7 @@ file it just generated fails on a clean build, even though
 `@vbmcompilechunk` runs first. The workaround is the same: generate the
 file with one compile first, then `@include` it from a separate compile.
 
-*Reference page:* [`@vbmcompilechunk`](reference/keywords/vbmcompilechunk.md)
+*Reference page:* [`@vbmcompilechunk`](reference/directives/vbmcompilechunk.md)
 
 ### `@donotprefix <symbol>` never compiles
 
@@ -233,7 +233,7 @@ configuration tested: the directive reads its symbol-name argument but
 never actually consumes it from the token stream, desyncing everything
 parsed afterward, the same failure shape as the `case`/`else` bug above.
 
-*Reference page:* [`@donotprefix`](reference/keywords/donotprefix.md)
+*Reference page:* [`@donotprefix`](reference/directives/donotprefix.md)
 
 ### `@ignoresystemheaders` has no effect
 
@@ -244,7 +244,7 @@ compiler actually reads the flag it sets. Using it doesn't change the
 compiled output in any observable way.
 
 *Reference page:*
-[`@ignoresystemheaders`](reference/keywords/ignoresystemheaders.md)
+[`@ignoresystemheaders`](reference/directives/ignoresystemheaders.md)
 
 ### `@use KrillsLoader` requires one exact casing/spacing, or it fails
 
@@ -272,7 +272,7 @@ command-line-only fork. `@raiseerror`, by contrast, does still show its
 message and stop compilation, since aborting works through a different
 mechanism.
 
-*Reference page:* [`@raisewarning`](reference/keywords/raisewarning.md)
+*Reference page:* [`@raisewarning`](reference/directives/raisewarning.md)
 
 ### `@startblock` doesn't notice a missing or nested `@endblock`
 
@@ -285,7 +285,7 @@ warning. The reverse mistake, an `@endblock` with nothing open to close,
 does raise a clear error, so this asymmetry is easy to trust past its
 actual safety.
 
-*Reference page:* [`@startblock`](reference/keywords/startblock.md)
+*Reference page:* [`@startblock`](reference/directives/startblock.md)
 
 ## Compression
 
@@ -305,7 +305,7 @@ runtime" path is pre-compressing data offline with an external tool and
 loading it with `decrunch()`, not `compressed`/`@compress`.
 
 *Reference pages:* [`compressed`](reference/keywords/compressed.md),
-[`@compress`](reference/keywords/compress.md)
+[`@compress`](reference/directives/compress.md)
 
 ## Image/asset import/export directives
 
@@ -319,7 +319,7 @@ data across is unimplemented for every asset type this fork can produce.
 The destination file is saved back to disk completely unchanged. Only one
 unrelated, non-C64 asset type has a working implementation of this step.
 
-*Reference page:* [`@importchar`](reference/keywords/importchar.md)
+*Reference page:* [`@importchar`](reference/directives/importchar.md)
 
 ### `@exportblackwhite`/`@exportframe` only work for one asset type each
 
@@ -333,8 +333,8 @@ outcome for the asset types routed through it). There's no warning when
 this happens, the build just quietly produces nothing useful.
 
 *Reference pages:*
-[`@exportblackwhite`](reference/keywords/exportblackwhite.md),
-[`@exportframe`](reference/keywords/exportframe.md)
+[`@exportblackwhite`](reference/directives/exportblackwhite.md),
+[`@exportframe`](reference/directives/exportframe.md)
 
 ### `@spritecompiler` never produces any output
 
@@ -348,7 +348,7 @@ computed and then thrown away internally rather than making it into the
 compiled output. There is currently no target this fork ships with where
 `@spritecompiler` does anything useful.
 
-*Reference page:* [`@spritecompiler`](reference/keywords/spritecompiler.md)
+*Reference page:* [`@spritecompiler`](reference/directives/spritecompiler.md)
 
 ### `@pathtool` never compiles, in any configuration
 
@@ -361,7 +361,7 @@ resulting error is reported far from the actual problem, worded as if a
 `begin` were missing rather than pointing at the `@pathtool` line. This
 happens no matter where the directive is placed.
 
-*Reference page:* [`@pathtool`](reference/keywords/pathtool.md)
+*Reference page:* [`@pathtool`](reference/directives/pathtool.md)
 
 ### `@perlinnoise`'s exported data isn't clamped, but its preview image is
 
@@ -373,7 +373,7 @@ some pixels, while the `.png` preview saved alongside it is clamped and
 looks completely clean at those same pixels. The preview can't be trusted
 to catch an out-of-range setting; only the actual exported data can.
 
-*Reference page:* [`@perlinnoise`](reference/keywords/perlinnoise.md)
+*Reference page:* [`@perlinnoise`](reference/directives/perlinnoise.md)
 
 ## Object model
 

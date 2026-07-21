@@ -5,7 +5,7 @@
 Tells the compiler's unused-symbol removal pass to keep a symbol even if
 nothing in the visible TRSE source appears to reference it. Useful for a
 variable or label that's only ever referenced from inside a raw
-[`asm`](asm.md) block, which the compiler can't statically see as a use.
+[`asm`](../keywords/asm.md) block, which the compiler can't statically see as a use.
 
 ## Syntax
 

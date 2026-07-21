@@ -19,7 +19,7 @@ inner one).
   `<width> * <height>` elements.
 - `<js expression>`: a JavaScript expression string, evaluated once per
   cell with `i` bound to the column and `j` to the row. Any user-defined
-  `const` is available in the expression by name (see [`define`](define.md)
+  `const` is available in the expression by name (see [`define`](../directives/define.md)
   for the `@name` style constants used in some of the compiler's own
   tutorials, such as `@DWIDTH`).
 

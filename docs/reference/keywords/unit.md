@@ -4,7 +4,7 @@
 
 Declares a `.tru` file as a reusable unit: a separate source file of
 variables, procedures, and functions that a program (or another unit)
-pulls in with [`@use`](use.md). It plays the same role as `program` does
+pulls in with [`@use`](../directives/use.md). It plays the same role as `program` does
 for a `.ras` file, just for a file that isn't compiled on its own.
 
 ## Syntax
@@ -45,5 +45,5 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/mathhelper.tru){ .md-button download }
-(a unit file isn't compiled on its own; see [`@use`](use.md) for a
+(a unit file isn't compiled on its own; see [`@use`](../directives/use.md) for a
 driver program that pulls this one in and calls `MathHelper::Double`)

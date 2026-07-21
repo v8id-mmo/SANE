@@ -1,0 +1,16 @@
+program AtIfDemo;
+@define target_ntsc 1
+@if target_ntsc = 1
+var
+	refreshRate : byte = 60;
+@else
+var
+	refreshRate : byte = 50;
+@endif
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(refreshRate,3);
+	loop();
+end.

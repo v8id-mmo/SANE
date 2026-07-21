@@ -57,7 +57,9 @@ end.
 
 ## See also
 
-There's also a compile-time `@if <name> = <value>` preprocessor directive
-(distinct from this statement, evaluated before compilation even starts),
-which checks a value previously set with [`@define`](define.md) and is
-closed with [`@endif`](endif.md), the same way [`@ifdef`](ifdef.md) is.
+There's also a compile-time [`@if`](../directives/if.md) preprocessor
+directive (distinct from this statement, evaluated before compilation
+even starts), which checks a value previously set with
+[`@define`](../directives/define.md) and is closed with
+[`@endif`](../directives/endif.md), the same way
+[`@ifdef`](../directives/ifdef.md) is.

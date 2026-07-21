@@ -10,20 +10,20 @@ library as the compiler actually implements them, cross-checked directly
 against the compiler source rather than copied from TRSE's own limited
 and incomplete docs.
 
-!!! tip "Using vanilla, upstream TRSE?"
+!!! tip "Using vanilla TRSE?"
     This site works for you too, not just SANE users. The official TRSE
     documentation is incomplete and out of date in places; this site was
     written from scratch against the actual compiler source specifically
     to fix that. Outside of pages tagged **SANE** or
     **TRSE (modified in SANE)** (see [Compatibility Tags](tags.md)),
-    everything here applies equally to upstream TRSE. The one thing to
+    everything here applies equally to vanilla TRSE. The one thing to
     keep in mind: this site only covers the Commodore 64 target, so parts
     of it won't apply if you're targeting a different system.
 
 If you already know **TRSE**: almost everything here works exactly as it
-does upstream. Every page carries a small badge so you can tell at a
-glance whether it's unchanged from TRSE, changed in SANE, or new to SANE.
-See [Compatibility Tags](tags.md) for details.
+does in the original. Every page carries a small badge so you can tell at
+a glance whether it's unchanged from TRSE, changed in SANE, or new to
+SANE. See [Compatibility Tags](tags.md) for details.
 
 ## Where to start
 

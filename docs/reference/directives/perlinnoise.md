@@ -5,7 +5,7 @@
 
 A build-time directive that fills a raw binary file with 2D coherent
 ("Perlin-style") noise, the same kind of compile-time data generation as
-[`buildsinetable`](buildsinetable.md)/[`buildtable2d`](buildtable2d.md),
+[`buildsinetable`](../keywords/buildsinetable.md)/[`buildtable2d`](../keywords/buildtable2d.md),
 but for a full 2D noise field instead of a mathematical function. Meant
 for things like procedurally generated terrain, cloud/fire textures, or
 organic-looking fade patterns.

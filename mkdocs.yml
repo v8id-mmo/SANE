@@ -43,93 +43,46 @@ nav:
       - Keywords:
           - Overview: reference/keywords/index.md
           - absolute: reference/keywords/absolute.md
-          - "@addcpmheader": reference/keywords/addcpmheader.md
-          - "@addemulatorparam": reference/keywords/addemulatorparam.md
-          - "@addmonitorcommand": reference/keywords/addmonitorcommand.md
           - asm: reference/keywords/asm.md
           - assembler: reference/keywords/assembler.md
           - at: reference/keywords/at.md
           - begin: reference/keywords/begin.md
-          - "@bin2inc": reference/keywords/bin2inc.md
           - break: reference/keywords/break.md
           - buildsinetable: reference/keywords/buildsinetable.md
           - buildtable: reference/keywords/buildtable.md
           - buildtable2d: reference/keywords/buildtable2d.md
           - case: reference/keywords/case.md
-          - "@compress": reference/keywords/compress.md
           - compressed: reference/keywords/compressed.md
           - const: reference/keywords/const.md
           - continue: reference/keywords/continue.md
-          - "@copyfile": reference/keywords/copyfile.md
-          - "@define": reference/keywords/define.md
-          - "@deletefile": reference/keywords/deletefile.md
           - do: reference/keywords/do.md
-          - "@donotprefix": reference/keywords/donotprefix.md
-          - "@donotprefixunit": reference/keywords/donotprefixunit.md
-          - "@donotremove": reference/keywords/donotremove.md
           - else: reference/keywords/else.md
           - end: reference/keywords/end.md
-          - "@endassembler": reference/keywords/endassembler.md
-          - "@endblock": reference/keywords/endblock.md
-          - "@endif": reference/keywords/endif.md
-          - "@endmacro": reference/keywords/endmacro.md
-          - "@error": reference/keywords/error.md
-          - "@execute": reference/keywords/execute.md
-          - "@export": reference/keywords/export.md
-          - "@export_parallax_data": reference/keywords/export_parallax_data.md
-          - "@exportblackwhite": reference/keywords/exportblackwhite.md
-          - "@exportcompressed": reference/keywords/exportcompressed.md
-          - "@exportframe": reference/keywords/exportframe.md
-          - "@exportprg2bin": reference/keywords/exportprg2bin.md
-          - "@exportrgb8palette": reference/keywords/exportrgb8palette.md
-          - "@exportsubregion": reference/keywords/exportsubregion.md
           - for: reference/keywords/for.md
           - fori: reference/keywords/fori.md
           - forward: reference/keywords/forward.md
           - function: reference/keywords/function.md
           - global: reference/keywords/global.md
           - if: reference/keywords/if.md
-          - "@ifdef": reference/keywords/ifdef.md
-          - "@ifndef": reference/keywords/ifndef.md
-          - "@ignoremethod": reference/keywords/ignoremethod.md
-          - "@ignoresystemheaders": reference/keywords/ignoresystemheaders.md
-          - "@importchar": reference/keywords/importchar.md
-          - "@include": reference/keywords/include.md
           - inline: reference/keywords/inline.md
           - interrupt: reference/keywords/interrupt.md
           - invert: reference/keywords/invert.md
           - krillsloader: reference/keywords/krillsloader.md
           - length: reference/keywords/length.md
-          - "@macro": reference/keywords/macro.md
           - no_term: reference/keywords/no_term.md
           - of: reference/keywords/of.md
           - offpage: reference/keywords/offpage.md
           - onpage: reference/keywords/onpage.md
-          - "@pathtool": reference/keywords/pathtool.md
-          - "@pbmexport": reference/keywords/pbmexport.md
-          - "@perlinnoise": reference/keywords/perlinnoise.md
           - private: reference/keywords/private.md
           - procedure: reference/keywords/procedure.md
           - program: reference/keywords/program.md
-          - "@projectsettings": reference/keywords/projectsettings.md
           - public: reference/keywords/public.md
-          - "@raiseerror": reference/keywords/raiseerror.md
-          - "@raisewarning": reference/keywords/raisewarning.md
           - repeat: reference/keywords/repeat.md
           - repend: reference/keywords/repend.md
-          - "@requirefile": reference/keywords/requirefile.md
           - return: reference/keywords/return.md
-          - "@setcompressionweights": reference/keywords/setcompressionweights.md
-          - "@setvalue": reference/keywords/setvalue.md
           - signed: reference/keywords/signed.md
           - sizeof: reference/keywords/sizeof.md
-          - "@sparklefile": reference/keywords/sparklefile.md
-          - "@splitfile": reference/keywords/splitfile.md
-          - "@spritecompiler": reference/keywords/spritecompiler.md
-          - "@spritepacker": reference/keywords/spritepacker.md
           - stack: reference/keywords/stack.md
-          - "@startassembler": reference/keywords/startassembler.md
-          - "@startblock": reference/keywords/startblock.md
           - step: reference/keywords/step.md
           - then: reference/keywords/then.md
           - to: reference/keywords/to.md
@@ -137,16 +90,66 @@ nav:
           - unit: reference/keywords/unit.md
           - unroll: reference/keywords/unroll.md
           - until: reference/keywords/until.md
-          - "@use": reference/keywords/use.md
-          - "@userdata": reference/keywords/userdata.md
           - var: reference/keywords/var.md
-          - "@vbmcompilechunk": reference/keywords/vbmcompilechunk.md
-          - "@vbmexport": reference/keywords/vbmexport.md
-          - "@vbmexportchunk": reference/keywords/vbmexportchunk.md
-          - "@vbmexportcolor": reference/keywords/vbmexportcolor.md
           - volatile: reference/keywords/volatile.md
           - wedge: reference/keywords/wedge.md
           - while: reference/keywords/while.md
+      - Directives:
+          - Overview: reference/directives/index.md
+          - "@addcpmheader": reference/directives/addcpmheader.md
+          - "@addemulatorparam": reference/directives/addemulatorparam.md
+          - "@addmonitorcommand": reference/directives/addmonitorcommand.md
+          - "@bin2inc": reference/directives/bin2inc.md
+          - "@compress": reference/directives/compress.md
+          - "@copyfile": reference/directives/copyfile.md
+          - "@define": reference/directives/define.md
+          - "@deletefile": reference/directives/deletefile.md
+          - "@donotprefix": reference/directives/donotprefix.md
+          - "@donotprefixunit": reference/directives/donotprefixunit.md
+          - "@donotremove": reference/directives/donotremove.md
+          - "@endassembler": reference/directives/endassembler.md
+          - "@endblock": reference/directives/endblock.md
+          - "@endif": reference/directives/endif.md
+          - "@endmacro": reference/directives/endmacro.md
+          - "@error": reference/directives/error.md
+          - "@execute": reference/directives/execute.md
+          - "@export": reference/directives/export.md
+          - "@export_parallax_data": reference/directives/export_parallax_data.md
+          - "@exportblackwhite": reference/directives/exportblackwhite.md
+          - "@exportcompressed": reference/directives/exportcompressed.md
+          - "@exportframe": reference/directives/exportframe.md
+          - "@exportprg2bin": reference/directives/exportprg2bin.md
+          - "@exportrgb8palette": reference/directives/exportrgb8palette.md
+          - "@exportsubregion": reference/directives/exportsubregion.md
+          - "@if": reference/directives/if.md
+          - "@ifdef": reference/directives/ifdef.md
+          - "@ifndef": reference/directives/ifndef.md
+          - "@ignoremethod": reference/directives/ignoremethod.md
+          - "@ignoresystemheaders": reference/directives/ignoresystemheaders.md
+          - "@importchar": reference/directives/importchar.md
+          - "@include": reference/directives/include.md
+          - "@macro": reference/directives/macro.md
+          - "@pathtool": reference/directives/pathtool.md
+          - "@pbmexport": reference/directives/pbmexport.md
+          - "@perlinnoise": reference/directives/perlinnoise.md
+          - "@projectsettings": reference/directives/projectsettings.md
+          - "@raiseerror": reference/directives/raiseerror.md
+          - "@raisewarning": reference/directives/raisewarning.md
+          - "@requirefile": reference/directives/requirefile.md
+          - "@setcompressionweights": reference/directives/setcompressionweights.md
+          - "@setvalue": reference/directives/setvalue.md
+          - "@sparklefile": reference/directives/sparklefile.md
+          - "@splitfile": reference/directives/splitfile.md
+          - "@spritecompiler": reference/directives/spritecompiler.md
+          - "@spritepacker": reference/directives/spritepacker.md
+          - "@startassembler": reference/directives/startassembler.md
+          - "@startblock": reference/directives/startblock.md
+          - "@use": reference/directives/use.md
+          - "@userdata": reference/directives/userdata.md
+          - "@vbmcompilechunk": reference/directives/vbmcompilechunk.md
+          - "@vbmexport": reference/directives/vbmexport.md
+          - "@vbmexportchunk": reference/directives/vbmexportchunk.md
+          - "@vbmexportcolor": reference/directives/vbmexportcolor.md
       - Builtins: reference/builtins/index.md
       - Operators:
           - Overview: reference/operators/index.md

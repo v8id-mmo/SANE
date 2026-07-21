@@ -74,7 +74,7 @@ writing down so they don't get lost:
   file and directory access, network/TCP access from a running program,
   a real-time clock, extra SID chips, and an audio sampler. Exposing
   these as language-level builtins for anyone targeting that hardware is
-  a genuinely new capability, not something upstream TRSE has. A smaller,
+  a genuinely new capability, not something vanilla TRSE has. A smaller,
   faster win in the same space: a simple deploy helper that uploads and
   runs a compiled program on real Ultimate hardware over the network,
   as a complement to testing in an emulator. This is additive to plain
@@ -83,11 +83,11 @@ writing down so they don't get lost:
 
 ## What SANE deliberately isn't trying to be
 
-- **Not a multi-platform retro compiler.** Upstream TRSE supports dozens
+- **Not a multi-platform retro compiler.** Classic TRSE supports dozens
   of 8/16-bit systems. SANE dropped all of them on purpose to put full
   attention on getting one platform right, rather than spreading fixes
   thin across many.
-- **Not aiming to merge back into upstream TRSE**, or to track it
+- **Not aiming to merge back into original TRSE**, or to track it
   release-for-release. SANE is a fork with its own direction; the
   [Compatibility Tags](tags.md) system exists specifically so it stays
   clear, page by page, where SANE has actually diverged.

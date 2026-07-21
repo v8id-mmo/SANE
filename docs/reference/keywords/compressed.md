@@ -41,7 +41,7 @@ independent compression schemes that don't interoperate, and only the
 Exomizer side (via `IncBin` + `decrunch()`) currently has a way back to
 the original data from within a running program.
 
-The [`@compress`](compress.md) build directive has the exact same gap
+The [`@compress`](../directives/compress.md) build directive has the exact same gap
 (nothing decompresses its output at runtime either), but is not even the
 same LZ4 container as this flag: `@compress` shells out to an external
 `lz4` tool with the `-l` flag, which produces the **legacy** LZ4 frame

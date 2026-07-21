@@ -4,7 +4,7 @@
 
 Compile-time conditional compilation: includes the code between `@ifdef`
 and its matching `@else`/`@endif` only if the named symbol has been set
-with [`@define`](define.md). Unlike [`if`](if.md), this is resolved before
+with [`@define`](../directives/define.md). Unlike [`if`](../keywords/if.md), this is resolved before
 compilation starts, so the excluded branch's code doesn't exist in the
 compiled program at all, not even as dead code.
 
@@ -54,6 +54,5 @@ is the one actually compiled in.
 ## See also
 
 [`@ifndef`](ifndef.md) is the inverted form (compiles the block when the
-symbol is **not** defined). There's also a separate `@if <name> = <value>`
-form that checks a defined symbol against a specific value rather than
-just checking whether it exists; see [`if`](if.md).
+symbol is **not** defined). [`@if`](if.md) checks a defined symbol
+against a specific value rather than just checking whether it exists.

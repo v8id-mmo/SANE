@@ -3,7 +3,7 @@
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A build-time directive that LZ4-compresses a file on disk, by shelling
-out to an external `lz4` command-line tool. Unlike the [`compressed`](compressed.md)
+out to an external `lz4` command-line tool. Unlike the [`compressed`](../keywords/compressed.md)
 variable flag (which uses the compiler's own bundled LZ4 implementation),
 `@compress` needs a real `lz4` binary installed and configured.
 
@@ -47,7 +47,7 @@ the same folder)
 
 ## Known limitations
 
-Same underlying gap as [`compressed`](compressed.md): there is no
+Same underlying gap as [`compressed`](../keywords/compressed.md): there is no
 compiler builtin that decompresses this data back at runtime, and
 `decrunch()` cannot be used on it (it only accepts `IncBin`-typed data,
 and decompresses a different format, Exomizer, not LZ4). On top of that,

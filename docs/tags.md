@@ -3,25 +3,25 @@
 Every reference page in this site (keywords, builtins, operators, types)
 carries exactly one badge right under its title, answering a single
 question: **does SANE's compiler currently produce different behavior for
-this than vanilla upstream TRSE does?**
+this than vanilla TRSE does?**
 
 There are exactly three possible tags:
 
 ## `TRSE`
 
-Inherited from upstream TRSE, and SANE's compiler currently produces the
+Inherited from vanilla TRSE, and SANE's compiler currently produces the
 **same behavior** for it, even if that behavior has a known bug. This is
 the default, and covers the large majority of pages.
 
 A known, documented bug does **not** by itself change this tag. Writing
 down "we know about this limitation" is not the same as actually fixing
 the compiler. If a page has a `TRSE` badge and a **Known limitations**
-section, that means: this is exactly how upstream TRSE behaves too, warts
+section, that means: this is exactly how classic TRSE behaves too, warts
 and all, and SANE hasn't changed it (yet).
 
 ## `TRSE (modified in SANE)`
 
-Inherited from upstream TRSE, but SANE's compiler has **actually been
+Inherited from vanilla TRSE, but SANE's compiler has **actually been
 changed** so it behaves differently now, typically because a known bug
 was really fixed in code, not just documented.
 
@@ -51,8 +51,8 @@ removed if it's no longer relevant).
 ## How the tag is decided
 
 Every tag is decided by comparing SANE's actual compiler behavior against
-an unmodified upstream `leuat/TRSE` checkout. In order:
+an unmodified `leuat/TRSE` checkout. In order:
 
-1. Does this exist in upstream TRSE at all? If no, it's `SANE`, done.
-2. If yes, does SANE's actual codegen for it currently differ from
-   upstream's? If no, it's `TRSE`. If yes, it's `TRSE (modified in SANE)`.
+1. Does this exist in vanilla TRSE at all? If no, it's `SANE`, done.
+2. If yes, does SANE's actual codegen for it currently differ from the
+   original's? If no, it's `TRSE`. If yes, it's `TRSE (modified in SANE)`.
