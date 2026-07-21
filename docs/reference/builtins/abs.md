@@ -46,19 +46,15 @@ end.
 
 ## Known limitations
 
-`Abs` is correct for `byte` and `integer` values (confirmed by compiling
-both and reading the generated code): the `byte` path checks bit 7 of the
-value and two's-complements it if set; the `integer` path checks bit 7 of
-the high byte and two's-complements both bytes together.
+`Abs` is correct for `byte` and `integer` values: the `byte` path checks
+bit 7 of the value and two's-complements it if set; the `integer` path
+checks bit 7 of the high byte and two's-complements both bytes together.
 
 It is **wrong for a `long` value**. Instead of using a real 24-bit
 negation, it silently falls back to the plain `byte` path: it checks bit 7
 of only the *low* byte (the wrong byte for a 24-bit value's sign) and, if
 that happens to be set, negates only that one byte, leaving the middle and
-high bytes completely unchanged. Confirmed by compiling `long lv := -100000; r
-:= abs(lv);` and reading the generated code: the compiler's own comment
-above the emitted code literally says `abs(x) byte`, and only the low byte
-goes through the negate sequence. There is currently no way to get a
+high bytes completely unchanged. There is currently no way to get a
 correct 24-bit absolute value through this builtin; compute it by hand
 (compare the high byte's bit 7, then negate all three bytes with a
 carry-propagating two's complement) if you need this on a `long`.

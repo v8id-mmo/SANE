@@ -59,11 +59,9 @@ bits).
   right-hand expression's own top byte happened to be, and the middle
   byte can come out one off from the correct value, because of leftover
   state from evaluating the right-hand expression bleeding into the
-  result. Confirmed by comparing the generated code for a plain-variable
-  version against a complex-expression version of the same `long`
-  expression. Keep the right-hand side of a `long xor` a plain variable
-  (or copy a complex expression into a temporary `long` variable first)
-  to avoid this.
+  result. Keep the right-hand side of a `long xor` a plain variable (or
+  copy a complex expression into a temporary `long` variable first) to
+  avoid this.
 - **`xor` written between two parenthesized conditions (not two plain
   numeric values) compiles without error but always evaluates true,
   regardless of what either condition actually is.** For example,

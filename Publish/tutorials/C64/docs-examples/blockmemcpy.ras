@@ -1,0 +1,14 @@
+program BlockMemCpyDemo;
+var
+	i : byte;
+
+begin
+	clearscreen(key_space, screen_char_loc);
+
+	for i := 0 to 39 do
+		screen_char_loc[i] := 65; // fill row 0 with 'A'
+
+	blockmemcpy($0400, $0500, 1); // copy one 256-byte page: row 0-6 area to the page below it
+
+	loop();
+end.

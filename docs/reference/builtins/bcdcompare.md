@@ -48,12 +48,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/bcdcompare.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working by compiling the example above and reading
-the generated code: it compares byte pairs from the most significant digit
-pair down to the least significant, stopping at the first pair that
-differs, which is the correct way to order BCD numbers digit pair by
-digit pair. Two exactly equal numbers correctly return `false` (`equal`
-does not count as `larger`).

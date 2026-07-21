@@ -53,10 +53,9 @@ producing garbage.
   the same as for an unsigned value, instead of replicating the sign bit
   the way a proper signed (arithmetic) right shift needs to. This means
   shifting a negative value right gives a wrong, positive result instead
-  of preserving its sign: confirmed by compiling `signed byte x := -8; y
-  := x >> 1;` and reading the generated code, which produces `124`
-  instead of the mathematically correct `-4`. There's no way to get a
-  correct sign-preserving right shift on a negative value using this
+  of preserving its sign: `signed byte x := -8; y := x >> 1;` produces
+  `124` instead of the mathematically correct `-4`. There's no way to get
+  a correct sign-preserving right shift on a negative value using this
   operator right now; shifting an already-non-negative signed value is
   unaffected.
 

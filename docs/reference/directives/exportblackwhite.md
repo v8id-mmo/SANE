@@ -48,10 +48,9 @@ Worse, that one working asset type appears to be effectively unreachable
 in this fork already: it corresponds to an image imported directly from a
 plain bitmap file (PNG etc.) through TRSE's GUI image-import dialog, part
 of the GUI IDE this fork has removed. None of the `.flf` files bundled
-anywhere in this repository are of that type (confirmed by checking every
-`.flf` file shipped with the project templates and tutorials), so there is
-currently no known way, from within this CLI-only fork, to produce an
-asset `@exportblackwhite` actually does anything with. The example above
+anywhere in this repository are of that type, so there is currently no
+known way, from within this CLI-only fork, to produce an asset
+`@exportblackwhite` actually does anything with. The example above
 compiles cleanly (per this site's rule that every example must compile),
 but its output file is empty, since `sample_sprite.flf` is a sprite-type
 asset, not the one type this directive supports.

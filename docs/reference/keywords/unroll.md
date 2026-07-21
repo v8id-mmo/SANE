@@ -46,8 +46,8 @@ dropping the loop's last, inclusive pass.** [`fori`](fori.md)'s whole
 point versus plain `for` is that `fori i:=0 to 3 do ...` runs with
 `i = 0, 1, 2, 3` (the end value included). Adding `unroll` to a `fori`
 loop breaks that guarantee: `fori i:=0 to 3 unroll do screen_bg_col := i;`
-only emits 3 copies of the body (for `0`, `1`, `2`), not 4, confirmed by
-counting the generated assembly instructions. Unrolling doesn't look at
+only emits 3 copies of the body (for `0`, `1`, `2`), not 4. Unrolling
+doesn't look at
 whether the loop was written as `for` or `fori` at all, it always expands
 `<start>` up to, but not including, `<end>`. A plain (non-unrolled)
 `fori` loop is unaffected and correctly includes the end value. If the

@@ -50,8 +50,6 @@ into `integer`, for example) auto-widens correctly, the same way the
   example above, an `integer` holding `300` assigned into a `byte`
   variable doesn't clamp or error, it just keeps the low byte: `300`
   ($012C) becomes `44` ($2C), the value's high byte is simply dropped.
-  Confirmed by reading the generated code: only the source value's low
-  byte is ever loaded and stored into the narrower destination.
 - **Chained assignment isn't supported.** `a := b := 5;` is a compile
   error (not silently misinterpreted); each assignment needs to be its
   own statement.

@@ -40,14 +40,7 @@ end.
 
 ## Known limitations
 
-None found. `screenmemory` needs to be set to a real screen address
-before calling `BcdPrint` (as in the example, via `moveto`, not yet
-documented on this site, or a direct assignment), otherwise it prints
-wherever `screenmemory` last happened to point at. Its loop-exit condition
-looked, on first read of the source,
-like it might be missing a bounds check tied to `<digit pairs>` at all;
-this was checked by hand-tracing the generated code's flag usage and
-confirmed correct: the loop actually exits based on the running screen
-column offset underflowing past zero, which happens to align exactly with
-printing the requested number of digit pairs, not a coincidence but a
-real (if terse) exit condition.
+`screenmemory` needs to be set to a real screen address before calling
+`BcdPrint` (as in the example, via `moveto`, not yet documented on this
+site, or a direct assignment), otherwise it prints wherever
+`screenmemory` last happened to point at.

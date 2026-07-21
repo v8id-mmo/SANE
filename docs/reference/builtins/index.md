@@ -1,8 +1,7 @@
 # Builtins
 
 This section holds one reference page per builtin function/array. The full
-list (139 builtins, scoped to the C64 target) is being written in batches;
-this is the first one.
+list (139 builtins, scoped to the C64 target) is being written in batches.
 
 - [`Abs`](abs.md): returns the absolute (unsigned magnitude) value of a
   signed `byte` or `integer`.
@@ -25,3 +24,21 @@ this is the first one.
 - [`CreateAddressTable`](createaddresstable.md): builds a table of
   addresses in memory, for fast lookup with
   [`AddressTable`](addresstable.md).
+- [`BlockMemCpy`](blockmemcpy.md): copies one or more full 256-byte pages
+  from a source address to a destination address.
+- [`Call`](call.md): calls a machine-code routine at an address, and
+  returns once it hits an `rts`.
+- [`ClearBitmap`](clearbitmap.md): clears one or more 256-byte pages of
+  bitmap memory to zero.
+- [`ClearScreen`](clearscreen.md): fills an entire 1000-byte screen (or
+  color RAM) with one byte value.
+- [`ClearSound`](clearsound.md): immediately silences all three SID
+  voices.
+- [`CloseIRQ`](closeirq.md): restores registers at the end of an
+  interrupt handler started with `StartIRQ`.
+- [`CloseIRQWedge`](closeirqwedge.md): the `CloseIRQ` counterpart for
+  raster-IRQ "wedge" chaining.
+- [`CopyBytesShift`](copybytesshift.md): copies a run of bytes while
+  shifting or rotating each one by a fixed number of bits.
+- [`CopyCharsetFromRom`](copycharsetfromrom.md): copies the character ROM
+  font to RAM for customization.

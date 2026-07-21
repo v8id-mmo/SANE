@@ -56,8 +56,7 @@ in the example above) work correctly, and so does `not` on a plain
 `byte` value (also shown above: `not $0F` correctly gives `$F0`).
 
 - **`not` on an `integer`/`long` value only complements the low byte; the
-  upper byte(s) pass straight through unchanged.** Confirmed by compiling
-  a 16-bit example and reading the generated code: `not` on an `integer`
+  upper byte(s) pass straight through unchanged.** `not` on an `integer`
   holding `$00FF` should give `$FF00`, but the upper byte is left as `$00`
   and the actual result comes out `$0000`. Stick to `not` on `byte`
   values, or on a plain boolean, until this is fixed.

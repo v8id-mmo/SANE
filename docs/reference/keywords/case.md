@@ -47,7 +47,7 @@ end.
 wrapped in its own `begin...end`) fails to compile, but the error doesn't
 point at the `case` statement itself.** It surfaces at the very end of
 the file instead, as `Expected 'DOT' but found ';'` on the line of the
-program's own closing `end.`. Confirmed reproducible:
+program's own closing `end.`:
 
 ```pascal
 case i of
@@ -63,7 +63,7 @@ closing `end` of the `case` statement the way its non-`else` branch does,
 so the token stream shifts by one and every line after it gets
 misinterpreted, right up to the file's own final `end.`.
 
-**Confirmed workaround:** wrap the `else` block in `begin ... end`:
+**Workaround:** wrap the `else` block in `begin ... end`:
 
 ```pascal
 else begin
@@ -73,5 +73,4 @@ end;
 
 This avoids the bug because the block is no longer a single bare
 statement. The example on this page sidesteps the issue entirely by using
-an explicit branch for every tested value instead of `else`, since that
-form is confirmed working.
+an explicit branch for every tested value instead of `else`.

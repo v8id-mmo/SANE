@@ -58,14 +58,14 @@ different result than expected. Inside a raw `asm(...)` block specifically,
 the substituted text may not even be valid as a standalone operand for the
 complex-expression case.
 
-**Confirmed, reliable workaround:** if you need to pass something more
-complex than a bare variable or literal to an `inline` procedure, copy it
-into a local temp variable first and pass that instead:
+**Workaround:** if you need to pass something more complex than a bare
+variable or literal to an `inline` procedure, copy it into a local temp
+variable first and pass that instead:
 
 ```pascal
 tmp := someArray[complexIndex];
 SetBorder(tmp);
 ```
 
-This is not currently confirmed to affect regular, non-`inline` procedure
-calls, only ones marked `inline`.
+This only affects procedures marked `inline`; regular procedure calls
+are unaffected.

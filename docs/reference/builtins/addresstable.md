@@ -21,7 +21,9 @@ address, using a table of per-row start addresses.
 
 ## Returns
 
-The 16-bit address at `<y offset>` in the table, plus `<x offset>`.
+The 16-bit address at `<y offset>` in the table, plus `<x offset>`. The Y
+offset is automatically scaled by 2 before indexing, since each table
+entry is a 16-bit (2-byte) address.
 
 ## Example
 
@@ -48,10 +50,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/addresstable.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working by compiling the example above and
-verifying the generated code correctly scales the Y offset (multiplying
-by 2, since each table entry is a 16-bit address) before indexing the
-table.

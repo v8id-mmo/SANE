@@ -48,14 +48,11 @@ end.
 
 ## Known limitations
 
-None found, including the auto-init text-scan limitation that affects
-several other auto-initialized builtins in this category (their own pages
-cover it individually as they're written). `Atan2` was specifically
-tested for it: compiling a program where `Atan2`
-is only ever called from inside an `@use`d unit file (never mentioned in
-the main program's own text) still produces correct, working code. This
-is because `Atan2`'s "auto-init" doesn't need a runtime setup call at all;
-it just makes sure a fixed, precomputed lookup table and the calculation
-routine get included in the compiled program exactly once, and that
-inclusion is triggered independently by each file's own text (including
-unit files), not only the main program's.
+`Atan2` is auto-initialized (the compiler includes its lookup table and
+calculation routine the first time it sees `atan2(` in the source), but
+unlike some other auto-initialized builtins, it isn't affected by the
+`@use`d-unit-file auto-init scan gap: calling it only from inside a unit
+file still works correctly. Its "auto-init" doesn't need a runtime setup
+call at all, it just makes sure the lookup table and routine get
+included exactly once, and that inclusion is triggered independently by
+each file's own text, unit files included.

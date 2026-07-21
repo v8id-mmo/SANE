@@ -50,5 +50,4 @@ across falls back to a do-nothing default for every reachable C64 asset
 type (charset, sprite, multicolor bitmap, full-screen character, etc.).
 Only one unrelated, non-C64 asset type actually implements it. The output
 `.flf` file is saved back to disk byte-for-byte identical to how it
-started; confirmed by comparing the file's contents before and after
-compiling the example above.
+started.

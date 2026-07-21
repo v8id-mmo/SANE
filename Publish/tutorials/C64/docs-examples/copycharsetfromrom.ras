@@ -1,0 +1,9 @@
+program CopyCharsetFromRomDemo;
+var
+	dest : ^byte;
+begin
+	dest := $3000;
+	copycharsetfromrom(dest); // copy the ROM charset to RAM at $3000 (see Known limitations)
+
+	loop();
+end.

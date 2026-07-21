@@ -1,0 +1,6 @@
+program ClearSoundDemo;
+begin
+	clearsound(); // silence all three SID voices
+
+	loop();
+end.

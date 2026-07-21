@@ -1,0 +1,18 @@
+program CopyBytesShiftDemo;
+var
+	src : array[4] of byte = (1, 2, 64, 255);
+	dst : array[4] of byte;
+	i : byte;
+
+begin
+	copybytesshift(#src, #dst, 4, 1, 0); // shift all 4 bytes left by 1 bit (mode 0 = asl)
+
+	moveto(0, 0, hi(screen_char_loc));
+	for i := 0 to 3 do
+	begin
+		moveto(0, i, hi(screen_char_loc));
+		printdecimal(dst[i], 3);
+	end;
+
+	loop();
+end.

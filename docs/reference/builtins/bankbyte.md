@@ -43,15 +43,13 @@ end.
 ## Known limitations
 
 `bankbyte` works correctly on a `pointer` variable (as in the example
-above): confirmed by compiling and reading the generated code, it emits a
-plain `lda ptr+2`.
+above), emitting a plain `lda ptr+2`.
 
 It is a **silent no-op on a `long` variable**, this fork's other 24-bit
-type. Confirmed by compiling `long longvar at $c000; b :=
-bankbyte(longvar);` and reading the generated code: the line lowers
-straight to a bare store instruction with no load before it anywhere in
-the routine, so `b` ends up holding whatever was already in the
-accumulator at that point in the program, not any byte of `longvar` at
-all. If you need the top byte of a `long` value, read it directly instead
-(e.g. by declaring an overlapping `array[3] of byte` at the same address,
-or via pointer arithmetic) rather than through `bankbyte`.
+type. `b := bankbyte(longvar)` lowers straight to a bare store
+instruction with no load before it anywhere in the routine, so `b` ends
+up holding whatever was already in the accumulator at that point in the
+program, not any byte of `longvar` at all. If you need the top byte of a
+`long` value, read it directly instead (e.g. by declaring an overlapping
+`array[3] of byte` at the same address, or via pointer arithmetic) rather
+than through `bankbyte`.

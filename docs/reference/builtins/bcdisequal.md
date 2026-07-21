@@ -46,9 +46,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/bcdisequal.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working by compiling the example above and reading
-the generated code: it compares every digit-pair byte and only reports
-equal if none of them differ.

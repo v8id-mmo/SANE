@@ -5,7 +5,10 @@
 Inserts a debugger breakpoint at the point in the program where it's
 called. When the compiled program is run under the VICE emulator, hitting
 this point halts execution and drops into the VICE monitor, so registers,
-memory, and the disassembly can be inspected right there.
+memory, and the disassembly can be inspected right there. Each call gets
+its own unique label, with a matching `break <address>` line in the
+generated VICE symbols file, so multiple breakpoints in the same program
+are each individually addressable.
 
 ## Syntax
 
@@ -34,11 +37,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/addbreakpoint.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working end-to-end by compiling and inspecting the
-generated VICE symbols file: each `AddBreakpoint()` call gets its own
-unique label in the compiled program, and the compiler emits a matching
-`break <address>` line for it in the `.sym` file passed to VICE, so the
-breakpoint is real and address-accurate, not just a compiled-in no-op.

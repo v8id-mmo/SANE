@@ -46,9 +46,6 @@ end.
 
 ## Known limitations
 
-None found. Confirmed working by compiling the example above and reading
-the generated code: it uses the 6502's decimal mode (`sed`/`cld`) to
-subtract matching byte pairs directly, mirroring
-[`BcdAdd`](bcdadd.md)'s implementation. Note that, like plain binary
-subtraction, subtracting a larger BCD number from a smaller one wraps
-around rather than going negative; there is no separate sign handling.
+Like plain binary subtraction, subtracting a larger BCD number from a
+smaller one wraps around rather than going negative; there is no
+separate sign handling.

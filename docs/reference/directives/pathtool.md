@@ -27,17 +27,16 @@ sprite following a path. Not currently usable; see Known limitations.
 ## Known limitations
 
 **This directive does not currently compile, in any configuration.**
-Confirmed by testing: placing `@pathtool` at the top level of a program,
-and inside a `var` block (its only sensible location, since its output is
-meant to be pulled in via `incbin`), both fail the same way. The
-directive's own side effects (reading the input file, writing the three
-output `.bin` files) do run successfully, but something afterward leaves
-the parser out of sync with the rest of the file, and the resulting error
-surfaces much later, worded as if the problem were a missing `begin`
-rather than pointing at the `@pathtool` line itself. A sibling directive
-with a very similar shape, [`@perlinnoise`](perlinnoise.md), was tested
-side by side in the exact same placement and compiles cleanly, confirming
-the problem is specific to `@pathtool`.
+Placing `@pathtool` at the top level of a program, and inside a `var`
+block (its only sensible location, since its output is meant to be
+pulled in via `incbin`), both fail the same way. The directive's own
+side effects (reading the input file, writing the three output `.bin`
+files) do run successfully, but something afterward leaves the parser
+out of sync with the rest of the file, and the resulting error surfaces
+much later, worded as if the problem were a missing `begin` rather than
+pointing at the `@pathtool` line itself. A sibling directive with a very
+similar shape, [`@perlinnoise`](perlinnoise.md), compiles cleanly in the
+exact same placement, so the problem is specific to `@pathtool`.
 
 No working example exists to show here; a broken example would be worse
 than none, so none is included on this page.

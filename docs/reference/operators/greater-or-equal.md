@@ -54,13 +54,11 @@ This operator works correctly for unsigned `byte`, `integer`, and
 `long` values.
 
 - **On a `signed byte`, this operator is accepted without a compile
-  error, but is suspected to give the wrong answer right at the extreme
-  boundary values** (comparing something like `127` against `-128`). The
-  generated code for a signed byte comparison uses a plain positive/
-  negative flag check, without the extra overflow-correction step the
-  16-bit signed `<`/`<=` path applies. This hasn't been confirmed by
-  actually running it, only by reading the generated code, but it's a real
-  enough risk that a `signed byte` comparison near its type boundary
+  error, but is unverified at the extreme boundary values** (comparing
+  something like `127` against `-128`): the generated code uses a plain
+  positive/negative flag check, without the extra overflow-correction
+  step the 16-bit signed `<`/`<=` path applies, so it may give the wrong
+  answer there. A `signed byte` comparison near its type boundary
   shouldn't be trusted without testing it yourself first. Away from the
   extremes (as in the example above), it behaves correctly.
 - **On a `signed integer`, this operator isn't implemented at

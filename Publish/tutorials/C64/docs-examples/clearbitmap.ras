@@ -1,0 +1,8 @@
+program ClearBitmapDemo;
+var
+	const bitmapAddr : address = $2000;
+begin
+	clearbitmap(bitmapAddr, 32); // clear 32 pages (8192 bytes) of bitmap memory to 0
+
+	loop();
+end.

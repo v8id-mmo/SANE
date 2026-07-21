@@ -37,10 +37,9 @@ the same folder)
 ## Known limitations
 
 `@bin2inc`'s output file cannot be [`@include`](include.md)d in the *same*
-compile that generates it. Confirmed by testing: on a clean build,
-`@include "<output file>"` fails with "Could not open file for
-inclusion", even though `@bin2inc` appears earlier in the same file and
-does write the file to disk. Generate the include file with one project
-first (`@bin2inc` alone, as in the example above), then `@include` it
-from a separate `.ras`/`.tru` file, or check the generated file into the
-project ahead of time.
+compile that generates it. On a clean build, `@include "<output file>"`
+fails with "Could not open file for inclusion", even though `@bin2inc`
+appears earlier in the same file and does write the file to disk.
+Generate the include file with one project first (`@bin2inc` alone, as
+in the example above), then `@include` it from a separate `.ras`/`.tru`
+file, or check the generated file into the project ahead of time.

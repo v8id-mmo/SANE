@@ -44,9 +44,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/bcdadd.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working by compiling the example above and reading
-the generated code: it uses the 6502's decimal mode (`sed`/`cld`) to add
-matching byte pairs directly, which is exactly what BCD addition needs.

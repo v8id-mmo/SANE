@@ -47,10 +47,3 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/addresstable.ras){ .md-button download }
-
-## Known limitations
-
-None found. Confirmed working by compiling the example above; each
-of the 25 diagonal characters lands at a distinct, correctly-spaced screen
-position when the generated table is used through
-[`AddressTable`](addresstable.md).

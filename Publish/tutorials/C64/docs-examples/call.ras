@@ -1,0 +1,15 @@
+program CallDemo;
+var
+	udtimPtr : ^byte;
+	const udtim : address = $ffea; // KERNAL UDTIM: bumps the jiffy clock, then RTS
+
+begin
+	screen_bg_col := blue;
+
+	call(udtim); // direct call to a fixed address
+
+	udtimPtr := $ffea;
+	call(udtimPtr); // same routine, called indirectly through a pointer
+
+	loop();
+end.

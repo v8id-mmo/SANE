@@ -52,8 +52,8 @@ compiler builtin that decompresses this data back at runtime, and
 `decrunch()` cannot be used on it (it only accepts `IncBin`-typed data,
 and decompresses a different format, Exomizer, not LZ4). On top of that,
 `@compress`'s output isn't even the same *container* as `compressed`'s:
-confirmed by inspecting the output files directly, `@compress` (which
-runs the external `lz4` tool with the `-l` flag) produces the **legacy**
-LZ4 frame format (magic bytes `$02 $21 $4c $18`), while `compressed`'s
-bundled `CompressLZ4` produces the modern LZ4 frame format (magic bytes
-`$04 $22 $4d $18`). The two aren't interchangeable either.
+`@compress` (which runs the external `lz4` tool with the `-l` flag)
+produces the **legacy** LZ4 frame format (magic bytes `$02 $21 $4c
+$18`), while `compressed`'s bundled `CompressLZ4` produces the modern
+LZ4 frame format (magic bytes `$04 $22 $4d $18`). The two aren't
+interchangeable either.

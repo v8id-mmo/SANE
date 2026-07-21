@@ -54,14 +54,12 @@ once:
   [`<>`](../operators/not-equal.md)) throws a compile error instead of
   producing wrong code. Signed comparison for a `signed long` isn't
   implemented at all, any comparison operator errors out.
-- **Byte-level signed comparison is suspected wrong at the extremes**,
-  such as comparing `-128` and `127`, because the generated code doesn't
-  correct for 6502 signed-overflow the way the 16-bit `<`/`<=` case does.
-  This hasn't been confirmed by running it, just inferred from the
-  generated code, but the risk is real enough to flag: don't rely on
-  signed byte comparison right at the type's boundary values without
-  testing it yourself first. The example above (`dx < 0`) sits well away
-  from that boundary and is unaffected.
+- **Byte-level signed comparison is unverified at the extremes**, such as
+  comparing `-128` and `127`, because the generated code doesn't correct
+  for 6502 signed-overflow the way the 16-bit `<`/`<=` case does: don't
+  rely on signed byte comparison right at the type's boundary values
+  without testing it yourself first. The example above (`dx < 0`) sits
+  well away from that boundary and is unaffected.
 - **Signed multiplication ([`*`](../operators/multiplication.md)) silently
   gives the wrong result for a negative operand.** The multiply routine
   actually wired up behind `*` is always the unsigned one, regardless of

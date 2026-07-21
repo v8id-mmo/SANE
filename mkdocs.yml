@@ -203,6 +203,15 @@ nav:
           - BcdPrint: reference/builtins/bcdprint.md
           - BcdSub: reference/builtins/bcdsub.md
           - CreateAddressTable: reference/builtins/createaddresstable.md
+          - BlockMemCpy: reference/builtins/blockmemcpy.md
+          - Call: reference/builtins/call.md
+          - ClearBitmap: reference/builtins/clearbitmap.md
+          - ClearScreen: reference/builtins/clearscreen.md
+          - ClearSound: reference/builtins/clearsound.md
+          - CloseIRQ: reference/builtins/closeirq.md
+          - CloseIRQWedge: reference/builtins/closeirqwedge.md
+          - CopyBytesShift: reference/builtins/copybytesshift.md
+          - CopyCharsetFromRom: reference/builtins/copycharsetfromrom.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

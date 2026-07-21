@@ -43,8 +43,8 @@ end.
 
 ## Known limitations
 
-None found. `shl`/`<<` works the same regardless of whether the value is
-`signed`: shifting left never needs to treat a signed and unsigned value
+`shl`/`<<` works the same regardless of whether the value is `signed`:
+shifting left never needs to treat a signed and unsigned value
 differently, since the bit pattern moves the same way either direction.
 
 Shifting by an amount equal to or greater than the value's own width isn't

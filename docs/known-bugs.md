@@ -543,3 +543,70 @@ completely unchanged. Confirmed by compiling a negative `long` test case
 and reading the generated code.
 
 *Reference page:* [`Abs`](reference/builtins/abs.md)
+
+### `CopyBytesShift`'s rotate-right mode never actually rotates
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`CopyBytesShift` supports four modes: shift left, shift right, rotate
+left, and rotate right. Rotate left is confirmed correct at any shift
+amount. Rotate right instead silently behaves exactly like plain shift
+right at every shift amount, including a single shift: the bit that
+falls off the bottom is simply discarded and a `0` is always shifted in
+from the top, instead of the discarded bit wrapping back around to the
+top the way a real rotate should. Confirmed by compiling a test case
+(rotating `%10000001` right by one, expected `%11000000`, actual
+`%01000000`) and reading the generated code.
+
+*Reference page:* [`CopyBytesShift`](reference/builtins/copybytesshift.md)
+
+### A literal numeric address fails to assemble for a handful of builtins
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Passing a bare numeric address literal (e.g. `$ffea`) directly as an
+argument to `Call`, `ClearBitmap`, or `CopyCharsetFromRom` compiles
+without any error, but fails at the assembly stage right afterward, with
+an "opcode not implemented" error. The generated instruction ends up in
+an invalid form (an addressing mode that doesn't exist for that
+instruction) because the literal gets formatted the same way it would be
+for loading it into a register, not for using it as a memory address.
+Routing the exact same address through a named constant, or through a
+pointer/variable, works correctly for all three. Confirmed by compiling
+both forms directly and comparing the generated code.
+
+*Reference pages:* [`Call`](reference/builtins/call.md),
+[`ClearBitmap`](reference/builtins/clearbitmap.md),
+[`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
+
+### `CopyCharsetFromRom` only copies part of the character ROM
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`CopyCharsetFromRom` is meant to copy the full 2048-byte character ROM
+font to RAM in one call. Its copy loop is built from 8 chunks that are
+each supposed to cover one non-overlapping 256-byte page, but they're
+actually spaced only 100 bytes apart, so they heavily overlap each other
+and the last chunk stops well short of the end. Well over half of the
+character ROM is never copied at all, while the bytes that are covered
+get copied several times over. Confirmed by compiling a test case and
+reading the generated addresses.
+
+*Reference page:*
+[`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
+
+### `CopyCharsetFromRom` disables interrupts and never turns them back on
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`CopyCharsetFromRom` disables interrupts partway through (needed to
+safely bank in the character ROM for reading) but never re-enables them
+afterward. Confirmed by compiling a minimal program that calls it once
+and does nothing else, then checking the entire generated program for an
+interrupt re-enable instruction: there isn't one anywhere. Any program
+that calls this and doesn't separately set up its own interrupt handling
+afterward will silently run with interrupts permanently off from that
+point on, breaking keyboard input and other interrupt-driven behavior.
+
+*Reference page:*
+[`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
