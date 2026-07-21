@@ -1,0 +1,16 @@
+program AndDemo;
+var
+	a : byte = 10;
+	b : byte = 2;
+	msgTrue : cstring = "BOTH CONDITIONS TRUE";
+	msgFalse : cstring = "NOT BOTH CONDITIONS TRUE";
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,2,hi(screen_char_loc));
+	if ((a>5) and (b<3)) then
+		printstring(msgTrue,0,40)
+	else
+		printstring(msgFalse,0,40);
+	loop();
+end.

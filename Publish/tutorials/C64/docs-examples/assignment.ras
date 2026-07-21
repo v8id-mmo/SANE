@@ -1,0 +1,12 @@
+program AssignmentDemo;
+var
+	w : integer = 300;
+	b : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	b := w;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(b,3);
+	loop();
+end.

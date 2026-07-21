@@ -1,0 +1,20 @@
+program NotDemo;
+var
+	flag : boolean = false;
+	value : byte = $0F;
+	complement : byte;
+	msgTrue : cstring = "FLAG IS NOT SET";
+	msgFalse : cstring = "FLAG IS SET";
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	complement := not value;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(complement,3);
+	moveto(0,4,hi(screen_char_loc));
+	if not flag then
+		printstring(msgTrue,0,40)
+	else
+		printstring(msgFalse,0,40);
+	loop();
+end.

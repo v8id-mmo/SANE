@@ -1,0 +1,16 @@
+program OrDemo;
+var
+	a : byte = 10;
+	b : byte = 20;
+	msgTrue : cstring = "AT LEAST ONE CONDITION TRUE";
+	msgFalse : cstring = "NEITHER CONDITION TRUE";
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,2,hi(screen_char_loc));
+	if ((a>5) or (b<3)) then
+		printstring(msgTrue,0,40)
+	else
+		printstring(msgFalse,0,40);
+	loop();
+end.

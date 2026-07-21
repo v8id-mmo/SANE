@@ -165,6 +165,10 @@ nav:
           - "xor / ^": reference/operators/xor.md
           - "shl / <<": reference/operators/shift-left.md
           - "shr / >>": reference/operators/shift-right.md
+          - "and": reference/operators/and.md
+          - "or": reference/operators/or.md
+          - "not": reference/operators/not.md
+          - ":=": reference/operators/assignment.md
       - Types: reference/types.md
       - Constants: reference/constants.md
   - Examples: examples/index.md

@@ -35,5 +35,13 @@ because most of the compiler's known signed-arithmetic bugs live here.
 - [`shl` / `<<`](shift-left.md): shifts bits left, filling with `0`.
 - [`shr` / `>>`](shift-right.md): shifts bits right, filling with `0`.
 
-The remaining categories (logical, assignment) are planned for a later
-batch.
+## Logical
+
+- [`and`](and.md): combines two conditions, true only if both are true.
+- [`or`](or.md): combines two conditions, true if either is true.
+- [`not`](not.md): negates a boolean value, or bitwise-complements a
+  numeric value.
+
+## Assignment
+
+- [`:=`](assignment.md): stores a value into a variable.

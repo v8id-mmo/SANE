@@ -480,3 +480,36 @@ works correctly; this only affects `xor` written between two parenthesized
 conditions.
 
 *Reference page:* [`xor`](reference/operators/xor.md)
+
+## Logical operators
+
+### `not` on a wider-than-byte value only complements the low byte
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`not` on an `integer` or `long` value should flip every bit, but only the
+low byte actually gets flipped; the upper byte(s) pass straight through
+unchanged instead of being complemented too. Confirmed by compiling a
+16-bit example and reading the generated code directly: `not` on an
+`integer` holding `$00FF` should give `$FF00`, but actually gives
+`$0000`. `not` on a plain `byte` is unaffected and works correctly.
+
+*Reference page:* [`not`](reference/operators/not.md)
+
+### `not` can't negate a comparison the way it looks like it should
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Writing `not (a > 5)`, with the comparison in parentheses, fails to
+compile at all. Writing it without the parentheses, `not a > 5`, does
+compile, but silently means something different from what it looks like:
+it computes `not a` (a bitwise complement) first, and only then compares
+that complemented value against `5`, instead of negating the result of
+`a > 5`. Confirmed by compiling both forms and reading the generated
+code: for `a = 10`, this reads as `(not 10) > 5`, which comes out true,
+the opposite of the intended `not (10 > 5)`, which should be false. `not`
+directly in front of a plain boolean value or variable (not a
+comparison), like `if not someFlag then`, is unaffected and works
+correctly.
+
+*Reference page:* [`not`](reference/operators/not.md)
