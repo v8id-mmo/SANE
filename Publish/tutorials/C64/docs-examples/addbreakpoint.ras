@@ -1,0 +1,13 @@
+program AddBreakpointDemo;
+var
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	i := 0;
+	AddBreakpoint(); // execution halts here in VICE, dropping into the monitor
+	i := i + 1;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(i,3);
+	loop();
+end.

@@ -1,0 +1,19 @@
+program AddressTableDemo;
+var
+	rowAddr : array[25] of integer;
+	i : byte;
+
+begin
+	DefineScreen();
+	clearscreen(key_space,screen_char_loc);
+
+	CreateAddressTable(#rowAddr, screen_char_loc, 40, 25); // 25 row start addresses, 40 bytes apart
+
+	fori i := 0 to 24 do
+	begin
+		screenmemory := AddressTable(#rowAddr, i, i); // diagonal: column i of row i
+		screenmemory[0] := 65 + i; // plot 'A', 'B', 'C', ...
+	end;
+
+	loop();
+end.

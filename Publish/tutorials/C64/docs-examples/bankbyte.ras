@@ -1,0 +1,13 @@
+program BankbyteDemo;
+var
+	ptr : ^byte;
+	bank : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	ptr := $c000;
+	bank := bankbyte(ptr);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(bank,3);
+	loop();
+end.

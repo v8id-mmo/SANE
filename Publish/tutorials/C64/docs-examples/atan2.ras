@@ -1,0 +1,16 @@
+program Atan2Demo;
+var
+	x1, x2, y1, y2, angle : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	x1 := 100; y1 := 100;
+	x2 := 200; y2 := 100; // point 2 is due "3 o'clock" from point 1
+
+	angle := Atan2(x1, x2, y1, y2);
+
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(angle,3);
+	loop();
+end.

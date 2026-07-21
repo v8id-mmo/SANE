@@ -190,7 +190,19 @@ nav:
           - "@vbmexport": reference/directives/vbmexport.md
           - "@vbmexportchunk": reference/directives/vbmexportchunk.md
           - "@vbmexportcolor": reference/directives/vbmexportcolor.md
-      - Builtins: reference/builtins/index.md
+      - Builtins:
+          - Overview: reference/builtins/index.md
+          - Abs: reference/builtins/abs.md
+          - AddBreakpoint: reference/builtins/addbreakpoint.md
+          - AddressTable: reference/builtins/addresstable.md
+          - Atan2: reference/builtins/atan2.md
+          - bankbyte: reference/builtins/bankbyte.md
+          - BcdAdd: reference/builtins/bcdadd.md
+          - BcdCompare: reference/builtins/bcdcompare.md
+          - BcdIsEqual: reference/builtins/bcdisequal.md
+          - BcdPrint: reference/builtins/bcdprint.md
+          - BcdSub: reference/builtins/bcdsub.md
+          - CreateAddressTable: reference/builtins/createaddresstable.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

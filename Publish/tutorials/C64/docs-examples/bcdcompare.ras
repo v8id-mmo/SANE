@@ -1,0 +1,17 @@
+program BcdCompareDemo;
+var
+	score: array[] of byte = ($12,$34,$56); // BCD for 563412
+	highscore: array[] of byte = ($15,$34,$56); // BCD for 563415
+
+begin
+	DefineScreen();
+	clearscreen(key_space,screen_char_loc);
+	screenmemory := screen_char_loc;
+
+	moveto(0,2,hi(screen_char_loc));
+	if (BcdCompare(#score,#highscore,3)) then
+		printstring("NEW HIGH SCORE",0,0)
+	else
+		printstring("NO NEW RECORD",0,0);
+	loop();
+end.

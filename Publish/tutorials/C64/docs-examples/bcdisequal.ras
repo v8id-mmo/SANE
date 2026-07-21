@@ -1,0 +1,17 @@
+program BcdIsEqualDemo;
+var
+	score: array[] of byte = ($12,$34,$56); // BCD for 563412
+	target: array[] of byte = ($12,$34,$56); // BCD for 563412
+
+begin
+	DefineScreen();
+	clearscreen(key_space,screen_char_loc);
+	screenmemory := screen_char_loc;
+
+	moveto(0,2,hi(screen_char_loc));
+	if (BcdIsEqual(#score,#target,3)) then
+		printstring("TARGET REACHED",0,0)
+	else
+		printstring("KEEP GOING",0,0);
+	loop();
+end.

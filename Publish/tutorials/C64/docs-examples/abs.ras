@@ -1,0 +1,17 @@
+program AbsDemo;
+var
+	b : signed byte = -100;
+	w : signed integer = -30000;
+	resultByte : byte;
+	resultWord : integer;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	resultByte := abs(b);
+	resultWord := abs(w);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(resultByte,3);
+	moveto(0,4,hi(screen_char_loc));
+	printdecimal(resultWord,5);
+	loop();
+end.

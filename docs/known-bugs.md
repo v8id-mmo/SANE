@@ -513,3 +513,33 @@ comparison), like `if not someFlag then`, is unaffected and works
 correctly.
 
 *Reference page:* [`not`](reference/operators/not.md)
+
+## Builtins
+
+### `bankbyte` is a silent no-op on a `long` value
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`bankbyte` correctly returns the third byte (bits 16-23) of a `pointer`
+value. On a `long` value, this fork's other 24-bit type, it produces no
+code at all: confirmed by compiling a test case and reading the generated
+code, the destination variable ends up holding whatever was already in
+the processor's accumulator at that point in the program, not any byte of
+the `long` value. There's no error or warning, the assignment just
+silently does the wrong thing.
+
+*Reference page:* [`bankbyte`](reference/builtins/bankbyte.md)
+
+### `Abs` only negates the low byte of a `long` value
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`Abs` correctly returns the absolute value of a negative `byte` or
+`integer`. On a `long` value it silently falls back to the plain `byte`
+logic: it checks the sign bit of the wrong byte (the low byte instead of
+the high byte, where a 24-bit value's sign actually lives) and, even when
+that happens to trigger, only negates that one byte, leaving the other two
+completely unchanged. Confirmed by compiling a negative `long` test case
+and reading the generated code.
+
+*Reference page:* [`Abs`](reference/builtins/abs.md)
