@@ -1,0 +1,8 @@
+program SetSpriteLocDemo;
+begin
+	SetSpriteLoc(0, $80, vic_bank0);   // sprite 0's data at $2000 ($2000/64 = $80)
+	sprite_color[0] := light_red;
+	togglebit(sprite_bitmask, 0, 1);   // turn sprite 0 on
+	SpritePos(100, 100, 0);
+	loop();
+end.

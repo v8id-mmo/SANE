@@ -1,0 +1,10 @@
+program SetTextModeDemo;
+begin
+	SetBitmapMode();
+	Wait(100);
+	SetTextMode();   // back to character mode
+	clearscreen(key_space, screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("back in text mode",0,40);
+	loop();
+end.

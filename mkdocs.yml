@@ -307,6 +307,16 @@ nav:
           - setHi: reference/builtins/sethi.md
           - setLo: reference/builtins/setlo.md
           - SetMemoryConfig: reference/builtins/setmemoryconfig.md
+          - SetMultiColorMode: reference/builtins/setmulticolormode.md
+          - SetRegularColorMode: reference/builtins/setregularcolormode.md
+          - SetScreenLocation: reference/builtins/setscreenlocation.md
+          - SetSpriteLoc: reference/builtins/setspriteloc.md
+          - SetTextMode: reference/builtins/settextmode.md
+          - SpritePos: reference/builtins/spritepos.md
+          - Sqrt: reference/builtins/sqrt.md
+          - StartIRQ: reference/builtins/startirq.md
+          - StartIRQWedge: reference/builtins/startirqwedge.md
+          - StartRasterChain: reference/builtins/startrasterchain.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

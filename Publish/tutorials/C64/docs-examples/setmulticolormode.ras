@@ -1,0 +1,8 @@
+program SetMultiColorModeDemo;
+begin
+	SetMultiColorMode();
+	screen_bg_col := black;
+	screen_fg_col := light_blue;
+	multicolor_char_col := grey;
+	loop();
+end.
