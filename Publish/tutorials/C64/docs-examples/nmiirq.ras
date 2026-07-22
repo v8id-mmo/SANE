@@ -1,0 +1,16 @@
+program NmiIRQDemo;
+var
+	nmiCount : byte = 0;
+
+interrupt nmi();
+begin
+	nmiCount += 1;
+	screen_bg_col := nmiCount;
+end;
+
+begin
+	moveto(0,0,hi(screen_char_loc));
+	printstring("nmi demo running",0,40);
+	NmiIRQ(nmi());
+	loop();
+end.

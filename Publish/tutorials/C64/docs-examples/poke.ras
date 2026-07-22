@@ -1,0 +1,16 @@
+program PokeDemo;
+var
+	values : array[4] of byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("poke demo",0,40);
+
+	poke(^$D020, 0, black); // border color := black
+
+	poke(#values, 2, 42); // same as values[2] := 42;
+	moveto(0,1,hi(screen_char_loc));
+	printnumber(values[2]);
+
+	loop();
+end.

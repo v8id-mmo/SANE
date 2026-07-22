@@ -591,7 +591,7 @@ in a correct rotate, but this builtin gives `%01000000`.
 
 *Reference page:* [`CopyBytesShift`](reference/builtins/copybytesshift.md)
 
-### A literal numeric address fails to assemble for a handful of builtins
+### A literal numeric address fails for a handful of builtins
 
 **Status:** Open · **Fixed in:** not yet fixed
 
@@ -606,11 +606,19 @@ as a memory address. Routing the exact same address through a named
 constant, a `^`-prefixed literal, or a pointer/variable works correctly
 in every case.
 
+`Poke` has the same symptom (a bare numeric literal address fails, a
+named constant/`^`-prefixed literal/pointer all work) but fails earlier
+and more clearly, with a plain "must be a variable or address" error at
+compile time rather than a confusing assembly-stage failure. `Peek`, the
+matching read builtin, is unaffected either way: a bare numeric literal
+address works correctly there.
+
 *Reference pages:* [`Call`](reference/builtins/call.md),
 [`ClearBitmap`](reference/builtins/clearbitmap.md),
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md),
 [`CopyFullScreen`](reference/builtins/copyfullscreen.md),
-[`CopyHalfScreen`](reference/builtins/copyhalfscreen.md)
+[`CopyHalfScreen`](reference/builtins/copyhalfscreen.md),
+[`Poke`](reference/builtins/poke.md)
 
 ### `CopyCharsetFromRom` only copies part of the character ROM
 
@@ -752,3 +760,36 @@ attempt a signed-aware branch, even if it's imperfect at the boundary;
 
 *Reference pages:* [`min`](reference/builtins/min.md),
 [`max`](reference/builtins/max.md)
+
+### `PrintNumber`/`PrintDecimal` fail unless `MoveTo`, `PrintString`, or `Tile` is also used somewhere
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Using `PrintNumber` or `PrintDecimal` with no `MoveTo`, `PrintString`, or
+`Tile` call anywhere else in the whole compiled program fails at the
+assembly stage with an "unknown operation" error. Adding a single
+`MoveTo` (or `PrintString`/`Tile`) call anywhere in the same compile,
+whether or not it's the one that actually runs at that point in the
+program, is enough to make the exact same `PrintNumber`/`PrintDecimal`
+call work. In practice this rarely bites, since real programs almost
+always call `MoveTo` to position the cursor before printing anything
+anyway, but `PrintNumber`/`PrintDecimal` used on their own, with nothing
+else positioning the screen cursor anywhere in the program, hits this.
+
+*Reference pages:* [`PrintNumber`](reference/builtins/printnumber.md),
+[`PrintDecimal`](reference/builtins/printdecimal.md),
+[`MoveTo`](reference/builtins/moveto.md)
+
+### `PlaySound`'s two waveform parameters both write the same register
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`PlaySound` takes two separate "waveform" parameters, meant to set the
+sound chip's control register twice: once to trigger the note and once
+to release it. Both are written to the exact same register back to back
+with nothing in between, so the first write is immediately overwritten
+by the second before it can have any effect. Only the second waveform
+parameter's value ever actually reaches the sound chip; the first is
+silently discarded every time.
+
+*Reference page:* [`PlaySound`](reference/builtins/playsound.md)

@@ -277,6 +277,16 @@ nav:
           - mod: reference/builtins/mod.md
           - mod16: reference/builtins/mod16.md
           - MoveTo: reference/builtins/moveto.md
+          - NmiIRQ: reference/builtins/nmiirq.md
+          - Nop: reference/builtins/nop.md
+          - Peek: reference/builtins/peek.md
+          - PlaySound: reference/builtins/playsound.md
+          - Poke: reference/builtins/poke.md
+          - PreventIRQ: reference/builtins/preventirq.md
+          - PrintDecimal: reference/builtins/printdecimal.md
+          - PrintNumber: reference/builtins/printnumber.md
+          - PrintString: reference/builtins/printstring.md
+          - Rand: reference/builtins/rand.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

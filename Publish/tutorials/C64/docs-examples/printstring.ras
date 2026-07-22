@@ -1,0 +1,15 @@
+program PrintStringDemo;
+var
+	text : string = "HELLO WORLD";
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring(text,0,40); // whole string
+
+	moveto(0,1,hi(screen_char_loc));
+	printstring(text,6,40); // shifted 6 chars in: "WORLD"
+
+	moveto(0,2,hi(screen_char_loc));
+	printstring("LITERAL STRING",0,7); // capped to 7 chars: "LITERAL"
+	loop();
+end.

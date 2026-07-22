@@ -2,8 +2,9 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Positions the screen "cursor" used by `PrintString`, `PrintNumber`,
-`PrintDecimal`, and `Tile` at a given column/row on a 40x25 text screen.
+Positions the screen "cursor" used by [`PrintString`](printstring.md),
+[`PrintNumber`](printnumber.md), [`PrintDecimal`](printdecimal.md), and
+`Tile` at a given column/row on a 40x25 text screen.
 Auto-init: the first time `moveto(`, `printstring(`, or `tile(` appears in
 a file, the compiler automatically includes the cursor-positioning
 routine this builtin needs.

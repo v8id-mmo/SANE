@@ -1,0 +1,13 @@
+program PlaySoundDemo;
+begin
+	moveto(0,0,hi(screen_char_loc));
+	printstring("playing a sound",0,40);
+	playsound(SID_CHANNEL1,
+		13,           // volume
+		20,           // frequency, high byte
+		0*16+0,       // attack/decay
+		3*16+12,      // sustain/release
+		1+SID_SAW,    // waveform+gate (see Known limitations)
+		SID_SAW);     // waveform actually applied
+	loop();
+end.

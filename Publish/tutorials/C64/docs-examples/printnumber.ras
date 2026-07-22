@@ -1,0 +1,12 @@
+program PrintNumberDemo;
+var
+	health : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	health := 64;
+	moveto(0,0,hi(screen_char_loc));
+	printstring("health (hex):",0,40);
+	moveto(14,0,hi(screen_char_loc));
+	printnumber(health); // prints "40" (64 in hexadecimal)
+	loop();
+end.
