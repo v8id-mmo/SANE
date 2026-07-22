@@ -1,0 +1,7 @@
+program SetBankDemo;
+begin
+	SetBank(vic_bank1);   // VIC now reads from $4000-$7FFF
+	SetCharsetLocation($6000);
+	clearscreen(key_space, screen_char_loc);
+	loop();
+end.

@@ -1,0 +1,9 @@
+program SetHiDemo;
+var
+	myInteger : integer;
+	myPointer : pointer;
+begin
+	setHi(myInteger, $33);
+	setHi(myPointer, $12);
+	loop();
+end.

@@ -1,0 +1,8 @@
+program SetBitmapModeDemo;
+begin
+	SetBitmapMode();
+	SetScreenLocation($4400);
+	SetCharsetLocation($6000);   // bitmap data base address
+	SetBank(vic_bank1);
+	loop();
+end.

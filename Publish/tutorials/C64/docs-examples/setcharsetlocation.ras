@@ -1,0 +1,8 @@
+program SetCharsetLocationDemo;
+var
+	const charsetLoc : address = $2000;
+begin
+	setcharsetlocation(charsetLoc);
+	clearscreen(key_space, screen_char_loc);
+	loop();
+end.

@@ -1,0 +1,13 @@
+program SetFrequencyDemo;
+var
+	freq : byte;
+begin
+	PlaySound(SID_CHANNEL1, 15, 100, 0*16+0, 14*16+9, 1+SID_TRI, SID_TRI);
+	freq := 100;
+	repeat
+		freq := freq + 1;
+		SetFrequency(SID_CHANNEL1, freq);
+		Wait(1);
+	until freq = 255;
+	loop();
+end.
