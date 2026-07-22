@@ -1,0 +1,11 @@
+program GetKeyDemo;
+var
+	key : byte = 0;
+begin
+	clearscreen(key_space,screen_char_loc);
+	repeat
+		key := getkey();
+	until key<>0;
+	screen_bg_col := LIGHT_GREEN;
+	loop();
+end.

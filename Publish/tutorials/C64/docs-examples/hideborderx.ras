@@ -1,0 +1,6 @@
+program HideBorderXDemo;
+begin
+	clearscreen(key_space,screen_char_loc);
+	hideborderx(1);
+	loop();
+end.

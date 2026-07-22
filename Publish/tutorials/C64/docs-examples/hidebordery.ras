@@ -1,0 +1,6 @@
+program HideBorderYDemo;
+begin
+	clearscreen(key_space,screen_char_loc);
+	hidebordery(1);
+	loop();
+end.

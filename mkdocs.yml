@@ -232,6 +232,13 @@ nav:
           - Fill: reference/builtins/fill.md
           - FillFast: reference/builtins/fillfast.md
           - FLD: reference/builtins/fld.md
+          - GetBit: reference/builtins/getbit.md
+          - getKey: reference/builtins/getkey.md
+          - Hi: reference/builtins/hi.md
+          - hideborderx: reference/builtins/hideborderx.md
+          - hidebordery: reference/builtins/hidebordery.md
+          - Inc: reference/builtins/inc.md
+          - IncRange: reference/builtins/incrange.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

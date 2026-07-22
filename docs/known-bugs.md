@@ -260,19 +260,24 @@ with the identical, valid address values fails to compile.
 
 *Reference page:* [`krillsloader`](reference/keywords/krillsloader.md)
 
-### `@raisewarning`'s message never shows up when compiling from the command line
+### No compiler warning is ever shown when compiling from the command line
 
 **Status:** Open · **Fixed in:** not yet fixed
 
-The directive itself runs and compilation finishes normally, but the
-warning text is never printed anywhere: not to the terminal, not into the
-compiled output. It was only ever wired up to be read by the old
-graphical editor's own output pane, which no longer exists in this
-command-line-only fork. `@raiseerror`, by contrast, does still show its
-message and stop compilation, since aborting works through a different
-mechanism.
+This isn't specific to any one directive: every warning the compiler
+produces goes silent when compiled from the command line, not just
+`@raisewarning`'s. The directive (or the built-in check that triggers a
+warning) runs and compilation finishes normally, but the warning text is
+never printed anywhere: not to the terminal, not into the compiled
+output. For example, calling `getKey()` internally queues a deprecation
+notice, but it never surfaces either. It was only ever wired up to be
+read by the old graphical editor's own output pane, which no longer
+exists in this command-line-only fork. `@raiseerror`, by contrast, does
+still show its message and stop compilation, since aborting works
+through a different mechanism.
 
-*Reference page:* [`@raisewarning`](reference/directives/raisewarning.md)
+*Reference pages:* [`@raisewarning`](reference/directives/raisewarning.md),
+[`getKey`](reference/builtins/getkey.md)
 
 ### `@startblock` doesn't notice a missing or nested `@endblock`
 
@@ -512,18 +517,22 @@ correctly.
 
 ## Builtins
 
-### `bankbyte` is a silent no-op on a `long` value
+### `Lo`, `Hi`, and `bankbyte` are all a silent no-op on a `long` value
 
 **Status:** Open · **Fixed in:** not yet fixed
 
-`bankbyte` correctly returns the third byte (bits 16-23) of a `pointer`
-value. On a `long` value, this fork's other 24-bit type, it produces no code at all: the
-destination variable ends up holding whatever was already in the
-processor's accumulator at that point in the program, not any byte of the
-`long` value. There's no error or warning, the assignment just silently
-does the wrong thing.
+`Lo`, `Hi`, and `bankbyte` correctly return the low, high, and third
+(bits 16-23) byte of a `pointer` value. On a `long` value, this fork's
+other 24-bit type, all three produce no code at all: the destination
+variable ends up holding whatever was already in the processor's
+accumulator at that point in the program, not any byte of the `long`
+value. There's no error or warning, the assignment just silently does the
+wrong thing. All three share one underlying implementation, so this isn't
+three separate bugs, just one gap that happens to surface under three
+different names.
 
-*Reference page:* [`bankbyte`](reference/builtins/bankbyte.md)
+*Reference pages:* [`Hi`](reference/builtins/hi.md),
+[`bankbyte`](reference/builtins/bankbyte.md)
 
 ### `Abs` only negates the low byte of a `long` value
 

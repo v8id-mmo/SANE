@@ -81,3 +81,15 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   numeric/variable fill values.
 - [`FLD`](fld.md): performs one or more lines of a Flexible Line Distance
   raster-stretch effect.
+- [`GetBit`](getbit.md): reads a single bit out of a `byte` value,
+  returned as `1` or `0`.
+- [`getKey`](getkey.md): reads the keyboard matrix directly, returning a
+  raw key code or `0`.
+- [`Hi`](hi.md): returns the high byte (bits 8-15) of a 16-bit value.
+- [`hideborderx`](hideborderx.md): widens or restores the left/right
+  screen border.
+- [`hidebordery`](hidebordery.md): widens or restores the top/bottom
+  screen border.
+- [`Inc`](inc.md): increases a variable by 1, in place.
+- [`IncRange`](incrange.md): increases a variable by 1, wrapping back to
+  a chosen low value once it reaches a chosen high value.

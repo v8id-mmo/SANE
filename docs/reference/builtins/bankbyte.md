@@ -3,9 +3,9 @@
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Returns the third byte (bits 16-23, sometimes called the "bank byte") of
-a wide, 24-bit-addressable value. `Lo` and `Hi` are the equivalent
-functions for the low and high byte of a 16-bit value (not yet documented
-on this site).
+a wide, 24-bit-addressable value. [`Hi`](hi.md) and `Lo` are the
+equivalent functions for the high and low byte of a 16-bit value (`Lo`
+not yet documented on this site).
 
 ## Syntax
 

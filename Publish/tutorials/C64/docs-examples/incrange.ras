@@ -1,0 +1,7 @@
+program IncRangeDemo;
+var
+	frame : byte = 0;
+begin
+	incrange(frame, 0, 9);
+	loop();
+end.

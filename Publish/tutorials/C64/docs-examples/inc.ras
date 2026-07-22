@@ -1,0 +1,7 @@
+program IncDemo;
+var
+	score : byte = 0;
+begin
+	inc(score);
+	loop();
+end.
