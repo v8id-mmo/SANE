@@ -1,0 +1,11 @@
+program InitKrillDemo;
+
+// KrillsLoader bundles Krill's loader/installer binaries into the build.
+// InitKrill installs the loader into memory and is always called
+// explicitly; it isn't part of the auto-init scan mechanism.
+@use KrillsLoader $0200 $2000 $3000
+
+begin
+	InitKrill();
+	loop();
+end.

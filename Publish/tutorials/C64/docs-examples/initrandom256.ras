@@ -1,0 +1,18 @@
+program InitRandom256Demo;
+
+// random() normally auto-includes initrandom256 the first time it's
+// seen. @ignoremethod opts out, so the call below is what actually pulls
+// the 256-range random number generator into the build.
+@ignoremethod initrandom256
+
+var
+	x : byte;
+
+begin
+	initrandom256();
+
+	x := random();
+
+	screen_bg_col := x;
+	loop();
+end.

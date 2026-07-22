@@ -1,0 +1,15 @@
+program InitJoy1Demo;
+
+// readjoy1() normally auto-includes initJoy1 the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// port-1 reading routine into the build.
+@ignoremethod initjoy1
+
+begin
+	initjoy1();
+
+	readjoy1();
+
+	screen_bg_col := joy1;
+	loop();
+end.

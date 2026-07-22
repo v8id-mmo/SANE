@@ -1,0 +1,14 @@
+program InitMovetoDemo;
+
+// moveto(/printstring(/tile( normally auto-include initmoveto the first
+// time one of them is seen. @ignoremethod opts out, so the call below is
+// what actually pulls the cursor-positioning routine into the build.
+@ignoremethod initmoveto
+
+begin
+	initmoveto();
+
+	moveto(0, 0, hi(screen_char_loc));
+	printstring("hello", 0, 0);
+	loop();
+end.

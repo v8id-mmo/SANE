@@ -1,0 +1,9 @@
+program InitSidDemo;
+
+var
+	sidfile : incsid("courier.sid", 2);
+
+begin
+	InitSid(sidfile_1_init);
+	loop();
+end.

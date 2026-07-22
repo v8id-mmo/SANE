@@ -1,0 +1,20 @@
+program InitRandomDemo;
+
+// rand( normally auto-includes initrandom the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// 8-bit random number generator into the build.
+@ignoremethod initrandom
+
+var
+	rmin, rmax, x : byte;
+
+begin
+	initrandom();
+
+	rmin := 0;
+	rmax := 255;
+	rand(rmin, rmax, x);
+
+	screen_bg_col := x;
+	loop();
+end.

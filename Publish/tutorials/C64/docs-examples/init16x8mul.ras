@@ -1,0 +1,22 @@
+program Init16x8MulDemo;
+
+// A 16-bit-by-8-bit multiply (integer * byte) auto-includes init16x8mul
+// the first time the compiler sees it. @ignoremethod opts out, so the
+// call below is what actually pulls the multiply routine into the build.
+@ignoremethod init16x8mul
+
+var
+	a : integer;
+	b : byte;
+	c : integer;
+
+begin
+	init16x8mul();
+
+	a := 300;
+	b := 3;
+	c := a * b;
+
+	screen_bg_col := lo(c);
+	loop();
+end.

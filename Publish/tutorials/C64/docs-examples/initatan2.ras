@@ -1,0 +1,18 @@
+program InitAtan2Demo;
+
+// atan2( normally auto-includes initatan2 the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// angle table and routine into the build.
+@ignoremethod initatan2
+
+var
+	angle : byte;
+
+begin
+	initatan2();
+
+	angle := atan2(0, 0, 10, 10);
+
+	screen_bg_col := angle;
+	loop();
+end.

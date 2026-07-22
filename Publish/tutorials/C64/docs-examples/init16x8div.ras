@@ -1,0 +1,20 @@
+program Init16x8DivDemo;
+
+// mod16(a,b) triggers the compiler to auto-include init16x8div the first
+// time it's seen. @ignoremethod opts out of that, so the call below is
+// what actually pulls the division routine into the build.
+@ignoremethod init16x8div
+
+var
+	a : integer;
+	r : byte;
+
+begin
+	init16x8div();
+
+	a := 1000;
+	r := mod16(a, 7);
+
+	screen_bg_col := r;
+	loop();
+end.

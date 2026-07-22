@@ -1,0 +1,20 @@
+program InitBcdDemo;
+
+// bcdprint( normally auto-includes initBcd the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// digit-plotting routine into the build.
+@ignoremethod initbcd
+
+var
+	score : array[] of byte = ($12, $34);
+
+begin
+	DefineScreen();
+	screenmemory := screen_char_loc;
+
+	initbcd();
+
+	moveto(0, 0, hi(screen_char_loc));
+	BcdPrint(#score, 2);
+	loop();
+end.

@@ -1,0 +1,20 @@
+program InitSinetableDemo;
+
+// sine[ normally auto-includes initsinetable the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually fills the
+// 256-byte sine table before it's read.
+@ignoremethod initsinetable
+
+var
+	angle : byte;
+	x : byte;
+
+begin
+	initsinetable();
+
+	angle := 64;
+	x := sine[angle];
+
+	screen_bg_col := x;
+	loop();
+end.

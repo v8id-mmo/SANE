@@ -1,0 +1,18 @@
+program InitGetKeyDemo;
+
+// getkey() normally auto-includes initGetKey the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// keyboard-scan routine into the build.
+@ignoremethod initgetkey
+
+var
+	k : byte;
+
+begin
+	initgetkey();
+
+	k := getkey();
+
+	screen_bg_col := k;
+	loop();
+end.

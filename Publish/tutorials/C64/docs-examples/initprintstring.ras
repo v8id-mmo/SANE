@@ -1,0 +1,13 @@
+program InitPrintStringDemo;
+
+// printstring(/printnumber( normally auto-include initprintstring the
+// first time one of them is seen. @ignoremethod opts out, so the call
+// below is what actually pulls the printing routine into the build.
+@ignoremethod initprintstring
+
+begin
+	initprintstring();
+
+	printstring("hi", 0, 0);
+	loop();
+end.

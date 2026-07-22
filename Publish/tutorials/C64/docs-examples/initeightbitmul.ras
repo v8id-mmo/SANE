@@ -1,0 +1,20 @@
+program InitEightBitMulDemo;
+
+// A plain byte * byte multiply auto-includes initeightbitmul the first
+// time the compiler sees it. @ignoremethod opts out, so the call below is
+// what actually pulls the multiply routine into the build.
+@ignoremethod initeightbitmul
+
+var
+	a, b, c : byte;
+
+begin
+	initeightbitmul();
+
+	a := 6;
+	b := 7;
+	c := a * b;
+
+	screen_bg_col := c;
+	loop();
+end.

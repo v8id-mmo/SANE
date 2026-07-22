@@ -126,22 +126,47 @@ declared the procedure they're chaining.
 
 ## Builtin auto-initialization
 
-### Auto-initialized builtins only look for usages in the current file
+### `sine[]`'s table-fill only looks for usages in the current file
 
 **Status:** Open · **Fixed in:** not yet fixed
 
 A number of builtins (`sine[`, `rand(`, `sqrt(`, `atan2(`, `joystick(`,
-and others) automatically insert their own setup call the first time the
-compiler spots a matching usage anywhere in the source text, so you don't
-have to call the setup routine yourself. That scan only looks at the text
-of whichever file is currently being compiled: if the only usage is
-inside a unit file brought in with `use`, the scan never sees it, the
-setup call never gets inserted, and the
-builtin silently doesn't work (for example, `sine[angle]` always returning
-`0`). The workaround is to add one real, uncommented reference to the
-same pattern in the main file too.
+and others) automatically insert a setup call the first time the compiler
+spots a matching usage anywhere in the source text, so a program doesn't
+have to call the setup routine itself. That text scan only looks at
+whichever file is currently being compiled, so in principle a usage that
+only appears inside a unit file brought in with `use` could be missed.
+
+In practice, testing each of these individually shows only `sine[]` is
+actually affected: its auto-inserted setup call fills a 256-byte lookup
+table at program start, and if `sine[` is only ever used from inside a
+`use`d unit, that fill never runs and `sine[angle]` always returns `0`.
+The other builtins in this same auto-init mechanism don't have this
+problem in practice, either because their setup is just a self-contained
+routine that gets called directly at each actual use (nothing needs to
+run ahead of time), or because a separate check at compile time catches
+the missing setup and stops the build with an error rather than silently
+producing wrong output. The workaround for `sine[]` is to add one real,
+uncommented `sine[...]` usage in the main file too.
 
 *Reference page:* [`@use`](reference/directives/use.md)
+
+### `@ignoremethod`'s argument only matches in lowercase
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`@ignoremethod <name>` is meant to opt a named `init...` routine out of
+the automatic-initialization scan described above, so a program can call
+that routine itself instead. Writing `<name>` in the routine's normally
+documented casing, matching how it's written everywhere else (for example
+`@ignoremethod initGetKey`), silently fails to match, and the automatic
+insertion stays active alongside the program's own explicit call. For
+most `init...` routines this doubling is harmless. For `initGetKey`
+specifically it isn't: the build fails outright with a duplicate-symbol
+assembly error. Writing the argument in all-lowercase (`@ignoremethod
+initgetkey`) works correctly.
+
+*Reference page:* [`@ignoremethod`](reference/directives/ignoremethod.md)
 
 ## Loops
 
@@ -663,3 +688,15 @@ the count, so passing a count of 0 doesn't skip the effect: the counter
 wraps around instead, and the step ends up running 256 times.
 
 *Reference page:* [`FLD`](reference/builtins/fld.md)
+
+### `InitKrill` disables interrupts and never turns them back on
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`InitKrill` disables interrupts partway through installing Krill's
+loader into memory but never re-enables them afterward, the same gap as
+`CopyCharsetFromRom` above, in a separate routine. A program that needs
+interrupts running once the loader is installed (a raster IRQ, for
+example) has to re-enable them itself.
+
+*Reference page:* [`InitKrill`](reference/builtins/initkrill.md)

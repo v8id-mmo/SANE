@@ -93,3 +93,39 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
 - [`Inc`](inc.md): increases a variable by 1, in place.
 - [`IncRange`](incrange.md): increases a variable by 1, wrapping back to
   a chosen low value once it reaches a chosen high value.
+- [`init16x8div`](init16x8div.md): includes the 16-bit-by-8-bit division
+  routine used by `integer` division and `mod16`.
+- [`init16x8mul`](init16x8mul.md): includes the 16-bit-by-8-bit
+  multiplication routine used when an `integer` is multiplied by a `byte`.
+- [`init8x8div`](init8x8div.md): includes the 8-bit-by-8-bit division
+  routine used by plain `byte / byte`.
+- [`initatan2`](initatan2.md): includes the angle table and routine used
+  by `Atan2`.
+- [`initBcd`](initbcd.md): includes the digit-plotting routine used by
+  `BcdPrint`.
+- [`initeightbitmul`](initeightbitmul.md): includes the 8-bit-by-8-bit
+  multiplication routine used by plain `byte * byte`.
+- [`initGetKey`](initgetkey.md): includes the keyboard-matrix scanning
+  routine used by `getKey`.
+- [`initJoy1`](initjoy1.md): includes the joystick port 1 reading routine
+  used by `ReadJoy1`.
+- [`initJoy2`](initjoy2.md): includes the joystick port 2 reading routine
+  used by `ReadJoy2`.
+- [`initjoystick`](initjoystick.md): includes the generic joystick-reading
+  routine used by `Joystick`.
+- [`InitKrill`](initkrill.md): installs Krill's loader into memory ahead
+  of loading data or code from disk.
+- [`initmoveto`](initmoveto.md): includes the cursor-positioning routine
+  used by `MoveTo`, `PrintString`, and `Tile`.
+- [`initprintdecimal`](initprintdecimal.md): includes the divide-by-10
+  routine used by `PrintDecimal`.
+- [`initprintstring`](initprintstring.md): includes the character-copy
+  routine used by `PrintString` and `PrintNumber`.
+- [`initrandom`](initrandom.md): includes the 8-bit random number
+  generator used by `Rand`.
+- [`initrandom256`](initrandom256.md): includes the self-modifying random
+  number generator used by `Random`.
+- [`InitSid`](initsid.md): calls a SID tune's own init routine to select a
+  subtune and set up its player.
+- [`initsinetable`](initsinetable.md): computes the 256-byte sine lookup
+  table read by `sine[]`.

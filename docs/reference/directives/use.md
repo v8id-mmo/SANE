@@ -47,9 +47,12 @@ end.
 
 Builtins that auto-initialize themselves the first time a matching call
 appears in the source text (`sine[`, `rand(`, `sqrt(`, `joystick(`, and
-similar; see [`sizeof`](../keywords/sizeof.md)'s neighbors for the full builtin list)
-only scan the current file's own text for that first-use pattern. A call
-to one of them written only inside a `@use`d unit, with no matching call
-anywhere in the main program text, doesn't trigger the auto-init, and the
-builtin ends up uninitialized at runtime. Adding at least one call to the
-same builtin somewhere in the main file works around it.
+similar) only scan the current file's own text for that first-use
+pattern, so in principle a call written only inside a `@use`d unit, with
+no matching call anywhere in the main program text, could fail to trigger
+the auto-init. In practice, `sine[]` is the only one of these confirmed to
+actually misbehave this way (silently returning `0` from every read,
+since its table-fill routine never runs); the others either check for the
+missing setup at compile time and fail loudly instead, or don't need a
+separate setup step to begin with. Adding at least one real, uncommented
+`sine[...]` call somewhere in the main file works around it for `sine[]`.

@@ -1,7 +1,20 @@
 program IgnoreMethodDemo;
 
-@ignoremethod unusedHelper
+// Normally, the first "sine[" usage anywhere in the source would
+// auto-insert a call to initsinetable() at program start. Opting out
+// means the table isn't filled until the explicit call below runs.
+@ignoremethod initsinetable
+
+var
+	angle : byte;
+	x : byte;
 
 begin
+	initsinetable();
+
+	angle := 64;
+	x := sine[angle];
+
+	screen_bg_col := x;
 	loop();
 end.

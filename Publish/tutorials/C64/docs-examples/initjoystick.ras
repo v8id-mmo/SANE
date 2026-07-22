@@ -1,0 +1,18 @@
+program InitJoystickDemo;
+
+// joystick( normally auto-includes initjoystick the first time it's seen.
+// @ignoremethod opts out, so the call below is what actually pulls the
+// generic joystick-reading routine into the build.
+@ignoremethod initjoystick
+
+var
+	dir : byte;
+
+begin
+	initjoystick();
+
+	dir := joystick(2);
+
+	screen_bg_col := dir;
+	loop();
+end.

@@ -1,0 +1,20 @@
+program Init8x8DivDemo;
+
+// A plain byte/byte division auto-includes init8x8div the first time the
+// compiler sees it. @ignoremethod opts out, so the call below is what
+// actually pulls the division routine into the build.
+@ignoremethod init8x8div
+
+var
+	a, b, c : byte;
+
+begin
+	init8x8div();
+
+	a := 100;
+	b := 7;
+	c := a / b;
+
+	screen_bg_col := c;
+	loop();
+end.

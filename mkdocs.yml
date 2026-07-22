@@ -239,6 +239,24 @@ nav:
           - hidebordery: reference/builtins/hidebordery.md
           - Inc: reference/builtins/inc.md
           - IncRange: reference/builtins/incrange.md
+          - init16x8div: reference/builtins/init16x8div.md
+          - init16x8mul: reference/builtins/init16x8mul.md
+          - init8x8div: reference/builtins/init8x8div.md
+          - initatan2: reference/builtins/initatan2.md
+          - initBcd: reference/builtins/initbcd.md
+          - initeightbitmul: reference/builtins/initeightbitmul.md
+          - initGetKey: reference/builtins/initgetkey.md
+          - initJoy1: reference/builtins/initjoy1.md
+          - initJoy2: reference/builtins/initjoy2.md
+          - initjoystick: reference/builtins/initjoystick.md
+          - InitKrill: reference/builtins/initkrill.md
+          - initmoveto: reference/builtins/initmoveto.md
+          - initprintdecimal: reference/builtins/initprintdecimal.md
+          - initprintstring: reference/builtins/initprintstring.md
+          - initrandom: reference/builtins/initrandom.md
+          - initrandom256: reference/builtins/initrandom256.md
+          - InitSid: reference/builtins/initsid.md
+          - initsinetable: reference/builtins/initsinetable.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

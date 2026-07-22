@@ -1,0 +1,18 @@
+program InitPrintDecimalDemo;
+
+// printdecimal( normally auto-includes initprintdecimal the first time
+// it's seen. @ignoremethod opts out, so the call below is what actually
+// pulls the divide-by-10 routine into the build.
+@ignoremethod initprintdecimal
+
+var
+	n : integer;
+
+begin
+	initprintdecimal();
+
+	n := 123;
+	moveto(0, 0, hi(screen_char_loc));
+	printdecimal(n, 3);
+	loop();
+end.
