@@ -1,0 +1,13 @@
+program LeftBitShiftDemo;
+var
+	// one 8x8 custom character, one bit set per row
+	shape : array[8] of byte = ($01, $01, $01, $01, $01, $01, $01, $01);
+	value : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	leftbitshift(#shape,1);
+	value := shape[0];
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(value,3);
+	loop();
+end.

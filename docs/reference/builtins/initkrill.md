@@ -2,8 +2,10 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Installs Krill's loader into memory, ahead of using `KrillLoad` or
-`KrillLoadCompressed` to load data or code from disk. Unlike the `init...`
+Installs Krill's loader into memory, ahead of using
+[`KrillLoad`](krillload.md) or
+[`KrillLoadCompressed`](krillloadcompressed.md) to load data or code from
+disk. Unlike the `init...`
 routines paired with an auto-init trigger, `InitKrill` is always called
 explicitly by the program; it isn't part of the automatic-initialization
 scan mechanism.

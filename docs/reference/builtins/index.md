@@ -129,3 +129,22 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   subtune and set up its player.
 - [`initsinetable`](initsinetable.md): computes the 256-byte sine lookup
   table read by `sine[]`.
+- [`int2ptr`](int2ptr.md): reinterprets an `integer` value as a
+  `pointer`, for assigning computed addresses.
+- [`IsOverlapping`](isoverlapping.md): checks whether two points are
+  within a given distance of each other on both axes.
+- [`IsOverlappingWH`](isoverlappingwh.md): checks whether two rectangular
+  hitboxes overlap.
+- [`Jammer`](jammer.md): a raster-timing watchdog that freezes the
+  machine if a target raster line has already passed.
+- [`Joystick`](joystick.md): reads a joystick port into the
+  `joystickup`/`down`/`left`/`right`/`button` state bytes.
+- [`Keypressed`](keypressed.md): reports whether one specific key is
+  currently held down.
+- [`KrillLoad`](krillload.md): loads a file from disk using Krill's
+  fastloader.
+- [`KrillLoadCompressed`](krillloadcompressed.md): loads and decompresses
+  a tinycrunch-compressed file using Krill's fastloader.
+- [`LeftBitShift`](leftbitshift.md): shifts (rotates) a multi-byte-wide
+  strip of 8-row data one bit to the left.
+- [`Lo`](lo.md): returns the low byte (bits 0-7) of a 16-bit value.

@@ -257,6 +257,16 @@ nav:
           - initrandom256: reference/builtins/initrandom256.md
           - InitSid: reference/builtins/initsid.md
           - initsinetable: reference/builtins/initsinetable.md
+          - int2ptr: reference/builtins/int2ptr.md
+          - IsOverlapping: reference/builtins/isoverlapping.md
+          - IsOverlappingWH: reference/builtins/isoverlappingwh.md
+          - Jammer: reference/builtins/jammer.md
+          - Joystick: reference/builtins/joystick.md
+          - Keypressed: reference/builtins/keypressed.md
+          - KrillLoad: reference/builtins/krillload.md
+          - KrillLoadCompressed: reference/builtins/krillloadcompressed.md
+          - LeftBitShift: reference/builtins/leftbitshift.md
+          - Lo: reference/builtins/lo.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

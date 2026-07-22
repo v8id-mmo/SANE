@@ -1,0 +1,15 @@
+program JammerDemo;
+var
+	msg : cstring = "WATCHDOG OK";
+begin
+	clearscreen(key_space,screen_char_loc);
+	// If the raster beam has not yet reached line 250 at this point in the
+	// frame, execution falls through here silently. If it has, Jammer
+	// freezes the machine and paints the border/background red instead,
+	// so a real caller would place this right after code with a known
+	// raster-timing budget.
+	Jammer(250,red);
+	moveto(0,0,hi(screen_char_loc));
+	printstring(msg,0,40);
+	loop();
+end.

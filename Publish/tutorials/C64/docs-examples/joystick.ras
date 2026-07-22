@@ -1,0 +1,26 @@
+program JoystickDemo;
+var
+	upVal, downVal, leftVal, rightVal, buttonVal : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	// Polls port 2 and fills in the joystickup/down/left/right/button
+	// globals the compiler auto-declares the first time joystick( is used
+	joystick(2);
+	upVal := joystickup;
+	downVal := joystickdown;
+	leftVal := joystickleft;
+	rightVal := joystickright;
+	buttonVal := joystickbutton;
+
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(upVal,3);
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(downVal,3);
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(leftVal,3);
+	moveto(0,3,hi(screen_char_loc));
+	printdecimal(rightVal,3);
+	moveto(0,4,hi(screen_char_loc));
+	printdecimal(buttonVal,3);
+	loop();
+end.

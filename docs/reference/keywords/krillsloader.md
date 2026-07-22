@@ -5,9 +5,11 @@
 A C64-only argument to `@use`, not a directive of its own. It sets up
 Krill's loader, a well-known third-party C64 fastloader/installer, bundling
 the loader and installer binaries into the build and making them available
-to the `InitKrill`/`KrillLoad`/`KrillLoadCompressed` builtins at runtime,
-for loading additional data or code from disk after the program has
-started.
+to the [`InitKrill`](../builtins/initkrill.md),
+[`KrillLoad`](../builtins/krillload.md), and
+[`KrillLoadCompressed`](../builtins/krillloadcompressed.md) builtins at
+runtime, for loading additional data or code from disk after the program
+has started.
 
 ## Syntax
 

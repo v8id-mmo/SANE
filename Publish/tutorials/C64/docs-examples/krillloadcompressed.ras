@@ -1,0 +1,12 @@
+program KrillLoadCompressedDemo;
+
+@use KrillsLoader $0200 $2000 $3000
+
+var
+	filename : cstring = "DATA.TC";
+
+begin
+	InitKrill();
+	KrillLoadCompressed(#filename);
+	loop();
+end.

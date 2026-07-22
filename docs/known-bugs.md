@@ -556,8 +556,8 @@ wrong thing. All three share one underlying implementation, so this isn't
 three separate bugs, just one gap that happens to surface under three
 different names.
 
-*Reference pages:* [`Hi`](reference/builtins/hi.md),
-[`bankbyte`](reference/builtins/bankbyte.md)
+*Reference pages:* [`Lo`](reference/builtins/lo.md),
+[`Hi`](reference/builtins/hi.md), [`bankbyte`](reference/builtins/bankbyte.md)
 
 ### `Abs` only negates the low byte of a `long` value
 
@@ -700,3 +700,18 @@ interrupts running once the loader is installed (a raster IRQ, for
 example) has to re-enable them itself.
 
 *Reference page:* [`InitKrill`](reference/builtins/initkrill.md)
+
+### `LeftBitShift`/`RightBitShift` always rotate, never actually shift
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Both builtins are named and used as a "shift" across a block of 8-row
+character/bitmap data, `num` bytes wide. At every width, including the
+simplest case (a single byte, 8 rows), the bit that shifts off one end of
+the block doesn't get dropped the way a real shift would drop it: it
+reappears at the opposite end instead. That's a rotate, not a shift, with
+no way to ask for the non-wrapping version. It's usable behavior (one of
+the bundled tutorials leans on the wraparound on purpose for a scrolling
+effect), just not what the name promises.
+
+*Reference page:* [`LeftBitShift`](reference/builtins/leftbitshift.md)

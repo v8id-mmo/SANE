@@ -1,0 +1,16 @@
+program Int2PtrDemo;
+var
+	base : integer = $c000;
+	p : ^byte;
+	value : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	// base+5 is computed as plain integer arithmetic, then reinterpreted
+	// as a pointer so it can be dereferenced
+	p := int2ptr(base+5);
+	p[0] := 42;
+	value := p[0];
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(value,3);
+	loop();
+end.

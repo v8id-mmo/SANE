@@ -1,0 +1,18 @@
+program IsOverlappingDemo;
+var
+	result : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// (10,10) and (12,11) are within 4 units on both axes: overlap
+	result := IsOverlapping(10,10, 12,11, 4);
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(result,3);
+
+	// (10,10) and (50,50) are far apart: no overlap
+	result := IsOverlapping(10,10, 50,50, 4);
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(result,3);
+
+	loop();
+end.

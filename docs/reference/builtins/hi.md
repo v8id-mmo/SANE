@@ -2,7 +2,7 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Returns the high byte (bits 8-15) of a 16-bit value. `Lo` is the
+Returns the high byte (bits 8-15) of a 16-bit value. [`Lo`](lo.md) is the
 counterpart for the low byte, and `bankbyte` reads the third byte of a
 wider, 24-bit-addressable value.
 
@@ -55,7 +55,7 @@ end.
 
 ## Known limitations
 
-`Hi` (and `Lo`) work correctly on `pointer`, `address`, and `integer`
+`Hi` (and [`Lo`](lo.md)) work correctly on `pointer`, `address`, and `integer`
 values, as in the example above. On a `long` variable, this fork's other
 24-bit type, both are a **silent no-op**: no code at all is generated for
 the call, so the destination variable ends up holding whatever was

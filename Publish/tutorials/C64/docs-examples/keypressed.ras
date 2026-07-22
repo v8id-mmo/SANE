@@ -1,0 +1,14 @@
+program KeypressedDemo;
+var
+	pressed : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	pressed := keypressed(KEY_SPACE);
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(pressed,3);
+
+	while (keypressed(KEY_SPACE)=false) do begin
+	end;
+
+	loop();
+end.

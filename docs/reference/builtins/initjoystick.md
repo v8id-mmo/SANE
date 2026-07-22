@@ -2,7 +2,8 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-Includes the generic joystick-reading routine used by `Joystick`, and
+Includes the generic joystick-reading routine used by
+[`Joystick`](joystick.md), and
 declares the direction/button state bytes it populates. Normally included
 automatically the first time `joystick(` appears in the source; calling
 it directly, together with

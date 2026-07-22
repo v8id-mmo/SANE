@@ -1,0 +1,12 @@
+program KrillLoadDemo;
+
+@use KrillsLoader $0200 $2000 $3000
+
+var
+	filename : cstring = "DATA.BIN";
+
+begin
+	InitKrill();
+	KrillLoad(#filename);
+	loop();
+end.

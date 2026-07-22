@@ -1,0 +1,19 @@
+program LoDemo;
+var
+	ptr : ^byte;
+	w : integer = $1234;
+	b : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	ptr := $c000;
+
+	b := lo(ptr);
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(b,3);
+
+	b := lo(w);
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(b,3);
+
+	loop();
+end.

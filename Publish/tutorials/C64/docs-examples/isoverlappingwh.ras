@@ -1,0 +1,18 @@
+program IsOverlappingWHDemo;
+var
+	result : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// two 8x8 boxes close enough to overlap
+	result := IsOverlappingWH(10,10, 14,12, 8,8);
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(result,3);
+
+	// two 8x8 boxes far enough apart to not overlap
+	result := IsOverlappingWH(10,10, 60,60, 8,8);
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(result,3);
+
+	loop();
+end.
