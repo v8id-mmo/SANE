@@ -1,16 +1,17 @@
-# `LeftBitShift`
+# `RightBitShift`
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Shifts a strip of 8-row character/bitmap data, `num` bytes wide, one bit
-to the left. Each of the 8 rows is shifted independently across the
+to the right. Each of the 8 rows is shifted independently across the
 `num` bytes that make up that row (see Known limitations for what
-actually happens to the outgoing bit). [`RightBitShift`](rightbitshift.md)
-is the mirror version, shifting to the right.
+actually happens to the outgoing bit). [`LeftBitShift`](leftbitshift.md)
+is the mirror version, shifting to the left; both share the exact same
+underlying implementation and the same behavior described there.
 
 ## Syntax
 
-    LeftBitShift( <address>, <num> )
+    RightBitShift( <address>, <num> )
 
 ## Parameters
 
@@ -22,14 +23,14 @@ is the mirror version, shifting to the right.
 ## Example
 
 ```pascal
-program LeftBitShiftDemo;
+program RightBitShiftDemo;
 var
 	// one 8x8 custom character, one bit set per row
-	shape : array[8] of byte = ($01, $01, $01, $01, $01, $01, $01, $01);
+	shape : array[8] of byte = ($80, $80, $80, $80, $80, $80, $80, $80);
 	value : byte;
 begin
 	clearscreen(key_space,screen_char_loc);
-	leftbitshift(#shape,1);
+	rightbitshift(#shape,1);
 	value := shape[0];
 	moveto(0,0,hi(screen_char_loc));
 	printdecimal(value,3);
@@ -37,7 +38,7 @@ begin
 end.
 ```
 
-[:material-download: Download this example](../../assets/examples/leftbitshift.ras){ .md-button download }
+[:material-download: Download this example](../../assets/examples/rightbitshift.ras){ .md-button download }
 
 ## Known limitations
 
@@ -46,8 +47,5 @@ one end of the `num`-byte-wide strip is never dropped, it reappears at
 the opposite end. That's true even at the simplest width (`num=1`, a
 single byte-wide column): each row's own outgoing bit becomes its own
 incoming bit. There's no way to get a true shift (vacated bit filled
-with `0`, outgoing bit discarded) through this builtin. One of the
-bundled tutorials relies on this wraparound deliberately, for a
-continuous scroll/melt effect, so it's usable behavior, just not what
-"shift" usually implies. [`RightBitShift`](rightbitshift.md) shares the
-same underlying routine and the same behavior.
+with `0`, outgoing bit discarded) through this builtin. `LeftBitShift`
+shares the same underlying routine and the same behavior.

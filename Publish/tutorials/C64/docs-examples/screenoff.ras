@@ -1,0 +1,13 @@
+program ScreenOffDemo;
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("screen off in...",0,40);
+
+	Wait(50);
+	screenoff(); // blanks the display, VIC-II badlines stop, more raster time available
+
+	Wait(50);
+	screenon();
+	loop();
+end.

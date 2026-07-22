@@ -287,6 +287,16 @@ nav:
           - PrintNumber: reference/builtins/printnumber.md
           - PrintString: reference/builtins/printstring.md
           - Rand: reference/builtins/rand.md
+          - Random: reference/builtins/random.md
+          - RasterIRQ: reference/builtins/rasterirq.md
+          - RasterIRQWedge: reference/builtins/rasterirqwedge.md
+          - ReadJoy1: reference/builtins/readjoy1.md
+          - ReadJoy2: reference/builtins/readjoy2.md
+          - ReturnInterrupt: reference/builtins/returninterrupt.md
+          - ReturnValue: reference/builtins/returnvalue.md
+          - RightBitShift: reference/builtins/rightbitshift.md
+          - ScreenOff: reference/builtins/screenoff.md
+          - ScreenOn: reference/builtins/screenon.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

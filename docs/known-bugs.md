@@ -128,6 +128,33 @@ declared the procedure they're chaining.
 
 *Reference page:* [`wedge`](reference/keywords/wedge.md)
 
+### `return` doesn't exit an interrupt handler correctly
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Using a plain `return;` for an early exit partway through an `interrupt`
+procedure's body doesn't leave the interrupt the same way reaching the
+procedure's own closing `end;` does. Every other exit path of the same
+handler, including its natural end, exits correctly; only an explicit
+`return;` used before that point is affected. Use `ReturnInterrupt`
+instead for an early exit from inside an `interrupt` procedure.
+
+*Reference pages:* [`return`](reference/keywords/return.md),
+[`ReturnInterrupt`](reference/builtins/returninterrupt.md)
+
+### `ReturnValue` fails on a function that returns `long`
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`ReturnValue` correctly sets and returns a `byte`, `integer`, or
+`boolean` value. On a function declared to return `long`, it fails to
+assemble instead: the build stops with an error at the point this
+builtin's code would run. The plain `<functionName> := <value>;` form
+works correctly for a `long`-returning function; only `ReturnValue`
+itself is affected.
+
+*Reference page:* [`ReturnValue`](reference/builtins/returnvalue.md)
+
 ## Builtin auto-initialization
 
 ### `sine[]`'s table-fill only looks for usages in the current file
@@ -793,3 +820,17 @@ parameter's value ever actually reaches the sound chip; the first is
 silently discarded every time.
 
 *Reference page:* [`PlaySound`](reference/builtins/playsound.md)
+
+### `RasterIRQWedge`'s KERNAL-vector mode never compiles
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`RasterIRQWedge` takes the same hardware-vector-or-KERNAL-vector mode
+parameter `RasterIRQ` does. The hardware-vector mode works; the
+KERNAL-vector mode always fails to compile, with an error stating
+outright that it isn't implemented. Every real usage of this builtin, in
+this fork's own bundled tutorials included, uses the hardware-vector
+mode for exactly this reason. `RasterIRQ` itself has no such gap; both
+modes work there.
+
+*Reference page:* [`RasterIRQWedge`](reference/builtins/rasterirqwedge.md)

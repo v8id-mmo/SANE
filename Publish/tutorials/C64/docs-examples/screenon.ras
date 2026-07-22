@@ -1,0 +1,12 @@
+program ScreenOnDemo;
+begin
+	clearscreen(key_space,screen_char_loc);
+	screenoff();
+
+	Wait(50);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("screen back on",0,40);
+	screenon(); // restores the display
+
+	loop();
+end.

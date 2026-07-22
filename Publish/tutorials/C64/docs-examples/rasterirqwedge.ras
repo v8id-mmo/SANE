@@ -1,0 +1,26 @@
+program RasterIRQWedgeDemo;
+var
+	y : byte = 50;
+
+@define useKernal 0
+
+interrupt RasterBar();
+begin
+	StartIRQWedge(5);
+	screen_bg_col := blue;
+	y := y + 4;
+	if (y > 240) then
+		y := 50;
+
+	RasterIRQWedge(RasterBar(), y, @useKernal); // re-arm for the next band
+
+	closeirqwedge();
+end;
+
+begin
+	preventirq();
+	disableciainterrupts();
+	SetMemoryConfig(1, @useKernal, 0);
+	StartRasterChain(RasterBar(), y, @useKernal);
+	loop();
+end.
