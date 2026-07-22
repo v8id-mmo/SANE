@@ -1,0 +1,12 @@
+program ScrollXDemo;
+var
+	x : byte;
+begin
+	clearscreen(key_space, screen_char_loc);
+	x := 0;
+	repeat
+		x := (x + 1) & 7;
+		ScrollX(x);
+		Wait(2);
+	until false;
+end.

@@ -203,3 +203,22 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   strip of 8-row data one bit to the right.
 - [`ScreenOff`](screenoff.md): blanks the VIC-II display.
 - [`ScreenOn`](screenon.md): turns the VIC-II display back on.
+- [`ScrollX`](scrollx.md): sets the VIC-II's horizontal fine-scroll
+  value.
+- [`ScrollY`](scrolly.md): sets the VIC-II's vertical fine-scroll value.
+- [`SetBank`](setbank.md): selects which 16KB region of memory the
+  VIC-II reads video data from.
+- [`SetBitmapMode`](setbitmapmode.md): switches the VIC-II from text
+  mode into bitmap mode.
+- [`SetCharsetAndScreenLocation`](setcharsetandscreenlocation.md): sets
+  the character-set and screen base addresses in one combined write.
+- [`SetCharsetLocation`](setcharsetlocation.md): sets the character-set
+  (or bitmap data) base address.
+- [`SetFrequency`](setfrequency.md): sets the coarse pitch of one SID
+  sound channel.
+- [`setHi`](sethi.md): writes the high byte of a `pointer`/`integer`
+  variable.
+- [`setLo`](setlo.md): writes the low byte of a `pointer`/`integer`
+  variable.
+- [`SetMemoryConfig`](setmemoryconfig.md): banks BASIC/KERNAL ROM and
+  the I/O area in or out.

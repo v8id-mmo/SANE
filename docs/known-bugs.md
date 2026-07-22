@@ -834,3 +834,81 @@ mode for exactly this reason. `RasterIRQ` itself has no such gap; both
 modes work there.
 
 *Reference page:* [`RasterIRQWedge`](reference/builtins/rasterirqwedge.md)
+
+### `ScrollX`/`ScrollY` don't range-check their own input value
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Both builtins expect a value from `0` to `7`. Both correctly mask the
+VIC-II register's *existing* contents before combining in the new value,
+but neither masks the value passed in. A value outside `0`-`7` gets
+OR'd straight into the register, silently flipping unrelated bits:
+for `ScrollX`, the 38/40-column select or multicolor-mode bits of the
+scroll register; for `ScrollY`, the 24/25-row select, display-enable, or
+extended-color-mode bits of its register. Programs that keep their own
+scroll counter masked to `0`-`7` before calling either builtin never hit
+this; nothing inside the builtin itself enforces the range.
+
+`ScrollY` has a second, independent quirk: every call unconditionally
+clears the raster-compare high bit of its register, regardless of the
+value passed in. If a raster interrupt has been set up on a line at or
+past 256 (which needs that high bit set), calling `ScrollY()` afterward
+silently disarms it.
+
+Both builtins also depend on a specific project setting
+(`temp_zeropages`) being non-empty; if it's blank, both silently do
+nothing at all; no error, no assembly emitted for the call.
+
+*Reference pages:* [`ScrollX`](reference/builtins/scrollx.md),
+[`ScrollY`](reference/builtins/scrolly.md)
+
+### `SetBank` writes the whole banking register unmasked
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`SetBank` selects which 16KB region the VIC-II reads video data from by
+writing to a CIA chip register that also carries the serial (IEC) bus
+and RS-232 output lines in its other bits. `SetBank` writes its value
+straight to that register with no read-modify-write step, so every call
+also forces those other lines low as a side effect. This is harmless in
+the overwhelming majority of programs, since disk/tape activity has
+normally already finished by the time `SetBank` gets called, but it's a
+real hazard for any custom fastloader or serial-bus code that calls
+`SetBank` while a transfer might still be active.
+
+*Reference page:* [`SetBank`](reference/builtins/setbank.md)
+
+### `SetBitmapMode` overwrites its whole register instead of changing one bit
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Switching into bitmap mode should only need to change one bit of the
+relevant VIC-II register. Every sibling mode-toggle builtin
+(`SetTextMode`, `SetMultiColorMode`, `SetRegularColorMode`) correctly
+changes only the bit(s) it needs to, leaving everything else in the
+register alone. `SetBitmapMode` instead overwrites the entire register
+with one fixed value. In practice this silently resets the vertical
+fine-scroll value to a fixed default and clears the raster-compare high
+bit, so calling `SetBitmapMode` after a `ScrollY` call, or after arming a
+raster interrupt on a line at or past 256, undoes part of that earlier
+setup with no warning.
+
+*Reference page:* [`SetBitmapMode`](reference/builtins/setbitmapmode.md)
+
+### `SetMemoryConfig(1, 0, 0)` silently writes a different value than requested
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`SetMemoryConfig` takes three arguments and computes a byte value from
+them to write to the CPU's memory-configuration port. For exactly one
+combination of arguments, `(1, 0, 0)`, which also happens to be by far
+the most common way this builtin gets called in practice, the compiler
+silently substitutes a different value for the third argument before
+computing the byte it writes, rather than using the value actually
+passed in. This particular substitution doesn't change which ROM/RAM
+ends up mapped in, so most programs never notice, but it does mean the
+exact byte value ends up different from what a plain reading of the
+three arguments would predict, which matters for any code that reads
+that port back directly and compares it against an expected value.
+
+*Reference page:* [`SetMemoryConfig`](reference/builtins/setmemoryconfig.md)

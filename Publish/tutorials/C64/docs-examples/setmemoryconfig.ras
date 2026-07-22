@@ -1,0 +1,6 @@
+program SetMemoryConfigDemo;
+begin
+	SetMemoryConfig(1, 0, 0);   // IO visible, KERNAL and BASIC banked out
+	clearscreen(key_space, screen_char_loc);
+	loop();
+end.

@@ -297,6 +297,16 @@ nav:
           - RightBitShift: reference/builtins/rightbitshift.md
           - ScreenOff: reference/builtins/screenoff.md
           - ScreenOn: reference/builtins/screenon.md
+          - ScrollX: reference/builtins/scrollx.md
+          - ScrollY: reference/builtins/scrolly.md
+          - SetBank: reference/builtins/setbank.md
+          - SetBitmapMode: reference/builtins/setbitmapmode.md
+          - SetCharsetAndScreenLocation: reference/builtins/setcharsetandscreenlocation.md
+          - SetCharsetLocation: reference/builtins/setcharsetlocation.md
+          - SetFrequency: reference/builtins/setfrequency.md
+          - setHi: reference/builtins/sethi.md
+          - setLo: reference/builtins/setlo.md
+          - SetMemoryConfig: reference/builtins/setmemoryconfig.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

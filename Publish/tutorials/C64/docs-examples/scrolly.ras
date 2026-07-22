@@ -1,0 +1,12 @@
+program ScrollYDemo;
+var
+	y : byte;
+begin
+	clearscreen(key_space, screen_char_loc);
+	y := 0;
+	repeat
+		y := (y + 1) & 7;
+		ScrollY(y);
+		Wait(2);
+	until false;
+end.

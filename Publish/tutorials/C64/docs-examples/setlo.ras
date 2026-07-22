@@ -1,0 +1,9 @@
+program SetLoDemo;
+var
+	myInteger : integer;
+	myPointer : pointer;
+begin
+	setLo(myInteger, $33);
+	setLo(myPointer, $12);
+	loop();
+end.

@@ -1,0 +1,16 @@
+program SetCharsetAndScreenLocationDemo;
+var
+	const SCRCHR1_ADR : address = $2000;
+	const SCRCHR2_ADR : address = $2400;
+	const FONT_ADR    : address = $2800;
+
+	switchScreen : byte;
+begin
+	switchScreen := 0;
+	if switchScreen > 1 then
+		SetCharsetAndScreenLocation(FONT_ADR, SCRCHR2_ADR)
+	else
+		SetCharsetAndScreenLocation(FONT_ADR, SCRCHR1_ADR);
+	clearscreen(key_space, SCRCHR1_ADR);
+	loop();
+end.
