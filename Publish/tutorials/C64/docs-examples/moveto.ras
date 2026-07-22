@@ -1,0 +1,15 @@
+program MoveToDemo;
+var
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	for i:=0 to 4 do
+	begin
+		moveto(i*2,i,hi(screen_char_loc)); // diagonal line, one cell per row
+		printstring("*",0,40);
+	end;
+
+	loop();
+end.

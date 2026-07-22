@@ -148,3 +148,21 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
 - [`LeftBitShift`](leftbitshift.md): shifts (rotates) a multi-byte-wide
   strip of 8-row data one bit to the left.
 - [`Lo`](lo.md): returns the low byte (bits 0-7) of a 16-bit value.
+- [`Loop`](loop.md): spins forever in place, keeping the program alive
+  past the end of `main`.
+- [`max`](max.md): returns the larger of two `byte` values.
+- [`MemCpy`](memcpy.md): copies a run of bytes from one address to
+  another in a runtime loop.
+- [`MemCpyFast`](memcpyfast.md): a faster variant of `MemCpy` using a
+  decrementing loop.
+- [`MemCpyUnroll`](memcpyunroll.md): copies a run of bytes using a
+  compile-time-unrolled sequence of instructions instead of a loop.
+- [`MemCpyUnrollReverse`](memcpyunrollreverse.md): like `MemCpyUnroll`,
+  but copies from the last byte to the first.
+- [`min`](min.md): returns the smaller of two `byte` values.
+- [`mod`](mod.md): returns the remainder of dividing one `byte` value by
+  another.
+- [`mod16`](mod16.md): returns the remainder of dividing an `integer`
+  value by a `byte` value.
+- [`MoveTo`](moveto.md): positions the screen cursor used by
+  `PrintString`/`PrintNumber`/`PrintDecimal`/`Tile`.

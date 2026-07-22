@@ -267,6 +267,16 @@ nav:
           - KrillLoadCompressed: reference/builtins/krillloadcompressed.md
           - LeftBitShift: reference/builtins/leftbitshift.md
           - Lo: reference/builtins/lo.md
+          - Loop: reference/builtins/loop.md
+          - max: reference/builtins/max.md
+          - MemCpy: reference/builtins/memcpy.md
+          - MemCpyFast: reference/builtins/memcpyfast.md
+          - MemCpyUnroll: reference/builtins/memcpyunroll.md
+          - MemCpyUnrollReverse: reference/builtins/memcpyunrollreverse.md
+          - min: reference/builtins/min.md
+          - mod: reference/builtins/mod.md
+          - mod16: reference/builtins/mod16.md
+          - MoveTo: reference/builtins/moveto.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

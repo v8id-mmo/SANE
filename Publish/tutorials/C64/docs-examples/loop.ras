@@ -1,0 +1,8 @@
+program LoopDemo;
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("hello, sane!",0,40);
+
+	loop(); // spins in place forever, keeping the program alive
+end.

@@ -69,9 +69,13 @@ operator.
 
 Division always uses unsigned arithmetic, regardless of whether either
 operand is a negative signed value. There's no signed-aware division
-routine anywhere in the compiler yet to fall back on.
+routine anywhere in the compiler yet to fall back on. `mod`/`mod16`
+inherit the identical limitation: `mod16` literally shares `/`'s
+16-bit-by-8-bit division routine, and `mod`'s own separate 8-bit routine
+is unsigned for the same underlying reason.
 
-*Reference page:* [`/`](reference/operators/division.md)
+*Reference pages:* [`/`](reference/operators/division.md),
+[`mod`](reference/builtins/mod.md), [`mod16`](reference/builtins/mod16.md)
 
 ### Mixing a signed byte with an integer drops the sign
 
@@ -715,3 +719,36 @@ the bundled tutorials leans on the wraparound on purpose for a scrolling
 effect), just not what the name promises.
 
 *Reference page:* [`LeftBitShift`](reference/builtins/leftbitshift.md)
+
+### `MemCpy`/`MemCpyFast` copy 256 bytes instead of 0 when given a runtime count of 0
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Both builtins are meant to copy exactly `count` bytes. Their copy loops
+only check whether they're done *after* copying a byte, never before the
+first pass, the same "always runs at least once" shape as `FLD`'s count-of-0
+case above. So if `count` is a runtime value that happens to be 0 (not a
+literal `0` written in the source), neither one copies zero bytes: both
+wrap all the way around and copy a full 256 bytes instead, silently
+overwriting whatever memory follows the destination. `MemCpyUnroll`/
+`MemCpyUnrollReverse` don't have this problem, since their count has to be
+a fixed value known at compile time, and a compile-time 0 there correctly
+produces no copy at all.
+
+*Reference pages:* [`MemCpy`](reference/builtins/memcpy.md),
+[`MemCpyFast`](reference/builtins/memcpyfast.md)
+
+### `min`/`max` compare bytes as unsigned, with no signed handling at all
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`min`/`max` pick the smaller/larger of two `byte` values using a plain
+unsigned comparison. On a `signed byte`, any pair straddling the sign
+boundary comes out wrong: `min(-1, 1)` returns `1` instead of `-1`,
+because `-1`'s bit pattern is unsigned-larger than `1`'s. This is a
+stricter gap than the signed-comparison operators above: those at least
+attempt a signed-aware branch, even if it's imperfect at the boundary;
+`min`/`max` don't attempt signed handling at all.
+
+*Reference pages:* [`min`](reference/builtins/min.md),
+[`max`](reference/builtins/max.md)

@@ -1,0 +1,14 @@
+program Mod16Demo;
+var
+	a : integer = 1000;
+	b : byte = 7;
+	result : integer;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	result := mod16(a,b);
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(result,5);
+
+	loop();
+end.

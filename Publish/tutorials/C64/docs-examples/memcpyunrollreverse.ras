@@ -1,0 +1,18 @@
+program MemCpyUnrollReverseDemo;
+var
+	source : array[5] of byte = (1,2,3,4,5);
+	dest : array[5] of byte;
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	memcpyunrollreverse(#source,0,#dest,5); // count must be a compile-time constant
+
+	for i:=0 to 4 do
+	begin
+		moveto(i*3,0,hi(screen_char_loc));
+		printdecimal(dest[i],2);
+	end;
+
+	loop();
+end.
