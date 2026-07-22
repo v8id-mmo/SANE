@@ -1,0 +1,9 @@
+program FillFastDemo;
+var
+	buf : array[10] of byte;
+
+begin
+	clearscreen(key_space, #screen_char_loc);
+	FillFast(#buf, 65, 5); // intended: fill buf[0..4]; see Known limitations
+	loop();
+end.

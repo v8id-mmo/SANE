@@ -1,0 +1,6 @@
+program FillDemo;
+begin
+	clearscreen(key_space, #screen_char_loc);
+	Fill(#screen_col_loc, light_blue, screen_width); // fills the top row's color RAM
+	loop();
+end.

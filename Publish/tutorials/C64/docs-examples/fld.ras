@@ -1,0 +1,9 @@
+program FldDemo;
+begin
+	screen_bg_col := black;
+	while (true) do
+	begin
+		waitforverticalblank();
+		fld(32,0);
+	end;
+end.

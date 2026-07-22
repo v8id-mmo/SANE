@@ -1,0 +1,13 @@
+program DisassembleDemo;
+var
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	i := 0;
+	disassemble(); // execution pauses here in VICE's monitor, showing disassembly
+	i := i + 1;
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(i,3);
+	loop();
+end.

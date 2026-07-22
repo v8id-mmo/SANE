@@ -61,3 +61,23 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   the source address from a table at runtime.
 - [`DefineScreen`](definescreen.md): defines the `screenmemory` and
   `colormemory` label aliases other builtins rely on.
+- [`DisableCIAInterrupts`](disableciainterrupts.md): turns off the CIA
+  timer interrupts, ahead of installing a custom raster interrupt.
+- [`disassemble`](disassemble.md): pauses in the VICE monitor at this
+  point, showing a disassembly.
+- [`DrawColorTextBox`](drawcolortextbox.md): like `DrawTextBox`, but also
+  fills the box's border cells in color RAM with one color.
+- [`DrawTextBox`](drawtextbox.md): draws a rectangular PETSCII box outline
+  to screen memory from an address table and border characters.
+- [`EnableAllRam`](enableallram.md): banks out BASIC/KERNAL ROM, leaving
+  I/O and color RAM visible.
+- [`EnableIRQ`](enableirq.md): acknowledges the raster interrupt flag and
+  turns interrupts back on.
+- [`EnableRasterIRQ`](enablerasterirq.md): turns on the VIC-II's
+  raster-compare interrupt source.
+- [`Fill`](fill.md): writes the same byte value to a run of consecutive
+  memory locations.
+- [`FillFast`](fillfast.md): a faster variant of `Fill` for plain
+  numeric/variable fill values.
+- [`FLD`](fld.md): performs one or more lines of a Flexible Line Distance
+  raster-stretch effect.

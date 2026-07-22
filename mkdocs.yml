@@ -222,6 +222,16 @@ nav:
           - Decrunch: reference/builtins/decrunch.md
           - DecrunchFromIndex: reference/builtins/decrunchfromindex.md
           - DefineScreen: reference/builtins/definescreen.md
+          - DisableCIAInterrupts: reference/builtins/disableciainterrupts.md
+          - disassemble: reference/builtins/disassemble.md
+          - DrawColorTextBox: reference/builtins/drawcolortextbox.md
+          - DrawTextBox: reference/builtins/drawtextbox.md
+          - EnableAllRam: reference/builtins/enableallram.md
+          - EnableIRQ: reference/builtins/enableirq.md
+          - EnableRasterIRQ: reference/builtins/enablerasterirq.md
+          - Fill: reference/builtins/fill.md
+          - FillFast: reference/builtins/fillfast.md
+          - FLD: reference/builtins/fld.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

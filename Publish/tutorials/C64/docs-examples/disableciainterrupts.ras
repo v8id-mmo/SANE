@@ -1,0 +1,18 @@
+program DisableCIAInterruptsDemo;
+var
+	frameCount : byte = 0;
+
+interrupt RasterHandler();
+begin
+	startirq(0);
+	inc(frameCount);
+	screen_bg_col := frameCount&15;
+end;
+
+begin
+	DisableCIAInterrupts();
+	RasterIRQ(RasterHandler(),0,0);
+	EnableIRQ();
+	EnableRasterIRQ();
+	loop();
+end.

@@ -631,3 +631,26 @@ exactly the same code as assigning `CreateInteger`'s result to an
 
 *Reference pages:* [`CreateInteger`](reference/builtins/createinteger.md),
 [`CreatePointer`](reference/builtins/createpointer.md)
+
+### `FillFast` writes one byte more than it's told to
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`FillFast(address, value, count)` is meant to fill exactly `count` bytes,
+the same as the plain `Fill` builtin. `Fill` does that correctly, but
+`FillFast`'s loop always runs one extra time, so it actually writes
+`count + 1` bytes, silently overwriting one byte past the range the
+caller asked for every time it's used.
+
+*Reference page:* [`FillFast`](reference/builtins/fillfast.md)
+
+### `FLD` runs 256 times instead of 0 when given a count of 0
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`FLD(count, mode)` is meant to repeat one step of the effect `count`
+times. Its loop always executes the step at least once before checking
+the count, so passing a count of 0 doesn't skip the effect: the counter
+wraps around instead, and the step ends up running 256 times.
+
+*Reference page:* [`FLD`](reference/builtins/fld.md)
