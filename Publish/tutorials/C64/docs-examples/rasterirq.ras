@@ -1,0 +1,28 @@
+program RasterIRQDemo;
+var
+	frame : byte = 0;
+
+interrupt IRQTop();
+
+interrupt IRQBottom();
+begin
+	startirq(0);
+	inc(frame);
+	screen_bg_col := frame;
+	RasterIRQ(IRQTop(), $32, 0); // hand off to the top-of-screen handler
+	CloseIRQ();
+end;
+
+interrupt IRQTop();
+begin
+	startirq(0);
+	screen_bg_col := black;
+	RasterIRQ(IRQBottom(), $c8, 0); // hand off back to the bottom handler
+	CloseIRQ();
+end;
+
+begin
+	disableciainterrupts();
+	StartRasterChain(IRQTop(), $32, 0);
+	loop();
+end.

@@ -185,3 +185,21 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   the screen cursor, with a start offset and max length.
 - [`Rand`](rand.md): generates a random byte in a given range using the
   SID chip's noise generator.
+- [`Random`](random.md): returns a raw random byte in the full `0`-`255`
+  range, no range parameters.
+- [`RasterIRQ`](rasterirq.md): hooks an `interrupt` procedure directly to
+  a raster line.
+- [`RasterIRQWedge`](rasterirqwedge.md): hooks an `interrupt` procedure
+  to a raster line via the wedge-chaining mechanism.
+- [`ReadJoy1`](readjoy1.md): reads joystick port 1 into a bitmask
+  variable.
+- [`ReadJoy2`](readjoy2.md): reads joystick port 2 into a bitmask
+  variable.
+- [`ReturnInterrupt`](returninterrupt.md): the correct way to exit an
+  `interrupt` procedure early.
+- [`ReturnValue`](returnvalue.md): sets a function's return value and
+  exits, in one call.
+- [`RightBitShift`](rightbitshift.md): shifts (rotates) a multi-byte-wide
+  strip of 8-row data one bit to the right.
+- [`ScreenOff`](screenoff.md): blanks the VIC-II display.
+- [`ScreenOn`](screenon.md): turns the VIC-II display back on.

@@ -17,7 +17,9 @@ ordinary procedure: same parameter syntax, same `forward`/`inline`/
 The return value is set by assigning to the function's own name inside its
 body, Pascal-style, not with a `return <value>` statement (`return` on its
 own just exits the current procedure/function early, without setting a
-value).
+value). [`ReturnValue`](../builtins/returnvalue.md) is a separate builtin
+that sets the return value and exits in one call, useful for an early
+exit from deep inside a function.
 
 ## Parameters
 

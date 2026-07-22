@@ -1,0 +1,25 @@
+program ReturnValueDemo;
+var
+	data : array[8] of byte = (5,3,9,0,7,1,2,4);
+	result : byte;
+
+function FindFirstZero() : byte;
+var
+	i : byte;
+begin
+	for i := 0 to 7 do begin
+		if (data[i] = 0) then
+			returnvalue(i); // set the return value and exit right here
+
+	end;
+	returnvalue(255); // none found
+end;
+
+begin
+	result := FindFirstZero();
+	moveto(0,0,hi(screen_char_loc));
+	printstring("first zero at:",0,40);
+	moveto(15,0,hi(screen_char_loc));
+	printdecimal(result,3);
+	loop();
+end.
