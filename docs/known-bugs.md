@@ -912,3 +912,112 @@ three arguments would predict, which matters for any code that reads
 that port back directly and compares it against an expected value.
 
 *Reference page:* [`SetMemoryConfig`](reference/builtins/setmemoryconfig.md)
+
+### `SpritePos` with sprite number 8 or higher corrupts VIC-II registers
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`SpritePos` expects a sprite number from `0` to `7`, matching the eight
+hardware sprites. That range isn't enforced anywhere. If the sprite
+number is a compile-time constant of `8` or higher, the position writes
+don't land on a nonexistent ninth sprite, they land squarely on two core
+VIC-II registers instead: the sprite-MSB register (which tracks each
+sprite's 9th X-position bit) and the VIC-II's main control register
+(screen on/off, text/bitmap mode, Y-scroll, and the raster-compare high
+bit). Calling `SpritePos(x, y, 8)` silently corrupts core display state
+on every call instead of failing to compile.
+
+*Reference page:* [`SpritePos`](reference/builtins/spritepos.md)
+
+### `SetSpriteLoc` doesn't range-check its own bank or sprite-number arguments
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`SetSpriteLoc`'s own compile error message for its bank argument says it
+"must be constant 0-3", but only "is this actually a constant" gets
+checked, not whether the constant is inside that range. A bank value of
+`4` or higher compiles cleanly and computes an address outside the
+sprite-pointer table it's meant to target. Its sprite-number argument has
+no range check at all, so a value outside the real `0`-`7` hardware range
+silently writes past the 8-byte sprite-pointer table into whatever memory
+follows it, again with no error.
+
+*Reference page:* [`SetSpriteLoc`](reference/builtins/setspriteloc.md)
+
+### `EnableRasterIRQ` (and `StartRasterChain`) overwrite the whole VIC-II control register, and can't reach raster lines past 255
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`EnableRasterIRQ` is meant to turn on the raster-interrupt source, a
+single-bit change in one register. It does that correctly, but
+immediately follows it with an unconditional overwrite of the VIC-II's
+entire main control register with one fixed value, the same "hardcoded
+overwrite instead of a masked change" shape already documented for
+`SetBitmapMode` above. This silently resets the vertical fine-scroll
+value and turns off bitmap/extended-color mode, regardless of anything
+set up beforehand. `StartRasterChain` calls `EnableRasterIRQ` internally
+as part of its own one-call setup, so it inherits the exact same side
+effect.
+
+That fixed value also always clears the raster-compare high bit rather
+than setting it, and `RasterIRQ` (the builtin that actually arms a
+raster line) never sets that bit either. Between the two, there's
+currently no way to trigger a raster interrupt on a line at or past 256
+through `RasterIRQ`, `EnableRasterIRQ`, or `StartRasterChain`; only lines
+`0`-`255` work.
+
+*Reference pages:* [`EnableRasterIRQ`](reference/builtins/enablerasterirq.md),
+[`RasterIRQ`](reference/builtins/rasterirq.md),
+[`StartRasterChain`](reference/builtins/startrasterchain.md)
+
+### `RasterIRQ`, `RasterIRQWedge`, and `StartIRQWedge` crash the compiler on a bad argument instead of erroring
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Three related builtins skip validating an argument that's used
+unconditionally right after, so a malformed call doesn't produce a
+compile error, it crashes the compiler process itself:
+
+- `RasterIRQ`, and by extension `StartRasterChain` (which calls it
+  internally): passing something other than an interrupt procedure
+  reference as the first argument.
+- `RasterIRQWedge`: the same gap on its first argument, plus no check
+  that its mode argument is a compile-time constant.
+- `StartIRQWedge`: no check that its one argument is a compile-time
+  constant. Its sibling `StartIRQ` correctly rejects a non-constant
+  argument with a clean compile error; `StartIRQWedge` doesn't do the
+  same check.
+
+*Reference pages:* [`RasterIRQ`](reference/builtins/rasterirq.md),
+[`RasterIRQWedge`](reference/builtins/rasterirqwedge.md),
+[`StartIRQWedge`](reference/builtins/startirqwedge.md),
+[`StartRasterChain`](reference/builtins/startrasterchain.md)
+
+### `Sqrt` silently compiles to nothing if not enough zero-page scratch is configured
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`Sqrt` needs 4 of the project's internal zero-page scratch slots to hold
+its working state while it computes. The shipped default project
+settings always provide all 4, so this doesn't affect a normal project,
+but if a project's settings provide fewer than 4, a call to `Sqrt`
+silently compiles to no code at all, with no compiler error pointing at
+the missing setting.
+
+*Reference page:* [`Sqrt`](reference/builtins/sqrt.md)
+
+### `SetSpriteLoc` assumes the screen is still at its default location
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The sprite-pointer table always lives at a fixed offset from wherever
+screen memory currently starts. `SetSpriteLoc` doesn't compute that
+offset from the screen's actual, currently configured location; it
+always assumes the *default* one. If a program moves the screen with
+`SetScreenLocation` and also uses sprites, `SetSpriteLoc` keeps writing
+to the old, default location's sprite-pointer table rather than the
+real one, silently leaving sprites pointed at the wrong (or stale)
+shape data, with no error.
+
+*Reference pages:* [`SetSpriteLoc`](reference/builtins/setspriteloc.md),
+[`SetScreenLocation`](reference/builtins/setscreenlocation.md)

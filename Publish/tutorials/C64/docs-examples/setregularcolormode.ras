@@ -1,0 +1,9 @@
+program SetRegularColorModeDemo;
+begin
+	SetMultiColorMode();
+	screen_bg_col := black;
+	Wait(100);
+	SetRegularColorMode();
+	screen_fg_col := light_green;
+	loop();
+end.

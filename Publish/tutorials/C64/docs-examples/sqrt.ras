@@ -1,0 +1,14 @@
+program SqrtDemo;
+var
+	value : integer;
+	result : byte;
+begin
+	clearscreen(key_space, screen_char_loc);
+	value := 200;
+	result := Sqrt(value);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("sqrt(200)=",0,40);
+	moveto(10,0,hi(screen_char_loc));
+	printdecimal(result,2); // 3 digits: prints "014"
+	loop();
+end.

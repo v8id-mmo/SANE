@@ -222,3 +222,22 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   variable.
 - [`SetMemoryConfig`](setmemoryconfig.md): banks BASIC/KERNAL ROM and
   the I/O area in or out.
+- [`SetMultiColorMode`](setmulticolormode.md): switches the VIC-II into
+  multicolor character mode.
+- [`SetRegularColorMode`](setregularcolormode.md): switches the VIC-II
+  back out of multicolor character mode.
+- [`SetScreenLocation`](setscreenlocation.md): sets the base address of
+  screen (character) memory within the current VIC bank.
+- [`SetSpriteLoc`](setspriteloc.md): points a hardware sprite at its
+  shape data.
+- [`SetTextMode`](settextmode.md): switches the VIC-II from bitmap mode
+  back into character (text) mode.
+- [`SpritePos`](spritepos.md): sets a hardware sprite's X/Y screen
+  position.
+- [`Sqrt`](sqrt.md): computes the integer square root of a 16-bit value.
+- [`StartIRQ`](startirq.md): saves registers and acknowledges the
+  interrupt at the start of a custom interrupt handler.
+- [`StartIRQWedge`](startirqwedge.md): burns a short delay at the start
+  of a wedge-chained interrupt handler to compensate for raster jitter.
+- [`StartRasterChain`](startrasterchain.md): one-call shortcut to arm
+  the first raster interrupt in a chain.

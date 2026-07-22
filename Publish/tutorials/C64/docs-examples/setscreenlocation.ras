@@ -1,0 +1,8 @@
+program SetScreenLocationDemo;
+begin
+	SetScreenLocation($0800);   // move screen memory to $0800 (within VIC bank 0)
+	clearscreen(key_space, $0800);
+	moveto(0,0,hi($0800));
+	printstring("screen moved to $0800",0,40);
+	loop();
+end.

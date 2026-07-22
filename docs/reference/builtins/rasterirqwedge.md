@@ -62,3 +62,10 @@ vector directly). Passing `1` to route through the KERNAL's own IRQ
 vector instead, the way plain `RasterIRQ` supports, is a hard compile
 error: "Kernal wedge not implemented." Every real usage of this builtin,
 in this fork's own bundled tutorials included, passes `0`.
+
+Neither `<procedure>` nor `<mode>` is actually validated before use:
+passing something other than an interrupt procedure reference as the
+first argument, or a non-constant expression as `<mode>`, doesn't
+produce a compile error, it crashes the compiler itself with a
+null-pointer dereference (see [`RasterIRQ`](rasterirq.md), which has the
+same gap on its own first argument).

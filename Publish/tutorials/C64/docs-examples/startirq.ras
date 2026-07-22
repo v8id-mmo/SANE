@@ -1,0 +1,17 @@
+program StartIRQDemo;
+var
+	frame : byte = 0;
+
+interrupt Raster();
+begin
+	StartIRQ(0);   // must match the mode given to StartRasterChain below
+	inc(frame);
+	screen_bg_col := frame;
+	CloseIRQ();
+end;
+
+begin
+	disableciainterrupts();
+	StartRasterChain(Raster(), 100, 0);
+	loop();
+end.

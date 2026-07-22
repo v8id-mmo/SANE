@@ -1,13 +1,14 @@
 # `RasterIRQ`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
+(see Known limitations below).
 
 Hooks an `interrupt` procedure directly to a raster line: the given
 procedure runs the next time the VIC-II beam reaches that line. Unlike
-`StartRasterChain` (not yet documented on this site), which is only used
-once to kick off the very first raster interrupt, `RasterIRQ` is normally
-called again from inside each handler to arm the *next* raster line,
-building a chain of raster bars/effects across the screen.
+[`StartRasterChain`](startrasterchain.md), which is only used once to
+kick off the very first raster interrupt, `RasterIRQ` is normally called
+again from inside each handler to arm the *next* raster line, building a
+chain of raster bars/effects across the screen.
 
 ## Syntax
 
@@ -59,3 +60,16 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/rasterirq.ras){ .md-button download }
+
+## Known limitations
+
+`RasterIRQ` never validates that its first argument actually is an
+interrupt procedure reference; the check exists in the source but is
+disabled. Passing something else there doesn't produce a compile error,
+it crashes the compiler itself with a null-pointer dereference.
+
+`RasterIRQ` also never sets or touches the raster-compare high bit (bit
+7 of `$D011`), and neither does [`EnableRasterIRQ`](enablerasterirq.md)
+(which actively clears it, see that page). Between the two, there's
+currently no way to arm a raster interrupt on a PAL line at or past 256
+through this builtin; only lines `0`-`255` are reachable.

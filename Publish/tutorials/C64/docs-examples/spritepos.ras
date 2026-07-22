@@ -1,0 +1,14 @@
+program SpritePosDemo;
+var
+	x : integer = 100;
+begin
+	sprite_color[0] := light_red;
+	togglebit(sprite_bitmask, 0, 1);   // turn sprite 0 on
+	repeat
+		x := x + 1;
+		if (x > 320) then
+			x := 0;
+		SpritePos(x, 100, 0);
+		Wait(1);
+	until false;
+end.
