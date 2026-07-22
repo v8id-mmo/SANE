@@ -166,3 +166,22 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   value by a `byte` value.
 - [`MoveTo`](moveto.md): positions the screen cursor used by
   `PrintString`/`PrintNumber`/`PrintDecimal`/`Tile`.
+- [`NmiIRQ`](nmiirq.md): hooks the non-maskable interrupt vector to an
+  `interrupt` procedure.
+- [`Nop`](nop.md): inserts a compile-time-constant run of `nop`
+  instructions.
+- [`Peek`](peek.md): reads and returns a byte from a base address plus
+  an offset.
+- [`PlaySound`](playsound.md): sets up one SID voice and plays a note on
+  it in a single call.
+- [`Poke`](poke.md): writes a byte to a base address plus an offset.
+- [`PreventIRQ`](preventirq.md): disables maskable interrupts, the same
+  as `asm(" sei")`.
+- [`PrintDecimal`](printdecimal.md): prints an integer as a fixed-width
+  decimal number at the screen cursor.
+- [`PrintNumber`](printnumber.md): prints a byte as a 2-character
+  hexadecimal number at the screen cursor.
+- [`PrintString`](printstring.md): prints a zero-terminated string at
+  the screen cursor, with a start offset and max length.
+- [`Rand`](rand.md): generates a random byte in a given range using the
+  SID chip's noise generator.

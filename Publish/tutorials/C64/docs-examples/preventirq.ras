@@ -1,0 +1,9 @@
+program PreventIRQDemo;
+begin
+	moveto(0,0,hi(screen_char_loc));
+	printstring("irqs prevented",0,40);
+	PreventIRQ(); // sei: stop interrupts from firing
+	// ... time-critical section would go here ...
+	EnableIRQ();  // re-enable, acking the raster interrupt
+	loop();
+end.

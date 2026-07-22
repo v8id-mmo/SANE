@@ -1,0 +1,12 @@
+program PrintDecimalDemo;
+var
+	score : integer;
+begin
+	clearscreen(key_space,screen_char_loc);
+	score := 1234;
+	moveto(0,0,hi(screen_char_loc));
+	printstring("score:",0,40);
+	moveto(7,0,hi(screen_char_loc));
+	printdecimal(score,3); // 4 digits: prints "1234"
+	loop();
+end.

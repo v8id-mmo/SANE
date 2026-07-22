@@ -1,0 +1,12 @@
+program RandDemo;
+var
+	r : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+	rand(0,99,r); // random value in [0,99]
+	moveto(0,0,hi(screen_char_loc));
+	printstring("random:",0,40);
+	moveto(8,0,hi(screen_char_loc));
+	printdecimal(r,1); // 2 digits
+	loop();
+end.

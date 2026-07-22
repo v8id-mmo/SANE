@@ -1,0 +1,7 @@
+program NopDemo;
+begin
+	moveto(0,0,hi(screen_char_loc));
+	printstring("inserting 3 nops",0,40);
+	nop(3); // same as asm(" nop nop nop ");
+	loop();
+end.
