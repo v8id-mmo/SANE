@@ -1,0 +1,23 @@
+program HelloWorld;
+var
+	// The message we'll print. A plain "string" variable works just as
+	// well as a double-quoted literal passed directly to PrintString.
+	message : string = "HELLO, C64!";
+
+begin
+	// Wipe the screen first so we start from a known, blank state.
+	clearscreen(key_space,screen_char_loc);
+
+	// screen_bg_col/screen_fg_col are real variables the compiler
+	// pre-declares for you; assigning to them changes the border-free
+	// background and text colors immediately.
+	screen_bg_col := blue;
+	screen_fg_col := light_blue;
+
+	// MoveTo positions the text cursor (column, row); PrintString then
+	// prints starting from that position.
+	moveto(8,12,hi(screen_char_loc));
+	printstring(message,0,40);
+
+	loop(); // keep the program running so the screen stays visible
+end.
