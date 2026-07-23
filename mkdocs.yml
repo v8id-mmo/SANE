@@ -352,7 +352,13 @@ nav:
           - "or": reference/operators/or.md
           - "not": reference/operators/not.md
           - ":=": reference/operators/assignment.md
-      - Types: reference/types.md
+      - Types:
+          - Overview: reference/types/index.md
+          - address: reference/types/address.md
+          - array: reference/types/array.md
+          - boolean: reference/types/boolean.md
+          - byte: reference/types/byte.md
+          - class: reference/types/class.md
       - Constants: reference/constants.md
   - Examples: examples/index.md
   - Platform Notes: platform-notes.md

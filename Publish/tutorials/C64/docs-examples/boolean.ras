@@ -1,0 +1,30 @@
+program BooleanDemo;
+var
+	gameOver : boolean = false;
+	lives : byte = 3;
+	flags : array[3] of boolean;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	flags[0] := true;
+	flags[1] := false;
+	flags[2] := not flags[1];
+
+	lives := lives - 3;
+	if (lives = 0) then
+		gameOver := true;
+
+	moveto(0,0,hi(screen_char_loc));
+	if (gameOver) then
+		printstring("game over: yes",0,40)
+	else
+		printstring("game over: no",0,40);
+
+	moveto(0,1,hi(screen_char_loc));
+	if (flags[0] and flags[2]) then
+		printstring("flags 0+2: both set",0,40)
+	else
+		printstring("flags 0+2: not both set",0,40);
+
+	loop();
+end.

@@ -1,7 +1,6 @@
 # `RasterIRQ`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Hooks an `interrupt` procedure directly to a raster line: the given
 procedure runs the next time the VIC-II beam reaches that line. Unlike

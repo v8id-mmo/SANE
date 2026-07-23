@@ -1,7 +1,6 @@
 # `ReturnValue`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Sets a [`function`](../keywords/function.md)'s return value and exits
 immediately, in one call. This differs from the normal

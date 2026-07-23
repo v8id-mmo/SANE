@@ -1,7 +1,6 @@
 # `StartIRQWedge`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 The "wedge" counterpart to [`StartIRQ`](startirq.md): called first thing
 inside a wedge-chained interrupt handler (one hooked with

@@ -1,7 +1,6 @@
 # `Wait`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Busy-waits for a fixed number of iterations, burning CPU cycles without
 doing anything else. A simple, imprecise delay; for delays synced to the

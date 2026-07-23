@@ -1,7 +1,6 @@
 # `StartRasterChain`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 A one-call shortcut for the setup normally needed to kick off a raster
 interrupt chain: it's exactly equivalent to calling

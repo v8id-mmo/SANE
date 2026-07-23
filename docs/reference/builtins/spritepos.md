@@ -1,7 +1,6 @@
 # `SpritePos`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Sets a hardware sprite's X/Y screen position. `x` is a full 16-bit value
 since sprites can be positioned slightly off the left edge of the

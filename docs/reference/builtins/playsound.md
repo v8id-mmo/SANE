@@ -1,7 +1,6 @@
 # `PlaySound`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Sets up one SID voice and plays a note on it in a single call: volume,
 frequency, envelope (attack/decay, sustain/release), and waveform. A

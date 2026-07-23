@@ -1,7 +1,6 @@
 # `RasterIRQWedge`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 The "wedge" counterpart to [`RasterIRQ`](rasterirq.md): hooks an
 `interrupt` procedure to a raster line the same way, but through the

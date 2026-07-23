@@ -1,7 +1,6 @@
 # `Poke`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Writes a single byte to a memory address, computed as a base address
 plus an offset. It can also be used to write one element of an array by
