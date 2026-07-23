@@ -1,0 +1,42 @@
+program ConstantsDemo;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// Colors: BLUE/LIGHT_BLUE are plain byte constants
+	screen_bg_col := blue;
+	screen_fg_col := light_blue;
+
+	// Screen/VIC-II registers: screen_char_loc is an address constant
+	moveto(0,0,hi(screen_char_loc));
+	printstring("CONSTANTS DEMO",0,40);
+
+	// Sprite registers: SPRITE_BITMASK is an address constant, Poke
+	// writes through it directly (turns all 8 sprites off)
+	Poke(SPRITE_BITMASK,0,0);
+
+	// Keyboard: KEY_A is a byte scan code, printed here as a number
+	moveto(0,2,hi(screen_char_loc));
+	printstring("KEY_A CODE:",0,40);
+	moveto(12,2,hi(screen_char_loc));
+	printdecimal(KEY_A,3);
+
+	// Joystick: JOY_FIRE is a bitmask, printed here as a number
+	moveto(0,3,hi(screen_char_loc));
+	printstring("JOY_FIRE MASK:",0,40);
+	moveto(15,3,hi(screen_char_loc));
+	printdecimal(JOY_FIRE,3);
+
+	// Sound (SID): SID_TRI is a waveform bit, printed here as a number
+	moveto(0,4,hi(screen_char_loc));
+	printstring("SID_TRI VALUE:",0,40);
+	moveto(15,4,hi(screen_char_loc));
+	printdecimal(SID_TRI,3);
+
+	// 6502 registers: _A loads the accumulator directly, used here to
+	// call the KERNAL CHROUT routine and print a carriage return
+	_A := 13;
+	call(^$FFD2);
+
+	loop();
+end.
