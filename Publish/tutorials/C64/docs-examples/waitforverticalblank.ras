@@ -1,0 +1,13 @@
+program WaitForVerticalBlankDemo;
+var
+	frame : byte = 0;
+begin
+	clearscreen(key_space,screen_char_loc);
+	while (true) do
+	begin
+		waitforverticalblank(); // sync to the screen's refresh rate
+		frame := frame + 1;
+		moveto(0,0,hi(screen_char_loc));
+		printdecimal(frame,3);
+	end;
+end.

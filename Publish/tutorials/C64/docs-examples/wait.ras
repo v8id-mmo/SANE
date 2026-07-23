@@ -1,0 +1,13 @@
+program WaitDemo;
+var
+	delay : byte = 200;
+begin
+	screen_bg_col := black;
+	while (true) do
+	begin
+		screen_bg_col := white;
+		wait(delay);
+		screen_bg_col := black;
+		wait(delay);
+	end;
+end.

@@ -2,8 +2,8 @@
 
 All notable changes to SANE are recorded here.
 
-This project doesn't cut versioned releases yet, it's an actively
-developed nightly fork, so changes are listed as a simple running list
+This project doesn't cut versioned releases yet, it's a (not so) actively
+developed fork, so changes are listed as a simple running list
 below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.

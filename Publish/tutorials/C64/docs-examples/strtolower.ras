@@ -1,0 +1,14 @@
+program StrToLowerDemo;
+var
+	text : string = "HELLO WORLD";
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring(#text,0,40); // "HELLO WORLD"
+
+	strtolower(#text);
+	moveto(0,1,hi(screen_char_loc));
+	printstring(#text,0,40); // "hello world"
+
+	loop();
+end.

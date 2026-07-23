@@ -1,0 +1,21 @@
+program ToggleBitDemo;
+var
+	flags : byte = %00000000;
+	idx : byte = 3;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	togglebit(flags,2,1); // constant bit index: turn bit 2 on
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(flags,3); // 4
+
+	togglebit(flags,idx,1); // variable bit index: turn bit 3 on too
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(flags,3); // 12
+
+	togglebit(flags,2,0); // constant bit index: turn bit 2 back off
+	moveto(0,2,hi(screen_char_loc));
+	printdecimal(flags,3); // 8
+
+	loop();
+end.

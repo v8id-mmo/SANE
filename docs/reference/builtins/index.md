@@ -241,3 +241,29 @@ list (139 builtins, scoped to the C64 target) is being written in batches.
   of a wedge-chained interrupt handler to compensate for raster jitter.
 - [`StartRasterChain`](startrasterchain.md): one-call shortcut to arm
   the first raster interrupt in a chain.
+- [`StrCmp`](strcmp.md): compares two zero-terminated strings for exact
+  equality.
+- [`StrGetFromIndex`](strgetfromindex.md): reads one word back out of a
+  buffer built by `StrSplit`, by position.
+- [`StrSplit`](strsplit.md): splits a string into null-separated words
+  inside a destination buffer.
+- [`StrToLower`](strtolower.md): converts a string's uppercase letters to
+  lowercase, in place.
+- [`StrToUpper`](strtoupper.md): converts a string's lowercase letters to
+  uppercase, in place.
+- [`Swap`](swap.md): exchanges the values of two `byte` variables.
+- [`Tile`](tile.md): draws a 2x2-character tile at the cursor position
+  from four corner lookup arrays.
+- [`ToggleBit`](togglebit.md): sets or clears a single bit of a `byte`
+  variable.
+- [`ToPointer`](topointer.md): builds a `pointer` out of separate high
+  and low bytes.
+- [`TransformColors`](transformcolors.md): remaps an entire screen and
+  its Color RAM through a 16-entry lookup table.
+- [`Wait`](wait.md): busy-waits for a fixed number of iterations.
+- [`WaitForRaster`](waitforraster.md): busy-waits until the raster beam
+  reaches a given scan line.
+- [`WaitForVerticalBlank`](waitforverticalblank.md): busy-waits for the
+  start of the next frame.
+- [`WaitNoRaster`](waitnoraster.md): busy-waits for a number of raster
+  lines to pass from wherever the beam currently is.

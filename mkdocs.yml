@@ -317,6 +317,20 @@ nav:
           - StartIRQ: reference/builtins/startirq.md
           - StartIRQWedge: reference/builtins/startirqwedge.md
           - StartRasterChain: reference/builtins/startrasterchain.md
+          - StrCmp: reference/builtins/strcmp.md
+          - StrGetFromIndex: reference/builtins/strgetfromindex.md
+          - StrSplit: reference/builtins/strsplit.md
+          - StrToLower: reference/builtins/strtolower.md
+          - StrToUpper: reference/builtins/strtoupper.md
+          - Swap: reference/builtins/swap.md
+          - Tile: reference/builtins/tile.md
+          - ToggleBit: reference/builtins/togglebit.md
+          - ToPointer: reference/builtins/topointer.md
+          - TransformColors: reference/builtins/transformcolors.md
+          - Wait: reference/builtins/wait.md
+          - WaitForRaster: reference/builtins/waitforraster.md
+          - WaitForVerticalBlank: reference/builtins/waitforverticalblank.md
+          - WaitNoRaster: reference/builtins/waitnoraster.md
       - Operators:
           - Overview: reference/operators/index.md
           - "<": reference/operators/less-than.md

@@ -1,0 +1,17 @@
+program TileDemo;
+var
+	// Two 2x2 tiles: tile 0 is blank, tile 1 is a box made of the
+	// PETSCII line-drawing characters.
+	tl : array[2] of byte = ($20,$70);
+	tr : array[2] of byte = ($20,$6e);
+	bl : array[2] of byte = ($20,$6d);
+	br : array[2] of byte = ($20,$7d);
+	tileno : byte = 1;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	moveto(10,10,hi(screen_char_loc));
+	tile(#tl,#tr,#bl,#br,tileno,40);
+
+	loop();
+end.
