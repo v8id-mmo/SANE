@@ -1,0 +1,12 @@
+program PureVariableDemo;
+var
+	level : byte = 5;
+procedure SetLevel(v : byte pure_variable) inline;
+begin
+	screen_bg_col := v;
+end;
+
+begin
+	SetLevel(level);
+	loop();
+end.

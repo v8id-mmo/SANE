@@ -1,0 +1,17 @@
+program IncSidDemo;
+var
+	tune : incsid("courier.sid", 2);
+
+interrupt PlayMusic();
+begin
+	startirq(0);
+	call(sidfile_1_play);
+	CloseIRQ();
+end;
+
+begin
+	InitSid(sidfile_1_init);
+	RasterIRQ(PlayMusic(), $ff, 0);
+
+	loop();
+end.

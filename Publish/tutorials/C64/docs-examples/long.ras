@@ -1,0 +1,19 @@
+program LongDemo;
+var
+	frameCount : long = 0;
+	i : integer;
+	lowByte : ^byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	for i:=0 to 999 do
+		frameCount := frameCount + 1;
+
+	lowByte := #frameCount;
+	moveto(0,0,hi(screen_char_loc));
+	printstring("frames (low byte):",0,40);
+	moveto(19,0,hi(screen_char_loc));
+	printdecimal(lowByte^,3);
+
+	loop();
+end.

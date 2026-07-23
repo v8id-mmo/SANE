@@ -2,9 +2,10 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-A type flag for `cstring` variables that sets the high bit on every
-character's byte value at compile time, producing PETSCII reverse-video
-(inverted) text without needing to invert it at runtime.
+A type flag for [`cstring`](../types/cstring.md) variables that sets the
+high bit on every character's byte value at compile time, producing
+PETSCII reverse-video (inverted) text without needing to invert it at
+runtime.
 
 ## Syntax
 

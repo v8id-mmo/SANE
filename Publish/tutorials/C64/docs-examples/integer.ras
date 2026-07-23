@@ -1,0 +1,23 @@
+program IntegerDemo;
+var
+	score : integer = 1000;
+	delta : integer = -250;
+	sscore : signed integer = -1;
+	total : integer;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	total := score + delta;
+	moveto(0,0,hi(screen_char_loc));
+	printstring("total:",0,40);
+	moveto(7,0,hi(screen_char_loc));
+	printdecimal(total,4);
+
+	// Only < and <= are implemented for signed integer comparison
+	// (known limitation, see below); this one works.
+	moveto(0,1,hi(screen_char_loc));
+	if (sscore < 0) then
+		printstring("sscore is negative",0,40);
+
+	loop();
+end.

@@ -1,0 +1,38 @@
+program RecordDemo;
+var
+	Point = record
+		x, y : byte;
+	end;
+
+	p1, p2 : Point;
+	points : array[3] of Point;
+	i : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	p1.x := 10;
+	p1.y := 20;
+
+	// whole-record assignment (p2 := p1;) isn't supported, so copy
+	// field by field instead (see Known limitations below)
+	p2.x := p1.x;
+	p2.y := p1.y;
+
+	for i:=0 to 2 do
+	begin
+		points[i].x := i*10;
+		points[i].y := i*5;
+	end;
+
+	moveto(0,0,hi(screen_char_loc));
+	printstring("p2.x:",0,40);
+	moveto(6,0,hi(screen_char_loc));
+	printdecimal(p2.x,3);
+
+	moveto(0,1,hi(screen_char_loc));
+	printstring("points[2].y:",0,40);
+	moveto(13,1,hi(screen_char_loc));
+	printdecimal(points[2].y,3);
+
+	loop();
+end.
