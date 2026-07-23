@@ -1,0 +1,14 @@
+program StrToUpperDemo;
+var
+	text : string = "hello world";
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring(#text,0,40); // "hello world"
+
+	strtoupper(#text);
+	moveto(0,1,hi(screen_char_loc));
+	printstring(#text,0,40); // "HELLO WORLD"
+
+	loop();
+end.

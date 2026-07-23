@@ -1,0 +1,13 @@
+program ToPointerDemo;
+var
+	base : integer = $0400;
+	p : pointer;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// high byte first, low byte second
+	p := topointer(hi(base),lo(base)+5);
+	p[0] := 65; // poke an "A" screen code 5 characters into the screen
+
+	loop();
+end.

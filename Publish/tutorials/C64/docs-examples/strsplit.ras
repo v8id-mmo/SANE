@@ -1,0 +1,19 @@
+program StrSplitDemo;
+var
+	source : string = "SANE IS FUN";
+	splitbuf : array[16] of byte;
+	part : pointer;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// Replaces every space in "source" with a zero terminator inside
+	// "splitbuf", so it becomes 3 back-to-back null-separated words.
+	strsplit(#source,#splitbuf,key_space);
+
+	// StrGetFromIndex reads a word back out by its 0-based position.
+	part := strgetfromindex(#splitbuf,0);
+	moveto(0,0,hi(screen_char_loc));
+	printstring(part,0,40); // "SANE"
+
+	loop();
+end.

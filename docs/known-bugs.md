@@ -624,8 +624,9 @@ in a correct rotate, but this builtin gives `%01000000`.
 
 Passing a bare numeric address literal (e.g. `$ffea`) directly as an
 argument to `Call`, `ClearBitmap`, `CopyCharsetFromRom`, `CopyFullScreen`,
-or `CopyHalfScreen` compiles without any error, but fails at the assembly
-stage right afterward, with an "opcode not implemented" error. The
+`CopyHalfScreen`, or `TransformColors` compiles without any error, but
+fails at the assembly stage right afterward, with an "opcode not
+implemented" error. The
 generated instruction ends up in an invalid form (an addressing mode that
 doesn't exist for that instruction) because the literal gets formatted
 the same way it would be for loading it into a register, not for using it
@@ -645,6 +646,7 @@ address works correctly there.
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md),
 [`CopyFullScreen`](reference/builtins/copyfullscreen.md),
 [`CopyHalfScreen`](reference/builtins/copyhalfscreen.md),
+[`TransformColors`](reference/builtins/transformcolors.md),
 [`Poke`](reference/builtins/poke.md)
 
 ### `CopyCharsetFromRom` only copies part of the character ROM
@@ -1021,3 +1023,33 @@ shape data, with no error.
 
 *Reference pages:* [`SetSpriteLoc`](reference/builtins/setspriteloc.md),
 [`SetScreenLocation`](reference/builtins/setscreenlocation.md)
+
+### `Wait(0)` spins through a near-256-iteration loop instead of returning immediately
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`Wait` is meant to busy-loop for a given number of iterations before
+returning. The generated loop always counts down at least once before
+checking whether it's reached zero, so calling it with a count of `0`
+underflows immediately and spins through nearly the full 256-iteration
+range instead of doing nothing. The same "runs the body at least once"
+shape shows up elsewhere in this fork too (`FOR`/`FORI`, `FLD`,
+`MemCpy`/`MemCpyFast` with a runtime count of `0`).
+
+*Reference page:* [`Wait`](reference/builtins/wait.md)
+
+### `ToggleBit` with a constant bit index runs its work twice
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`ToggleBit` has two internal code paths: a fast one for when the bit
+index is a compile-time constant, and a slower general one for when it's
+a variable or expression. When the bit index actually is a constant, the
+compiler generates the fast path correctly, but then falls through and
+also generates the slow path right after it, recomputing and reapplying
+the same set/clear a second time. The end result is still correct
+(setting or clearing the same bit twice has no further effect), but
+every call with a literal bit index, the common case, ends up roughly
+twice the code size and twice the execution time it needs to be.
+
+*Reference page:* [`ToggleBit`](reference/builtins/togglebit.md)

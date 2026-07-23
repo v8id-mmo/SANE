@@ -1,0 +1,17 @@
+program StrCmpDemo;
+var
+	name : string = "TRSE";
+	match : boolean;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	match := strcmp(#name,"TRSE");
+	moveto(0,0,hi(screen_char_loc));
+	printdecimal(match,1); // 1: equal
+
+	match := strcmp(#name,"SANE");
+	moveto(0,1,hi(screen_char_loc));
+	printdecimal(match,1); // 0: not equal
+
+	loop();
+end.

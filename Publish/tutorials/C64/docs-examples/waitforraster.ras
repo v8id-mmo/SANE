@@ -1,0 +1,11 @@
+program WaitForRasterDemo;
+begin
+	screen_bg_col := black;
+	while (true) do
+	begin
+		waitforraster(100);
+		screen_bg_col := white;
+		waitforraster(120);
+		screen_bg_col := black;
+	end;
+end.

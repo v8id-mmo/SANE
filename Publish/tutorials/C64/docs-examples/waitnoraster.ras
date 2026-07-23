@@ -1,0 +1,16 @@
+program WaitNoRasterDemo;
+begin
+	while (true) do
+	begin
+		// Simple raster bars: stack three background colors without
+		// ever needing a raster interrupt.
+		waitforverticalblank();
+		screen_bg_col := blue;
+		waitnoraster(60);
+		screen_bg_col := light_blue;
+		waitnoraster(20);
+		screen_bg_col := white;
+		waitnoraster(20);
+		screen_bg_col := black;
+	end;
+end.

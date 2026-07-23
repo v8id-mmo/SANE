@@ -1,0 +1,15 @@
+program TransformColorsDemo;
+var
+	invpal : array[16] of byte = (15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0);
+	const
+		screenbase : address = $0400;
+begin
+	clearscreen(key_space,screen_char_loc);
+	screen_fg_col := white;
+	moveto(0,0,hi(screen_char_loc));
+	printstring("INVERTED ON NEXT FRAME",0,40);
+
+	transformcolors(#invpal,screenbase);
+
+	loop();
+end.
