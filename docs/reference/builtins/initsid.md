@@ -15,8 +15,9 @@ part of the automatic-initialization scan mechanism.
 ## Parameters
 
 - `<address>`: the SID init entry point to call. Must be a compile-time
-  constant, typically the `_init` label an `incsid`-declared variable
-  generates (see the example below).
+  constant, typically the `_init` label an
+  [`incsid`](../types/incsid.md)-declared variable generates (see the
+  example below).
 
 ## Example
 

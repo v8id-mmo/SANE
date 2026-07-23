@@ -2,10 +2,10 @@
 
 :material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
-A flag on a `string`/`cstring` declaration that suppresses the automatic
-terminator byte normally appended after the text data. Useful for building
-a raw, fixed-width lookup table out of character data instead of a
-null-terminated string.
+A flag on a [`string`](../types/string.md)/[`cstring`](../types/cstring.md)
+declaration that suppresses the automatic terminator byte normally
+appended after the text data. Useful for building a raw, fixed-width
+lookup table out of character data instead of a null-terminated string.
 
 ## Syntax
 

@@ -451,6 +451,19 @@ currently no way to mark one private.
 
 *Reference page:* [`private`](reference/keywords/private.md)
 
+### Whole-record assignment always fails
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Assigning one record (or class) variable directly to another of the same
+type, with no field selector on either side, always fails to compile
+with an error saying a record can't be assigned to a single variable.
+This happens for every record/class shape, not just ones with array
+fields. Field-by-field assignment works and is the only way around it for
+now: copy each field individually instead of the whole value at once.
+
+*Reference page:* [`record`](reference/types/record.md)
+
 ## Types
 
 ### A non-`const` `address` variable is completely unusable

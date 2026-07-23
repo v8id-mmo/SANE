@@ -359,6 +359,17 @@ nav:
           - boolean: reference/types/boolean.md
           - byte: reference/types/byte.md
           - class: reference/types/class.md
+          - cstring: reference/types/cstring.md
+          - incbin: reference/types/incbin.md
+          - incsid: reference/types/incsid.md
+          - integer: reference/types/integer.md
+          - long: reference/types/long.md
+          - pointer: reference/types/pointer.md
+          - pure: reference/types/pure.md
+          - pure_number: reference/types/pure_number.md
+          - pure_variable: reference/types/pure_variable.md
+          - record: reference/types/record.md
+          - string: reference/types/string.md
       - Constants: reference/constants.md
   - Examples: examples/index.md
   - Platform Notes: platform-notes.md

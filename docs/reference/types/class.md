@@ -99,3 +99,8 @@ Known limitations: `array[N] of SomeClass` compiles fine even when
 implementation for either `record` or `class` members; see
 [`private`](../keywords/private.md)'s Known limitations. Every field and
 method declared here is effectively public.
+
+Whole-instance assignment (`hero2 := hero;` for two variables of the same
+class type) always fails to compile the same way it does for a plain
+[`record`](record.md); see that page's Known limitations for the full
+finding. Copy fields individually instead.

@@ -1,0 +1,11 @@
+program PureNumberDemo;
+
+procedure SetLevel(v : byte pure_number) inline;
+begin
+	screen_bg_col := v;
+end;
+
+begin
+	SetLevel(3);
+	loop();
+end.
