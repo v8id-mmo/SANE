@@ -1,7 +1,6 @@
 # `ToggleBit`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Sets or clears a single bit of a `byte` variable, in place.
 

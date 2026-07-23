@@ -1,7 +1,6 @@
 # `PrintNumber`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Prints a byte as a 2-character hexadecimal number at the current screen
 cursor position (set with [`MoveTo`](moveto.md)), despite the plain

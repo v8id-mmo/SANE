@@ -1,0 +1,43 @@
+program ClassDemo;
+var
+	Actor = class
+		hp : byte;
+		x, y : byte;
+
+		procedure Init(startHp : byte);
+		begin
+			this.hp := startHp;
+			this.x := 0;
+			this.y := 0;
+		end;
+
+		procedure TakeDamage(amount : byte);
+		begin
+			this.hp := this.hp - amount;
+		end;
+	end;
+
+	hero : Actor;
+	heroPtr : pointer of Actor;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	hero.Init(100);
+	hero.TakeDamage(30);
+
+	moveto(0,0,hi(screen_char_loc));
+	printstring("hp after hit:",0,40);
+	moveto(14,0,hi(screen_char_loc));
+	printdecimal(hero.hp,2);
+
+	// A pointer to the same object reaches the same fields/methods
+	heroPtr := #hero;
+	heroPtr^.TakeDamage(10);
+
+	moveto(0,1,hi(screen_char_loc));
+	printstring("hp via pointer:",0,40);
+	moveto(16,1,hi(screen_char_loc));
+	printdecimal(hero.hp,2);
+
+	loop();
+end.

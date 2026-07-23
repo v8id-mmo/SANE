@@ -1,7 +1,6 @@
 # `Rand`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Generates a random byte in a given inclusive range, using the SID chip's
 noise generator as an entropy source, and stores it in a variable.

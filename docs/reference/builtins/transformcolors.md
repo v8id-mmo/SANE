@@ -1,7 +1,6 @@
 # `TransformColors`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Remaps an entire 1000-byte (40x25) text screen and its matching Color
 RAM in place, through a 16-entry lookup table. Useful for palette-swap

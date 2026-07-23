@@ -16,7 +16,7 @@ function, and unit that declares any variables (or [`const`](const.md)/
 ## Parameters
 
 - `<name>`: the variable's identifier.
-- `<type>`: a built-in type (`byte`, `word`, `integer`, `long`, `boolean`,
+- `<type>`: a built-in type (`byte`, `integer`, `long`, `boolean`,
   `pointer`, `array[...] of ...`, `string`, ...) or a name introduced by
   [`type`](type.md).
 - `<initial value>`: optional; sets the variable's value at program start.

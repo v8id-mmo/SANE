@@ -1,0 +1,22 @@
+program AddressDemo;
+var
+	const borderReg : address = $D020;
+	const backgroundReg : address = $D021;
+	readBack : byte;
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// A named address constant, not a bare numeric literal, is the
+	// reliable way to pass a fixed memory location to a builtin.
+	Poke(borderReg, 6, 0);
+	Poke(backgroundReg, 6, 0);
+
+	// Reading it back proves it's the same location, not just a number
+	readBack := Peek(borderReg, 0);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("border reg now:",0,40);
+	moveto(17,0,hi(screen_char_loc));
+	printdecimal(readBack,2);
+
+	loop();
+end.

@@ -1,7 +1,6 @@
 # `PrintDecimal`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Prints an integer as a fixed-width decimal number at the current screen
 cursor position (set with [`MoveTo`](moveto.md)). Auto-init: the first

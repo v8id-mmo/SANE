@@ -1,7 +1,6 @@
 # `EnableRasterIRQ`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Turns on the VIC-II's raster-compare interrupt source. Used alongside
 [`EnableIRQ`](enableirq.md) and [`RasterIRQ`](rasterirq.md) when setting

@@ -1,7 +1,6 @@
 # `return`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE
-(see Known limitations below).
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
 
 Exits the current procedure or function immediately, skipping any
 remaining statements in it. Works the same way as

@@ -451,6 +451,22 @@ currently no way to mark one private.
 
 *Reference page:* [`private`](reference/keywords/private.md)
 
+## Types
+
+### A non-`const` `address` variable is completely unusable
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Every real usage of the `address` type declares it as a `const`. Declaring
+one as a plain `var` instead fails to compile with a codegen error, with
+or without an initial value, and whether or not the variable is ever
+referenced anywhere in the program. Reading it, writing to it, and
+passing it to a builtin all fail the same way. Use `const` for a fixed
+memory location, or `pointer` for something that genuinely needs to
+change at runtime.
+
+*Reference page:* [`address`](reference/types/address.md)
+
 ## Branch optimization
 
 ### `onpage`/`offpage` have gaps on `case` and `repeat...until`, and no safety net when forcing `onpage`
