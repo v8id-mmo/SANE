@@ -1,0 +1,43 @@
+program SpriteCollision;
+var
+	// Sprite 0: a fixed target sitting in the middle of the screen.
+	targetX : integer = 160;
+	targetY : byte = 100;
+
+	// Sprite 1: the one you move with the joystick.
+	playerX : integer = 24;
+	playerY : byte = 50;
+
+	touching : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	sprite_color[0] := yellow;
+	sprite_color[1] := light_red;
+	togglebit(sprite_bitmask,0,1);
+	togglebit(sprite_bitmask,1,1);
+
+	SpritePos(targetX,targetY,0); // the target never moves again after this
+
+	repeat
+		joystick(1);
+
+		if (joystickleft=1) then playerX := playerX - 2;
+		if (joystickright=1) then playerX := playerX + 2;
+		if (joystickup=1) then playerY := playerY - 2;
+		if (joystickdown=1) then playerY := playerY + 2;
+
+		SpritePos(playerX,playerY,1);
+
+		// Treat the two sprites as "touching" once they're within 12
+		// pixels of each other on both the X and Y axis.
+		touching := IsOverlapping(playerX,playerY,targetX,targetY,12);
+		if (touching=1) then
+			screen_bg_col := red
+		else
+			screen_bg_col := black;
+
+		wait(2);
+	until false;
+end.

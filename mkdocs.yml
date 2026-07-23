@@ -371,7 +371,14 @@ nav:
           - record: reference/types/record.md
           - string: reference/types/string.md
       - Constants: reference/constants.md
-  - Examples: examples/index.md
+  - Examples:
+      - Overview: examples/index.md
+      - Hello World: examples/hello-world.md
+      - Score counter: examples/score-counter.md
+      - Joystick sprite move: examples/joystick-sprite-move.md
+      - Keypress wait: examples/keypress-wait.md
+      - Sprite collision: examples/sprite-collision.md
+      - Raster bars: examples/raster-bars.md
   - Platform Notes: platform-notes.md
   - Compatibility Tags: tags.md
   - Changelog: changelog.md

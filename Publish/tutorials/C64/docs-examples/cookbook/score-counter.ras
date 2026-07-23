@@ -1,0 +1,27 @@
+program ScoreCounter;
+var
+	// integer, not byte, since we want room to count past 255.
+	score : integer = 0;
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("score:",0,40);
+
+	// Count up ten times, adding 10 each pass and redrawing the number
+	// straight after, so you can watch the on-screen value change.
+	for i:=0 to 9 do
+	begin
+		score := score + 10;
+
+		// Re-position the cursor before every redraw: PrintDecimal doesn't
+		// remember where it printed last time.
+		moveto(7,0,hi(screen_char_loc));
+		printdecimal(score,3); // 4 digits, e.g. "0100"
+
+		wait(80); // slow it down enough to actually see each step tick by
+	end;
+
+	loop();
+end.

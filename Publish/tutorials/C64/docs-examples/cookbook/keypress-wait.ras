@@ -1,0 +1,28 @@
+program KeypressWait;
+var
+	key : byte = 0;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(4,10,hi(screen_char_loc));
+	printstring("press any key to continue...",0,40);
+
+	// getkey() returns 0 until some key is actually held down, so looping
+	// until it's non-zero is a simple "wait for any key" pattern.
+	repeat
+		key := getkey();
+	until key<>0;
+
+	clearscreen(key_space,screen_char_loc);
+	moveto(4,10,hi(screen_char_loc));
+	printstring("thanks! now hold space to quit.",0,40);
+
+	// Keypressed checks one specific, named key instead of "any key at
+	// all"; useful once you know exactly which key you're waiting for.
+	while (keypressed(KEY_SPACE)=false) do
+	begin
+	end;
+
+	screen_bg_col := light_green;
+	loop();
+end.

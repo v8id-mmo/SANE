@@ -1,0 +1,53 @@
+program RasterBars;
+
+// Four handlers, each one armed to fire at a different raster line, each
+// re-arming the next one in the chain. Together they paint four bands of
+// background color down the screen, redrawn every single frame.
+
+interrupt Bar1();
+interrupt Bar2();
+interrupt Bar3();
+interrupt Bar4();
+
+interrupt Bar1();
+begin
+	startirq(0);
+	screen_bg_col := red;
+	RasterIRQ(Bar2(),80,0); // arm the next band down
+	closeirq();
+end;
+
+interrupt Bar2();
+begin
+	startirq(0);
+	screen_bg_col := yellow;
+	RasterIRQ(Bar3(),120,0);
+	closeirq();
+end;
+
+interrupt Bar3();
+begin
+	startirq(0);
+	screen_bg_col := green;
+	RasterIRQ(Bar4(),160,0);
+	closeirq();
+end;
+
+interrupt Bar4();
+begin
+	startirq(0);
+	screen_bg_col := blue;
+	RasterIRQ(Bar1(),40,0); // loop back to the top band for the next frame
+	closeirq();
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	// Standard setup before installing a custom raster interrupt: turn off
+	// the CIA timers, then arm the very first band in the chain.
+	disableciainterrupts();
+	StartRasterChain(Bar1(),40,0);
+
+	loop();
+end.
