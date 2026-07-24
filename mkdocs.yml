@@ -383,6 +383,14 @@ nav:
       - Dice roll mini-game: examples/dice-roll-game.md
       - String handling: examples/string-handling.md
       - Score table: examples/score-table.md
+      - Custom BASIC loader: examples/custom-basic-loader.md
+      - KERNAL file load: examples/kernal-file-load.md
+      - Sprite multiplexer: examples/sprite-multiplex.md
+      - Mouse reading: examples/mouse-read.md
+      - Smooth scrolling: examples/smooth-scroll.md
+      - KERNAL streaming load: examples/kernal-stream-load.md
+      - Sprite state machine: examples/sprite-state-machine.md
+      - Open border effect: examples/open-border.md
   - Platform Notes: platform-notes.md
   - Compatibility Tags: tags.md
   - Changelog: changelog.md

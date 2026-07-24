@@ -1,0 +1,39 @@
+program OpenBorder;
+
+// The VIC-II decides whether to draw the border or the display each
+// raster line by comparing against $D011's RSEL bit at two fixed points
+// every frame: around line 51 (top) and line 251 (bottom) on PAL.
+// Toggling that bit off right as the bottom border would normally
+// start, then back on right as the top border would normally start on
+// the next frame, tricks the VIC-II into never drawing the bottom (or
+// top) border at all for the lines in between: the classic "open
+// border" demo effect.
+
+interrupt OpenAtBottom();
+interrupt CloseAtTop();
+
+interrupt OpenAtBottom();
+begin
+	startirq(0);
+	hidebordery(1); // stop the bottom border from starting
+	RasterIRQ(CloseAtTop(),51,0);
+	closeirq();
+end;
+
+interrupt CloseAtTop();
+begin
+	startirq(0);
+	hidebordery(0); // restore the top border for the rest of this frame
+	RasterIRQ(OpenAtBottom(),251,0);
+	closeirq();
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	screen_bg_col := blue;
+
+	disableciainterrupts();
+	StartRasterChain(OpenAtBottom(),251,0);
+
+	loop();
+end.

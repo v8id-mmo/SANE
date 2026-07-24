@@ -1,0 +1,52 @@
+program SmoothScroll;
+
+// A minimal, symmetric left/right smooth scroller: ScrollX (the VIC-II
+// fine-scroll register) handles the sub-character pixel motion every
+// single frame, and once the fine-scroll counter wraps, the visible
+// substring of the message is redrawn one character further along
+// (the "coarse" step). Both directions are handled the same way here,
+// deliberately mirrored: a scroller where only one direction gets this
+// full treatment and the other is a shortened afterthought is exactly
+// how this mechanism ends up flickering or stalling going one way.
+
+var
+	message : string = "THIS TEXT SCROLLS SMOOTHLY, BOTH LEFT AND RIGHT, FOREVER.     ";
+	messageEnd : byte = 62; // length of the string above; where the loop point is
+	textOffset : byte = 0;
+	fineScroll : byte = 0;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,12,hi(screen_char_loc));
+	printstring(message,0,40);
+
+	repeat
+		joystick(1);
+
+		if (joystickleft=1) then begin
+			if (fineScroll=0) then begin
+				// coarse step: reveal the next character on the right edge
+				fineScroll := 7;
+				textOffset += 1;
+				if (textOffset > messageEnd-40) then textOffset := 0;
+				moveto(0,12,hi(screen_char_loc));
+				printstring(message,textOffset,40);
+			end else fineScroll -= 1;
+			scrollx(fineScroll & 7);
+		end;
+
+		if (joystickright=1) then begin
+			if (fineScroll=7) then begin
+				// coarse step: reveal the next character on the left edge
+				fineScroll := 0;
+				if (textOffset=0) then textOffset := messageEnd-40
+				else textOffset -= 1;
+				moveto(0,12,hi(screen_char_loc));
+				printstring(message,textOffset,40);
+			end else fineScroll += 1;
+			scrollx(fineScroll & 7);
+		end;
+
+		wait(1);
+	until false;
+end.

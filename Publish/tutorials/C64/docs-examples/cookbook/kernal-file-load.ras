@@ -1,0 +1,39 @@
+program KernalFileLoad;
+
+var
+	// Named address constants for the three KERNAL routines this needs.
+	// Call() doesn't accept a bare numeric literal address directly, so
+	// these have to be declared first.
+	const SETLFS : address = $ffba; // set logical file number, device, secondary address
+	const SETNAM : address = $ffbd; // set filename
+	const LOAD   : address = $ffd5; // load (or verify) a file from the open device
+
+	fileName       : string = "DATA";
+	fileNameLength : byte = 4;
+	loadAddress    : integer = $3000;
+
+procedure loadFile();
+begin
+	_A := 1; _X := 8; _Y := 0;        // logical file 1, device 8 (disk), sec. addr 0
+	Call(SETLFS);
+
+	_A := fileNameLength;
+	_X := lo(#fileName); _Y := hi(#fileName);
+	Call(SETNAM);
+
+	_A := 0;                           // 0 = load, not verify
+	_X := lo(loadAddress); _Y := hi(loadAddress);
+	Call(LOAD);                        // secondary address 0 above means:
+	                                    // ignore the file's own 2-byte header,
+	                                    // load to loadAddress instead
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	loadFile();
+
+	moveto(1,1,hi(screen_char_loc));
+	printstring("file loaded from disk",0,22);
+	loop();
+end.
