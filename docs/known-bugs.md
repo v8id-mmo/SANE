@@ -1082,3 +1082,61 @@ every call with a literal bit index, the common case, ends up roughly
 twice the code size and twice the execution time it needs to be.
 
 *Reference page:* [`ToggleBit`](reference/builtins/togglebit.md)
+
+## Project files and build tooling
+
+### A missing settings file reports a successful exit code
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Compiling with no `settings=` argument, when the CLI's own fallback
+location for a settings file also doesn't have one, prints an error and
+compiles nothing at all, but the process still reports a successful
+exit code, the same one a real, successful compile returns. A build
+script or CI job that only checks the exit code, rather than reading
+the printed output, would report this as a passing build.
+
+*Reference page:* [Project & Settings Files](project-files.md)
+
+### `output_file=` has no effect in the normal project compile mode
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+`output_file=` is meant to rename the produced binary. It only actually
+does that when assembling a `.asm` file directly, outside of a full
+project compile; in the normal project-compile mode, it's accepted on
+the command line but silently changes nothing, with no error or warning
+that it had no effect.
+
+*Reference page:* [Project & Settings Files](project-files.md)
+
+### Shipped C64 project templates spell two of their own settings wrong
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Every general-purpose C64 project template this fork ships (including
+the downloadable project bundle used to compile examples on this site)
+contains two settings under the wrong key name, so setting them has no
+effect at all: the whole-program compression toggle, and two of the
+four settings that override the default load address/header behavior
+(only the custom-load-address override actually works in an affected
+template; the other two silently stay off). A handful of more
+specialized templates carry the correct key names too, alongside the
+wrong ones, so compression and all four overrides do work there.
+Setting either one from inside a program's own source, rather than by
+hand-editing the project file, always uses the correct key name and
+isn't affected by this.
+
+*Reference page:* [Project & Settings Files](project-files.md)
+
+### A settings-file key that looks like it removes unused symbols does nothing
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+The settings file (as opposed to the project file) contains a key that
+reads exactly like the on/off switch for removing unused
+variables/procedures from a compile. It isn't; that key is never read
+anywhere. The real switch lives in the project file instead, under a
+different, similarly-named key.
+
+*Reference page:* [Project & Settings Files](project-files.md)

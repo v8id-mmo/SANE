@@ -194,3 +194,6 @@ one of the lists ends up empty.
   projects, not specific to any one of them: which assembler to use
   (`assembler = OrgAsm` or `dasm`), and the external tool paths
   (`lz4`, `exomizer`) the compression mechanisms above depend on.
+
+See [Project & Settings Files](project-files.md) for a full, detailed
+reference on every setting in both files.

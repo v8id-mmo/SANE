@@ -38,6 +38,10 @@ downloaded files work unchanged for every example on the site. Add
 `assemble=no` to the command above to stop after generating the `.asm`
 without assembling a `.prg`.
 
+See [Project & Settings Files](project-files.md) for a full, detailed
+reference on every setting in both files, what each one controls, and
+the rest of the command-line options.
+
 ## Where to go next
 
 - See the [Reference](reference/keywords/index.md) section for the
