@@ -1,0 +1,64 @@
+program MouseRead;
+
+var
+	const paddleSelect : address = $dc00;
+	const potXReg       : address = $d419;
+	const potYReg       : address = $d41a;
+	const ciaButtons   : address = $dc01;
+
+	mouseX : integer = 160;
+	mouseY : byte = 100;
+	lastPotX : byte = 0;
+	lastPotY : byte = 0;
+	raw, diff : byte;
+	buttonPressed : boolean;
+
+procedure initMouse();
+begin
+	poke(^$dc02,0,$c0);       // CIA1 port A DDR: bits 6-7 output (paddle select), rest input
+	poke(^$dc03,0,$00);       // CIA1 port B DDR: all input (buttons/pot lines)
+	poke(paddleSelect,0,$40); // select paddle/mouse pair 1 (control port 1)
+end;
+
+// A 1351 mouse reports motion as a continuously wrapping 6-bit counter on
+// SID's POTX/POTY, not an absolute position: each frame the new raw
+// reading is compared against last frame's to recover how far, and which
+// way, it moved. Written entirely with unsigned byte comparisons on
+// purpose, to sidestep this fork's own known limitations with signed
+// comparisons.
+procedure pollMouse();
+begin
+	raw := peek(potXReg,0);
+	diff := (raw - lastPotX) & $7f;
+	lastPotX := raw;
+	if diff >= 64 then mouseX := mouseX - (128-diff)
+	else mouseX := mouseX + diff;
+
+	raw := peek(potYReg,0);
+	diff := (raw - lastPotY) & $7f;
+	lastPotY := raw;
+	if diff >= 64 then mouseY := mouseY + (128-diff)  // Y is inverted at the hardware level
+	else mouseY := mouseY - diff;
+
+	if mouseX < 24 then mouseX := 24;
+	if mouseX > 320 then mouseX := 320;
+	if mouseY < 50 then mouseY := 50;
+	if mouseY > 229 then mouseY := 229;
+
+	buttonPressed := (peek(ciaButtons,0) & 16) = 0; // fire/left button, active low
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	initMouse();
+
+	sprite_color[0] := white;
+	togglebit(sprite_bitmask,0,1);
+
+	repeat
+		pollMouse();
+		SpritePos(mouseX,mouseY,0);
+		if buttonPressed then sprite_color[0] := light_red else sprite_color[0] := white;
+		wait(1);
+	until false;
+end.

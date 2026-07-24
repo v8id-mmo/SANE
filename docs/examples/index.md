@@ -25,3 +25,24 @@ test before publishing.
 - [A score table with records and arrays](score-table.md): a small
   fixed data table, printed in full and then scanned for the highest
   value.
+- [Writing a custom BASIC loader line](custom-basic-loader.md): replace
+  the automatic "10 SYS" stub with a hand-built BASIC line of your own.
+- [Loading a file from disk with the KERNAL](kernal-file-load.md): the
+  three-call `SETLFS`/`SETNAM`/`LOAD` sequence for loading a named file
+  into memory at runtime.
+- [A simple sprite multiplexer](sprite-multiplex.md): a raster split
+  reuses two hardware sprites to draw four independently falling
+  objects.
+- [Reading a 1351 mouse](mouse-read.md): decode the SID POT registers'
+  wrapping motion counter into a moving sprite and a button read.
+- [Smooth horizontal scrolling, both directions](smooth-scroll.md): a
+  fine-scroll register plus a coarse character-shift step, kept
+  symmetric so neither direction flickers or stalls.
+- [Streaming a file into multiple memory regions](kernal-stream-load.md):
+  `OPEN`/`CHKIN`/`CHRIN` to split one file's contents across several
+  destination addresses.
+- [A sprite that changes role over time](sprite-state-machine.md): one
+  hardware sprite as a crosshair, then a bullet, then an explosion,
+  driven by game state rather than raster position.
+- [The classic open-border effect](open-border.md): a two-line raster
+  handoff removes the top and bottom screen border for the whole frame.

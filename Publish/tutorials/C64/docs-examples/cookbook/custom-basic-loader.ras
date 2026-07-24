@@ -1,0 +1,32 @@
+program CustomBasicLoader;
+
+// SANE normally writes its own "10 SYS <startaddress>" line ahead of every
+// compiled program. These two settings turn that automatic line off, so a
+// hand-written BASIC line (declared as a raw byte array below) can take
+// its place instead.
+@projectsettings "ignorebasicsysstart" 1
+@projectsettings "startaddress" $0820
+
+var
+	// A hand-built BASIC program, byte for byte: line 10, "SYS 2080", then
+	// a REM comment that shows up when this program is LISTed in BASIC.
+	// 2080 decimal is $0820, the startaddress above.
+	basicLoader : array[25] of byte = (
+		$18, $08,                                          // link to the next BASIC line (the end-of-program marker below)
+		$0a, $00,                                          // line number: 10
+		$9e,                                                // SYS token
+		$32, $30, $38, $30,                                // "2080" as PETSCII digits
+		$3a,                                                // ":"
+		$8f,                                                // REM token
+		$20,                                                // " "
+		$48, $45, $4c, $4c, $4f, $20, $53, $41, $4e, $45,  // "HELLO SANE"
+		$00,                                                // end of this line
+		$00, $00                                            // end of BASIC program
+	) at $0801;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(1,1,hi(screen_char_loc));
+	printstring("custom basic loader ran",0,24);
+	loop();
+end.

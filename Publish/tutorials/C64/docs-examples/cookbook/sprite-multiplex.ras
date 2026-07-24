@@ -1,0 +1,56 @@
+program SpriteMultiplex;
+
+// A minimal sprite multiplexer: four falling raindrops share just two
+// hardware sprites. A raster interrupt splits the screen in half.
+// Sprites 0/1 show the top two raindrops while the beam draws the upper
+// half, then get repositioned to the bottom two raindrops' spots the
+// instant the beam crosses into the lower half, and back again for the
+// next frame's top half. Since each move happens only after the beam has
+// already drawn past that sprite's old position, two hardware sprites
+// end up drawing four independent raindrops.
+
+var
+	dropX : array[4] of integer = (60,140,220,280);
+	dropY : array[4] of byte    = (60,90,60,90);
+	i : byte;
+
+interrupt TopHalf();
+interrupt BottomHalf();
+
+interrupt TopHalf();
+begin
+	startirq(0);
+	SpritePos(dropX[0],dropY[0],0);
+	SpritePos(dropX[1],dropY[1],1);
+	RasterIRQ(BottomHalf(),140,0); // hand off once the beam reaches mid-screen
+	closeirq();
+end;
+
+interrupt BottomHalf();
+begin
+	startirq(0);
+	SpritePos(dropX[2],dropY[2],0);
+	SpritePos(dropX[3],dropY[3],1);
+	RasterIRQ(TopHalf(),50,0); // hand back for the next frame's top half
+	closeirq();
+end;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	sprite_color[0] := white;
+	sprite_color[1] := light_blue;
+	togglebit(sprite_bitmask,0,1);
+	togglebit(sprite_bitmask,1,1);
+
+	disableciainterrupts();
+	StartRasterChain(TopHalf(),50,0);
+
+	repeat
+		for i:=0 to 3 do begin
+			dropY[i] := dropY[i]+1;
+			if (dropY[i] > 229) then dropY[i] := 50;
+		end;
+		wait(1);
+	until false;
+end.

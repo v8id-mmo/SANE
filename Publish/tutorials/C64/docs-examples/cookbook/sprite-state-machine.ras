@@ -1,0 +1,87 @@
+program SpriteStateMachine;
+
+// One hardware sprite, three roles: while idle it's a crosshair that
+// follows the joystick; pressing fire launches it upward as a "bullet";
+// reaching the top of the screen switches it to an "explosion" shape for
+// a few frames, then it returns to being an idle crosshair again. This
+// is a different kind of sprite reuse than a raster-split multiplexer:
+// here the same hardware sprite index changes ROLE over time, driven by
+// game state, rather than being repositioned mid-frame.
+
+var
+	const STATE_IDLE      : byte = 0;
+	const STATE_FLYING    : byte = 1;
+	const STATE_EXPLODING : byte = 2;
+
+	// Placeholder shapes, deliberately simple: a thin "+" for the
+	// crosshair/bullet, a solid block for the explosion. Both are placed
+	// at fixed, 64-byte-aligned addresses, since SetSpriteLoc needs that
+	// (its dataLoc argument is the address divided by 64).
+	crosshairShape : array[63] of byte = (
+		$18,$18,$00, $18,$18,$00, $18,$18,$00, $18,$18,$00,
+		$18,$18,$00, $18,$18,$00, $18,$18,$00, $18,$18,$00,
+		$18,$18,$00, $ff,$ff,$00, $ff,$ff,$00, $ff,$ff,$00,
+		$18,$18,$00, $18,$18,$00, $18,$18,$00, $18,$18,$00,
+		$18,$18,$00, $18,$18,$00, $18,$18,$00, $18,$18,$00,
+		$18,$18,$00
+	) at $3000;
+
+	explosionShape : array[63] of byte = (
+		$ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff,
+		$ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff,
+		$ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff,
+		$ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff,
+		$ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff, $ff,$ff,$ff,
+		$ff,$ff,$ff
+	) at $3040;
+
+	state : byte = STATE_IDLE;
+	x : integer = 160;
+	y : byte = 150;
+	explodeTimer : byte = 0;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	SetSpriteLoc(0, $c0, vic_bank0); // $3000 / 64
+	sprite_color[0] := white;
+	togglebit(sprite_bitmask,0,1);
+
+	repeat
+		joystick(1);
+
+		if (state = STATE_IDLE) then begin
+			if (joystickleft=1)  then x := x - 2;
+			if (joystickright=1) then x := x + 2;
+			if (joystickup=1)    then y := y - 2;
+			if (joystickdown=1)  then y := y + 2;
+			if (joystickbutton=1) then begin
+				state := STATE_FLYING;
+				sprite_color[0] := yellow;
+			end;
+		end;
+
+		if (state = STATE_FLYING) then begin
+			y := y - 4;
+			if (y <= 50) then begin
+				state := STATE_EXPLODING;
+				explodeTimer := 15;
+				SetSpriteLoc(0, $c1, vic_bank0); // $3040 / 64
+				sprite_color[0] := light_red;
+			end;
+		end;
+
+		if (state = STATE_EXPLODING) then begin
+			explodeTimer := explodeTimer - 1;
+			if (explodeTimer = 0) then begin
+				state := STATE_IDLE;
+				SetSpriteLoc(0, $c0, vic_bank0); // back to the crosshair shape
+				sprite_color[0] := white;
+				y := 150;
+			end;
+		end;
+
+		SpritePos(x,y,0);
+		wait(2);
+	until false;
+end.
