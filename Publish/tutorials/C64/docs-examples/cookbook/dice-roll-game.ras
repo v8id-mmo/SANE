@@ -1,0 +1,44 @@
+program DiceRollGame;
+var
+	roll, previous : byte;
+	key : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	previous := 0;
+
+	moveto(0,0,hi(screen_char_loc));
+	printstring("press any key to roll the die",0,40);
+
+	repeat
+		// Wait for a fresh keypress before rolling again.
+		repeat
+			key := getkey();
+		until key<>0;
+
+		rand(1,6,roll); // a new die roll, 1-6 inclusive
+
+		moveto(0,2,hi(screen_char_loc));
+		printstring("roll:",0,40);
+		moveto(6,2,hi(screen_char_loc));
+		printdecimal(roll,1);
+
+		moveto(0,3,hi(screen_char_loc));
+		if (previous=0) then
+			printstring("first roll!            ",0,40)
+		else if (roll>previous) then
+			printstring("higher than last time! ",0,40)
+		else if (roll<previous) then
+			printstring("lower than last time.  ",0,40)
+		else
+			printstring("same as last time.     ",0,40);
+
+		previous := roll;
+
+		// Wait for the key to be released so one press doesn't register
+		// as several rolls in a row.
+		repeat
+			key := getkey();
+		until key=0;
+	until false;
+end.

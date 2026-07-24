@@ -18,3 +18,10 @@ test before publishing.
   sprite with the joystick and check it against a fixed target.
 - [Simple color raster bars](raster-bars.md): a chained raster
   interrupt painting bands of background color down the screen.
+- [A simple dice-roll mini-game](dice-roll-game.md): press a key to
+  roll a random die and compare it against your last roll.
+- [Normalizing and comparing strings](string-handling.md): convert a
+  string's case before comparing it with an exact byte match.
+- [A score table with records and arrays](score-table.md): a small
+  fixed data table, printed in full and then scanned for the highest
+  value.

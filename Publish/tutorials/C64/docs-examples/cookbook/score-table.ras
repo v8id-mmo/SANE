@@ -1,0 +1,59 @@
+program ScoreTable;
+var
+	Entry = record
+		id, score : byte;
+	end;
+
+	// A small fixed table of "player id"/"score" pairs. The same array
+	// could just as easily be filled in at runtime instead.
+	table : array[5] of Entry;
+	i, bestIndex : byte;
+	bestScore : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	table[0].id := 1;
+	table[0].score := 42;
+	table[1].id := 2;
+	table[1].score := 87;
+	table[2].id := 3;
+	table[2].score := 15;
+	table[3].id := 4;
+	table[3].score := 63;
+	table[4].id := 5;
+	table[4].score := 91;
+
+	// Print the whole table first.
+	for i:=0 to 4 do
+	begin
+		moveto(0,i,hi(screen_char_loc));
+		printstring("player",0,40);
+		moveto(7,i,hi(screen_char_loc));
+		printdecimal(table[i].id,1);
+		moveto(10,i,hi(screen_char_loc));
+		printstring("score:",0,40);
+		moveto(17,i,hi(screen_char_loc));
+		printdecimal(table[i].score,3);
+	end;
+
+	// Then scan it for the highest score, keeping track of which entry
+	// it belongs to.
+	bestIndex := 0;
+	bestScore := table[0].score;
+	for i:=1 to 4 do
+	begin
+		if (table[i].score > bestScore) then
+		begin
+			bestScore := table[i].score;
+			bestIndex := i;
+		end;
+	end;
+
+	moveto(0,7,hi(screen_char_loc));
+	printstring("highest: player",0,40);
+	moveto(16,7,hi(screen_char_loc));
+	printdecimal(table[bestIndex].id,1);
+
+	loop();
+end.
