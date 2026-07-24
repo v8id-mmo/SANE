@@ -8,6 +8,11 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Added a Platform Notes page to the documentation site: RAM/ROM
+  banking, VIC-II bank switching, raster interrupts, the three unrelated
+  compression mechanisms (including a whole-program self-extracting
+  crunch option not documented anywhere else on the site), build-time
+  optimization settings, zero-page usage, and source file roles.
 - Fixed the documentation site's navigation and color scheme
 - Split the documentation site's `@`-prefixed build directives out of
   the Keywords reference category into their own dedicated Directives
