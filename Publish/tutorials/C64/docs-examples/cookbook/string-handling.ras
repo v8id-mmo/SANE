@@ -1,0 +1,37 @@
+program StringHandling;
+var
+	name : string = "Trse";
+	checkName : string = "Trse";
+	isMatch : boolean;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+
+	moveto(0,0,hi(screen_char_loc));
+	printstring("original: ",0,40);
+	moveto(10,0,hi(screen_char_loc));
+	printstring(#name,0,40);
+
+	// StrCmp is an exact, case-sensitive byte compare, so normalizing a
+	// copy to uppercase first is what makes a "case-insensitive" check
+	// against a known reference word possible.
+	strtoupper(#checkName);
+	moveto(0,1,hi(screen_char_loc));
+	printstring("uppercased:",0,40);
+	moveto(11,1,hi(screen_char_loc));
+	printstring(#checkName,0,40);
+
+	isMatch := strcmp(#checkName,"TRSE");
+	moveto(0,2,hi(screen_char_loc));
+	printstring("matches 'TRSE':",0,40);
+	moveto(16,2,hi(screen_char_loc));
+	printdecimal(isMatch,1);
+
+	strtolower(#name);
+	moveto(0,3,hi(screen_char_loc));
+	printstring("lowercased:",0,40);
+	moveto(11,3,hi(screen_char_loc));
+	printstring(#name,0,40);
+
+	loop();
+end.

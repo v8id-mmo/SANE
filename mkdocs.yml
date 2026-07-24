@@ -379,6 +379,9 @@ nav:
       - Keypress wait: examples/keypress-wait.md
       - Sprite collision: examples/sprite-collision.md
       - Raster bars: examples/raster-bars.md
+      - Dice roll mini-game: examples/dice-roll-game.md
+      - String handling: examples/string-handling.md
+      - Score table: examples/score-table.md
   - Platform Notes: platform-notes.md
   - Compatibility Tags: tags.md
   - Changelog: changelog.md
