@@ -83,11 +83,9 @@ reasoning behind that, and everything else this fork is working toward.
 ## Thanks
 
 None of this would exist without [leuat](https://github.com/leuat)'s
-original TRSE and the community that's grown up around it: a genuinely
-capable, freely available 8-bit Pascal compiler, plus years of forum
-threads and tutorials written by other TRSE users that this project
-leaned on constantly along the way. SANE only exists because that work
-was already there to fork, narrow down, and build on top of.
+original [TRSE](https://github.com/leuat/TRSE) and the community that's grown up around it.
+SANE only exists because that work was already there to fork, narrow down,
+and build on top of.
 
 ---
 
