@@ -1,8 +1,0 @@
-unit Screen;
-var
-	const screen:address = $3C00;
-	const width:byte=64;
-	const height:byte=16;
-	
-	
-end.
