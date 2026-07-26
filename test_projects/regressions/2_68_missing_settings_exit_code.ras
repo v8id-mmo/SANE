@@ -1,0 +1,10 @@
+// Bug 2.68: a missing/unreadable settings file makes the CLI print an
+// error and compile nothing, but still exit 0 (success), instead of a
+// nonzero failure code. See KNOWN_BUGS.md and CLAUDE.md section 2.68.
+//
+// This file's content is irrelevant: op=project with no settings= param
+// (and, per this script's harness below, no AppData-fallback trse.ini
+// either) never gets far enough to actually compile it.
+Program Bug_2_68_MissingSettingsExitCode;
+begin
+end.

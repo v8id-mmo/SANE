@@ -1,0 +1,47 @@
+Program Bug_2_29_ShrSignedArithmetic;
+// Bug 2.29: `shr`/`>>` on a signed value is always a plain logical shift
+// (CodeGen6502::HandleShiftRight-family codegen, codegen_6502.cpp ~414-530
+// across the byte/16-bit/24-bit width handlers), never checking isSigned(),
+// so the vacated high bits are always filled with 0 instead of a copy of
+// the sign bit. Tested at both byte and 16-bit width.
+//
+// Results are stashed into plain (unsigned-flagged) byte/integer holders
+// and compared against the raw unsigned bit pattern of the expected
+// negative value, the same workaround 2_03/2_04/2_05 use to sidestep bug
+// 2.1's broken signed '=' comparison (only implemented for signed byte's
+// own compare, not signed integer's).
+@use "unittests/common"
+
+var
+	sb : signed byte = -8;
+	sb_result : byte;
+	si : signed integer = -256;
+	si_result : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	sb_result := sb >> 1;
+	// correct (arithmetic): -8 >> 1 = -4 = $FC = 252 unsigned
+	// buggy (logical): $F8 >> 1 = $7C = 124
+	Vars::text := "2.29a";
+	if (sb_result = 252) then Common::PASS() else Common::FAIL();
+
+	si_result := si >> 1;
+	// correct (arithmetic): -256 ($FF00) >> 1 = -128 = $FF80 = 65408 unsigned
+	// buggy (logical): $FF00 >> 1 = $7F80 = 32640
+	Vars::text := "2.29b";
+	if (si_result = 65408) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

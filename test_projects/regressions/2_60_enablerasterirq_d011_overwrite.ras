@@ -1,0 +1,41 @@
+Program Bug_2_60_EnableRasterIRQ_D011_Overwrite;
+// Bug 2.60: EnableRasterIRQ correctly does a masked read/OR/store on
+// $D01A (the raster-IRQ-enable bit) but immediately follows it with a
+// hardcoded `lda #$1B / sta $d011`, an unconditional overwrite of the
+// whole VIC-II main control register - the same "hardcoded overwrite"
+// shape as SetBitmapMode (2.56), just in a different builtin.
+// Methods6502::EnableRasterIRQ (methods6502.cpp ~4649-4654).
+// StartRasterChain calls EnableRasterIRQ internally, so it inherits the
+// same side effect.
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	// Baseline $D011 = %10011101: bit7 (raster-compare high) = 1,
+	// Y-scroll (bits 2-0) = 5, DEN/RSEL = 1.
+	poke(^$D011,0,%10011101);
+	EnableRasterIRQ();
+	b := peek(^$D011,0);
+
+	Vars::text := "2.60a";
+	if ((b & %00000111) = 5) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.60b";
+	if ((b & %10000000) = %10000000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

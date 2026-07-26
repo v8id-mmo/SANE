@@ -1,0 +1,41 @@
+Program Bug_2_38_CopyCharsetFromRom_PartialCoverage;
+// Bug 2.38: CopyCharsetFromRom is meant to copy the full 2048-byte
+// character ROM, but its 8 copy chunks are built with a stride of
+// `i*100` (Methods6502::CopyCharsetFromRom, methods6502.cpp ~4520-4552)
+// instead of `i*256`, so they heavily overlap and the highest byte
+// reached is offset 955. Everything from offset 956 onward is never
+// copied at all.
+//
+// Sentinel technique: fill the destination with a known byte, call
+// CopyCharsetFromRom, then check an offset well past the documented
+// reach (955) - offset 1500 - has actually been overwritten with real
+// ROM data. Pre-fix, that byte is untouched (still the sentinel);
+// post-fix, the full 8x256-byte stride reaches it and it differs.
+@use "unittests/common"
+
+var
+	dest : ^byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	dest := $3000;
+	poke(^$35DC,0,$AA); // $3000 + 1500, sentinel well past the buggy 956-byte reach
+
+	copycharsetfromrom(dest);
+
+	Vars::text := "2.38";
+	if (peek(^$35DC,0) <> $AA) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,39 @@
+Program Bug_2_56_SetBitmapMode_D011_Overwrite;
+// Bug 2.56: SetBitmapMode does a hardcoded `lda #$3b / sta $d011`, an
+// unconditional overwrite of the entire register, instead of a masked
+// read/OR/store like its sibling mode-toggle builtins (SetTextMode etc).
+// $3B = %00111011 forces Y-scroll to 3 and the raster-compare high bit
+// (bit 7) to 0, regardless of what was already configured.
+// Methods6502::SetBitmapMode dispatch (methods6502.cpp ~753-763).
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	// Baseline $D011 = %10011101: bit7 (raster-compare high) = 1,
+	// Y-scroll (bits 2-0) = 5, DEN/RSEL = 1.
+	poke(^$D011,0,%10011101);
+	SetBitmapMode();
+	b := peek(^$D011,0);
+
+	Vars::text := "2.56a";
+	if ((b & %00000111) = 5) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.56b";
+	if ((b & %10000000) = %10000000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

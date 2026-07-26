@@ -1,0 +1,37 @@
+Program Bug_2_25_StartblockNestedUndetected;
+// Bug 2.25: `@startblock` doesn't detect a missing or nested `@endblock`.
+// The `@startblock` handler has an explicit check for "a block is
+// already open" (`if (Node::m_staticBlockInfo.m_blockID != -1) { ... }`),
+// but the error call inside it is commented out, so the check exists but
+// currently does nothing: the active block state is just silently
+// overwritten with the new one. This is asymmetric with the reverse
+// mistake (an `@endblock` with no matching `@startblock` open), which
+// DOES fail with a clear "Cannot end a block that hasn't been started."
+// error.
+//
+// Method B (compile-time), no VICE step, and an INVERTED expectation from
+// every other snippet in this batch: this is a missing-error bug, not a
+// spurious one. Pre-fix expected behavior: this file compiles CLEAN (exit
+// 0, .prg produced), even though BlockA is left open when BlockB starts -
+// confirmed live, no error or warning of any kind is emitted. Post-fix,
+// once the commented-out error is re-enabled, this exact file should FAIL
+// to compile with a "block already started" style error instead - i.e.
+// the pass/fail sense of "does this compile" flips at fix time, unlike
+// every other Method B snippet in this batch where clean compilation is
+// the fixed-and-working state.
+
+@startblock $f000 "BlockA"
+var
+	a : byte = 0;
+
+@startblock $f100 "BlockB"
+var
+	b : byte = 0;
+
+@endblock
+
+begin
+	a := 1;
+	b := 2;
+	loop();
+end.

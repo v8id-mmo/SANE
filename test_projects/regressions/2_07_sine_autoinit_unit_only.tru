@@ -1,0 +1,10 @@
+unit SineUnit;
+
+var
+
+function GetSine(angle : byte) : byte;
+begin
+	GetSine := sine[angle];
+end;
+
+end.

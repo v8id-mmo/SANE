@@ -1,0 +1,44 @@
+Program Bug_2_54_ScrollX_ScrollY_Range_Check;
+// Bug 2.54: ScrollX/ScrollY don't range-check their own input parameter,
+// only mask the register's prior contents; an out-of-range input ORs its
+// extra bits straight into $D016/$D011. ScrollY also unconditionally
+// clears $D011 bit 7 (the raster-compare high bit) on every call,
+// regardless of any raster-IRQ setup already in place.
+// Methods6502::ScrollX/ScrollY (methods6502.cpp ~2685-2746).
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	// 2.54a: ScrollX(24) - 24 is out of the documented 0-7 range and has
+	// bits 3 (CSEL/40-col) and 4 (MCM) set. Correct behavior: those bits
+	// of $D016 are untouched since ScrollX only owns bits 0-2.
+	poke(^$D016,0,%00000000);
+	ScrollX(24);
+	b := peek(^$D016,0) & %00011000;
+	Vars::text := "2.54a";
+	if (b = 0) then Common::PASS() else Common::FAIL();
+
+	// 2.54b: ScrollY(0) must not clear $D011 bit 7 (needed to arm a raster
+	// IRQ on line 256-311); it currently clears it unconditionally.
+	poke(^$D011,0,%10011011);
+	ScrollY(0);
+	b := peek(^$D011,0) & %10000000;
+	Vars::text := "2.54b";
+	if (b = %10000000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

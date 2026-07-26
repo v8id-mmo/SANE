@@ -1,0 +1,16 @@
+program Bug_2_19_OnpageOffpageCaseNoEffect;
+// Baseline twin for 2_19_onpage_offpage_case_no_effect.ras's .diffcheck:
+// byte-identical except `onpage` -> `offpage`, same internal program name
+// (so the emitted label text matches too). Not a bug snippet on its own;
+// excluded from run_regressions.sh's default sweep (any *_baseline.ras is
+// skipped when no explicit names are given).
+var
+	i : byte;
+begin
+	i := 1;
+	case i offpage of
+		0: screen_bg_col := black;
+		1: screen_bg_col := white;
+	end;
+	loop();
+end.

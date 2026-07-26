@@ -1,0 +1,71 @@
+Program Bug_2_04_SignedDivide;
+// Bug 2.4: `a / b` division (Methods6502::InitDiv8x8 and its 16x8
+// counterpart) is a purely unsigned shift-subtract algorithm; no signed
+// variant exists at all. `mod(a,b)` (Methods6502::Modulo, a repeated
+// subtraction loop reading the 6502's unsigned borrow flag) and
+// `mod16(a,b)` (Methods6502::Modulo16, sharing divide16x8's quotient
+// routine but reading the remainder) inherit the exact same gap.
+//
+// Same bit-pattern-comparison technique as 2_03: `q`/`m16` are plain
+// (unsigned-flagged) `integer` so '=' doesn't hit bug 2.1's broken
+// signed-integer compare; `m` stays a plain `byte`, which never needed
+// widening or the workaround to begin with. `q`/`m16` are compared
+// against the positive unsigned 16-bit equivalent of the expected
+// negative value (e.g. 65531 for -5), not a negative literal - see
+// 2_03_signed_multiply.ras's header note for why a negative literal
+// compared against a plain unsigned `integer` isn't safe to use here.
+//
+// Expected (correct) signed semantics assumed here: truncating
+// division/remainder-takes-sign-of-dividend, matching C's `/`/`%` - the
+// most common convention, used for picking these expected values.
+@use "unittests/common"
+
+var
+	a : signed byte = -20;
+	b : signed byte = 4;
+	q : integer;
+
+	ma : signed byte = -7;
+	mb : byte = 3;
+	m : byte;
+
+	na : signed integer = -1000;
+	nb : byte = 7;
+	m16 : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	q := a / b;
+	// correct: -5, i.e. 65531 unsigned (0xFFFB widened); buggy: unsigned
+	// division of the raw byte patterns (-20 as byte = 236; 236/4=59,
+	// not sign-corrected)
+	Vars::text := "2.04a";
+	if (q = 65531) then Common::PASS() else Common::FAIL();
+
+	m := mod(ma, mb);
+	// correct (truncating, sign-of-dividend): -7 mod 3 = -1, i.e. byte
+	// pattern 255; buggy: unsigned mod of the raw byte pattern (-7 as
+	// byte = 249; 249 mod 3 = 0)
+	Vars::text := "2.04b";
+	if (m = 255) then Common::PASS() else Common::FAIL();
+
+	m16 := mod16(na, nb);
+	// correct (truncating, sign-of-dividend): -1000 mod 7 = -6, i.e.
+	// 65530 unsigned (0xFFFA widened); buggy: unsigned mod of the raw
+	// 16-bit pattern (-1000 as unsigned = 64536; 64536 mod 7 = 3)
+	Vars::text := "2.04c";
+	if (m16 = 65530) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

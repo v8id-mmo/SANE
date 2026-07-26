@@ -1,0 +1,28 @@
+Program Bug_2_12_DonotprefixDesync;
+// Bug 2.12: `@donotprefix <symbol>` never compiles, in any configuration.
+// Parser::PreprocessSingle's "donotprefix" handler reads
+// m_currentToken.m_value (the symbol-name argument) and appends it to
+// m_doNotPrefixSymbols, but never calls Eat() to actually consume that
+// argument token - same dropped-token desync shape as 2.8. Compare to
+// the sibling `@donotprefixunit` (no argument), which works fine, and to
+// `@donotremove`'s handler a few lines above, which does call Eat() on
+// its own symbol-name argument.
+//
+// Method B (compile-time desync), no VICE step. Confirmed live: placed as
+// a plain top-level directive (the shape tried here), this fails with
+// "After declarations, BEGIN is expected" - the dropped symbol-name token
+// shifts everything after it, so the parser never finds a valid `var`/
+// `begin`. Pre-fix expected behavior: compile failure with that error.
+// There is no known-good variant to fall back on (unlike 2.8/2.9): every
+// configuration tested for this directive fails the same way. Post-fix,
+// this should compile clean.
+
+@donotprefix myVar
+
+var
+	myVar : byte;
+
+begin
+	myVar := 5;
+	loop();
+end.

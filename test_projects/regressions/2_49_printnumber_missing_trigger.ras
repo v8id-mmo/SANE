@@ -1,0 +1,22 @@
+Program Bug_2_49_PrintNumberPrintDecimal_MissingTrigger;
+// Bug 2.49: Parser::InitBuiltinFunctions() (parser.cpp ~290) only registers
+// "moveto("/"printstring("/"tile(" as the trigger set for the initmoveto
+// auto-init routine, which is the only place that calls DefineScreen() and
+// emits the screenmemory/colormemory assembler symbols every use of the
+// bare `screenmemory` label depends on. PrintNumber/PrintDecimal both
+// reference `screenmemory` (directly, or via a jsr into PrintString's
+// shared runtime routine) but neither is in the trigger list itself, so
+// with no literal moveto(/printstring(/tile( anywhere else in the whole
+// compile (this file must NOT @use "unittests/common", since its own
+// PASS()/FAIL() call PrintString and would mask this exact bug),
+// PrintDecimal fails to assemble with "Unknown operation: (screenmemory),y".
+//
+// Method B: no pass/fail flag, no VICE step - just confirm the specific,
+// documented wrong error text at the assembly stage.
+var
+	n : byte = 5;
+
+begin
+	printdecimal(n,3);
+	loop();
+end.

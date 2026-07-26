@@ -1,0 +1,17 @@
+// Bug 2.13: @exportblackwhite/@exportframe are each only implemented
+// for one asset type (a GUI-imported plain bitmap; a level-editor
+// asset), unreachable from a charset/sprite .flf like sample_sprite.flf.
+// Every other asset type falls through to an empty-stub virtual method
+// (LImage::ExportBlackWhite, CharsetImage::ExportFrame), so both
+// directives compile clean and silently write a zero-byte output file.
+// Method C (build-output verification): see the companion .outputcheck
+// file. Expect both output files to be empty (0 bytes) pre-fix, non-empty
+// post-fix.
+program Bug_2_13_ExportBlackWhiteExportFrameEmptyOutput;
+
+@exportblackwhite "sample_sprite.flf" "2_13_export_bw.bin" 0 0 8 8
+@exportframe "sample_sprite.flf" "2_13_export_frame.bin" 0 1 0 0 0 0 0 0
+
+begin
+	loop();
+end.

@@ -1,0 +1,9 @@
+// Bug 2.69: output_file= is a no-op in the normal op=project compile
+// mode (only op=orgasm actually renames the produced binary). See
+// KNOWN_BUGS.md and CLAUDE.md section 2.69.
+//
+// Minimal, trivially-compiling program; the bug is about what the
+// produced .prg gets named, not anything about this program's behavior.
+Program Bug_2_69_OutputFileNoopProjectMode;
+begin
+end.

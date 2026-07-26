@@ -1,0 +1,19 @@
+// Bug 2.16: @importchar's actual character-copy step
+// (LImage::CopySingleChar) is an unimplemented virtual stub for every
+// C64-reachable asset class (only overridden for NES). The directive
+// loads both images successfully and prints "CopySingleChar not
+// implemented" to the console, but the destination asset is written
+// back to disk byte-for-byte identical to how it started.
+// Method C (build-output verification): see the companion .outputcheck
+// file, which diffs the working copy of the destination asset (refreshed
+// from the pristine sample_sprite.flf fixture before every compile,
+// since this directive rewrites its destination argument in place)
+// against that same pristine fixture. Expect them to be identical
+// (no-op) pre-fix, different post-fix.
+program Bug_2_16_ImportCharCopyUnimplemented;
+
+@importchar "sample_char.bin" "2_16_importchar_work.flf" 0 0
+
+begin
+	loop();
+end.

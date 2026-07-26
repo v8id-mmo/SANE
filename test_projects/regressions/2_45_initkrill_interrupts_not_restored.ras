@@ -1,0 +1,31 @@
+Program Bug_2_45_InitKrill_InterruptsNotRestored;
+// Bug 2.45: Methods6502::InitKrill (methods6502.cpp ~2302) calls
+// DisableInterrupts(as) (masking the CIA timer IRQs) and then emits a
+// literal `sei` immediately after copying Krill's loader into place, but
+// never emits a matching `cli` anywhere in the routine - the same
+// "disable, no matching re-enable" shape already catalogued for
+// CopyCharsetFromRom (bug 2.39). A program that calls InitKrill() and
+// then needs interrupts running (e.g. a raster IRQ) is left with
+// interrupts masked until it re-enables them itself.
+//
+// Verified via a static check on the generated .asm, not the runtime
+// php/pla register-peek 2.39 uses (see the companion .asmcheck file):
+// InitKrill's own installer (`jsr $3000`, the incbin'd
+// krill_installer.bin) genuinely talks to the 1541 drive over the real
+// IEC protocol to install Krill's drive-side loader counterpart - running
+// it through headless VICE with no disk image mounted hangs forever
+// waiting for a response that never comes (confirmed live: no
+// results.bin ever appears, even with a generous timeout), unlike every
+// other builtin in this suite, none of which depend on real device I/O.
+// A plain text check sidesteps this: confirmed live that the generated
+// .asm contains InitKrill's own `sei` (right after the "; Init Krill"
+// comment) with no `cli` anywhere in the whole program - this snippet
+// calls no other builtin that would legitimately emit one either, so the
+// mnemonic's total absence is exactly the documented bug, not a
+// coincidence of an otherwise-cli-free program.
+@use KrillsLoader $0200 $2000 $3000
+
+begin
+	InitKrill();
+	loop();
+end.

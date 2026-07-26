@@ -1,0 +1,54 @@
+Program Bug_2_34_LoHiBankbyteLongNoop;
+// Bug 2.34: `Lo`/`Hi`/`bankbyte()` are all a silent no-op on a `long`
+// variable. Methods6502::LoHi (methods6502.cpp ~2986-3060) has explicit
+// branches for POINTER/ADDRESS/INTEGER/BYTE but none for LONG, so none of
+// the three builtins emit any `lda` at all for a `long` operand; the
+// destination variable ends up with whatever was already in the
+// accumulator, not any byte of the long value.
+//
+// Each assertion below first loads a known "distractor" value into the
+// accumulator (via `junk := <n>;`) immediately before the buggy call, so
+// the pre-fix behavior (leftover accumulator content) is deterministic
+// instead of accidentally matching the expected byte by chance.
+@use "unittests/common"
+
+var
+	lv : long = $030201;
+	junk : byte;
+	b_lo : byte;
+	b_hi : byte;
+	b_bank : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	junk := 111;
+	b_lo := lo(lv);
+	// expected: low byte of $030201 = $01
+	Vars::text := "2.34a";
+	if (b_lo = $01) then Common::PASS() else Common::FAIL();
+
+	junk := 112;
+	b_hi := hi(lv);
+	// expected: middle byte of $030201 = $02
+	Vars::text := "2.34b";
+	if (b_hi = $02) then Common::PASS() else Common::FAIL();
+
+	junk := 113;
+	b_bank := bankbyte(lv);
+	// expected: high (bank) byte of $030201 = $03
+	Vars::text := "2.34c";
+	if (b_bank = $03) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

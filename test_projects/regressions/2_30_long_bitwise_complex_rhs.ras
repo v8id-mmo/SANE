@@ -1,0 +1,48 @@
+Program Bug_2_30_LongBitwiseComplexRhs;
+// Bug 2.30: `long` bitwise `&`/`|`/`xor`/`^` silently miscompute the result
+// when the right-hand operand is a non-trivial expression (not a plain
+// variable/literal). CodeGen6502::HandleVarBinopB16bit's generic
+// (non-pure-RHS) fallback branch (codegen_6502.cpp ~169-282) never
+// combines the top byte at all (just overwrites it with the RHS
+// expression's own top byte) and can also throw the middle byte off by
+// one via a carry-propagation snippet meant for +/- leaking into this
+// path. A plain-variable RHS (the "pure" fast path) is unaffected and used
+// here as a same-file control case.
+@use "unittests/common"
+
+var
+	a : long = $123456;
+	b : long = $0F0F0F;
+	d : long = 1;
+	plain_result : long;
+	complex_result : long;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	plain_result := a & b;
+	// control case: RHS is a plain variable, the "pure" fast path, expected
+	// to already be correct: $123456 & $0F0F0F = $020406
+	Vars::text := "2.30a";
+	if (plain_result = $020406) then Common::PASS() else Common::FAIL();
+
+	complex_result := a & (b + d);
+	// RHS is a non-trivial expression (b+d = $0F0F10); correct result:
+	// $123456 & $0F0F10 = $02040A. Buggy: top byte not ANDed at all (just
+	// overwritten with (b+d)'s own top byte, $0F), and the middle byte can
+	// be off by one from leftover carry state.
+	Vars::text := "2.30b";
+	if (complex_result = $02040A) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

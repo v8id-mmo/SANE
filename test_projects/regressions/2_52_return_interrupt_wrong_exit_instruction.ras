@@ -1,0 +1,47 @@
+program Bug_2_52_ReturnInterruptWrongExitInstruction;
+// Bug 2.52: AbstractCodeGen::DispatchConstructor (abstractcodegen.cpp
+// ~314) unconditionally emits `rts` (getReturn()) for a plain `return;`
+// statement, with no check for whether the enclosing procedure is an
+// `interrupt`. Contrast with the procedure epilogue codegen a few dozen
+// lines away (~1039-1046), which does branch on the node's own m_type and
+// correctly emits `rti` (getReturnInterrupt()) for an interrupt
+// procedure's natural end. An early `return;` partway through an
+// `interrupt` procedure's body therefore exits via `rts` instead of
+// `rti`, unlike every other exit path of the same procedure.
+//
+// Harmless-looking but wrong at runtime (an IRQ handler that exits via
+// `rts` instead of `rti` leaves the processor status pushed by the
+// hardware interrupt entry sitting on the stack, unbalancing it and never
+// restoring the pre-interrupt flags) - not something a single register-
+// peek can cleanly assert without also depending on how badly the
+// resulting stack imbalance manifests. Verified instead via a static
+// check on the generated .asm (see the companion .asmcheck file): this
+// snippet's only non-inline procedure is the interrupt handler below, and
+// its only other exit path is the procedure's own natural `end;` (which
+// does correctly emit `rti`) - no other builtin used here emits a bare
+// `rts` anywhere in this minimal program (confirmed live: the early
+// `return;` branch shows `rts` at one line, the natural end shows `rti`
+// at another), so a plain "is the mnemonic `rts` present anywhere"
+// check is sufficient and unambiguous for this file specifically.
+var
+	frame : byte = 0;
+
+interrupt Raster();
+begin
+	startirq(0);
+	inc(frame);
+	if (frame > 20) then begin
+		screen_bg_col := black;
+		closeirq();
+		return;
+	end;
+	screen_bg_col := frame;
+	closeirq();
+end;
+
+begin
+	preventirq();
+	disableciainterrupts();
+	StartRasterChain(Raster(), 100, 0);
+	loop();
+end.

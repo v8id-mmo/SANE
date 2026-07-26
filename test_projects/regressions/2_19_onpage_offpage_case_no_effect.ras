@@ -1,0 +1,43 @@
+program Bug_2_19_OnpageOffpageCaseNoEffect;
+// Bug 2.19 (issue 1 of 3 documented under this number; see KNOWN_BUGS.md
+// for the other two, noted but not separately exercised here):
+// `case <expr> onpage of ...` / `case <expr> offpage of ...` parse without
+// error and the forced-page flag is threaded all the way through
+// Parser::Case() into the code generator's case dispatch, but the one
+// concrete compare-and-jump routine on this target never actually reads
+// the flag it's handed; it unconditionally emits the same short-branch
+// form regardless of which direction (or neither) was requested. Forcing
+// `onpage` vs `offpage` on an otherwise byte-identical `case` should, once
+// this bug is fixed, produce two DIFFERENT .asm outputs (a short relative
+// branch vs a long jump); today they come out byte-for-byte IDENTICAL,
+// confirmed live via a raw diff (this file and its `offpage` baseline
+// twin share the same internal program name, so even the emitted
+// top-of-file label text matches).
+//
+// Not separately exercised here (would require its own file/verification
+// shape, same "one representative reproduction" rule the suite already
+// uses elsewhere - see e.g. 2.37's note): issue 2, `until <cond> onpage;`
+// never even parses - confirmed live it fails with "Expected 'END' but
+// found 'ONPAGE' Did you forget a semicolon (;) ?", since
+// Parser::RepeatUntil() never reads a trailing onpage/offpage token at
+// all and the compare-clause parser swallows it as an implicit
+// compare-against-0 terminator instead. Issue 3, forcing `onpage` on an
+// `if`/`while`/`for` block too large for a short branch has no
+// compile-time safety net at all (skips the size measurement the
+// automatic path performs) - not reproduced here since it needs a
+// deliberately oversized block, not a minimal snippet.
+//
+// New harness mechanism (see REGRESSION_SUITE_GUIDE.md): <stem>.diffcheck
+// names a baseline stem to compile and diff .asm against - FAIL if
+// identical (today's bug: forcing either direction has no effect), PASS
+// if different.
+var
+	i : byte;
+begin
+	i := 1;
+	case i onpage of
+		0: screen_bg_col := black;
+		1: screen_bg_col := white;
+	end;
+	loop();
+end.

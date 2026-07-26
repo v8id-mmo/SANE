@@ -1,0 +1,23 @@
+program Bug_2_15_IgnoreSystemHeadersNoEffect;
+// Bug 2.15: @ignoresystemheaders sets
+// Syntax::s.m_currentSystem->m_systemParams["ignoresystemheaders"] to "1"
+// (parser.cpp ~3244-3249) and prints a debug line, but nothing else in
+// the compiler ever reads that flag back - it's write-only. Compiling
+// this file (with the directive) and its baseline twin (byte-identical
+// except for the missing directive line, same internal program name so
+// the emitted top-of-file label text is identical too) should, once this
+// bug is fixed, produce two DIFFERENT .asm outputs (the whole point of a
+// fix is to make the flag gate something); today they come out
+// byte-for-byte IDENTICAL, confirmed live via a raw diff.
+//
+// New harness mechanism (see REGRESSION_SUITE_GUIDE.md): <stem>.diffcheck
+// names a baseline stem to compile and diff .asm against - FAIL if
+// identical (today's bug: no distinguishable effect), PASS if different.
+@ignoresystemheaders
+var
+	x : byte;
+begin
+	x := 1;
+	screen_bg_col := x;
+	loop();
+end.

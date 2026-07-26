@@ -1,0 +1,51 @@
+Program Bug_2_31_XorBooleanClause;
+// Bug 2.31: `xor` used to combine two parenthesized boolean conditions
+// (e.g. `(a>5) xor (b<3)`) compiles without error but always takes the
+// "true" branch. AbstractCodeGen::HandleLogicalClause
+// (abstractcodegen.cpp ~863-883) only implements AND/OR as clause
+// combinators; there's no XOR case, so the comparison result from the cmp
+// is left unconsumed and control falls straight into the true block
+// regardless of either sub-condition's actual value.
+//
+// Two cases: 2.31a picks operand values where a real xor would be false
+// (both sub-conditions true -> true xor true = false), which the bug
+// reports as true. 2.31b is an AND control case (known-working combinator,
+// same file) to confirm the harness/snippet itself isn't broken.
+@use "unittests/common"
+
+var
+	a : byte = 10;
+	b : byte = 1;
+	took_true_branch : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	took_true_branch := 0;
+	if ((a>5) xor (b<3)) then
+		took_true_branch := 1;
+	// both (a>5) and (b<3) are true, so a real xor must be false (no
+	// branch taken); buggy: always takes the true branch regardless
+	Vars::text := "2.31a";
+	if (took_true_branch = 0) then Common::PASS() else Common::FAIL();
+
+	took_true_branch := 0;
+	if ((a>5) and (b<3)) then
+		took_true_branch := 1;
+	// AND control case: both true, so AND is expected (and known) to
+	// correctly take the true branch
+	Vars::text := "2.31b";
+	if (took_true_branch = 1) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

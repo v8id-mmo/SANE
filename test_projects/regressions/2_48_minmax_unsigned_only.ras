@@ -1,0 +1,42 @@
+Program Bug_2_48_MinMax_UnsignedOnly;
+// Bug 2.48: Methods6502::MinMax (methods6502.cpp ~7345, shared by min/max
+// via an isMin flag) compares bytes with a plain cmp/bcs/bcc, branching on
+// the unsigned-borrow carry flag with no isSigned() check at all - unlike
+// CodeGen6502::PrintCompare (used for </>/etc.), which at least switches to
+// bpl/bmi for a signed operand. A signed pair straddling the sign boundary
+// gets the wrong answer: -1's bit pattern ($FF) is unsigned-larger than 1.
+@use "unittests/common"
+
+var
+	a : signed byte = -1;
+	b : signed byte = 1;
+	rmin : byte;
+	rmax : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	rmin := min(a,b);
+	// correct (signed): min(-1,1) = -1 = $FF = 255 unsigned
+	// buggy (unsigned): $FF treated as bigger than $01, returns 1
+	Vars::text := "2.48a";
+	if (rmin = 255) then Common::PASS() else Common::FAIL();
+
+	rmax := max(a,b);
+	// correct (signed): max(-1,1) = 1
+	// buggy (unsigned): $FF treated as bigger than $01, returns 255
+	Vars::text := "2.48b";
+	if (rmax = 1) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

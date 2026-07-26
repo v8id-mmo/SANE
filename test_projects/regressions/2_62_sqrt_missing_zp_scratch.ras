@@ -1,0 +1,52 @@
+Program Bug_2_62_Sqrt_MissingZpScratch;
+// Bug 2.62: Methods6502::Sqrt (methods6502.cpp ~3838-3841) and
+// Methods6502::InitSqrt16 (methods6502.cpp ~5350-5353) both start with
+//   if (as->m_internalZP.count()<4) return;
+// with no ErrorHandler::e.Error(...) call on that path - unlike most other
+// guarded builtins in this file, which raise a real compiler error in the
+// equivalent situation.
+//
+// CORRECTION to the original KNOWN_BUGS.md writeup, found while writing
+// this snippet (re-verified against the live repo per CLAUDE.md's own
+// "never trust a snapshot" rule): that `count()<4` guard is actually dead
+// code and can never fire. Assembler::m_internalZP is built once, in
+// Compiler6502's setup, as
+//   RegisterStack(QStringList() << getString("zeropage_internal1") << ... << getString("zeropage_internal4"))
+// - four QStringList::operator<< calls happen unconditionally, so the
+// resulting list always has exactly 4 entries (some possibly empty
+// strings) regardless of whether the project file defines those keys at
+// all. RegisterStack::count() just returns m_free.count() as constructed;
+// the only method that actually removes an entry (the no-arg Get(), as
+// opposed to the index/peek overload) is never called anywhere in live
+// (non-commented-out) code, so the free-list size can't shrink at
+// runtime either. Confirmed empirically: compiling a Sqrt call with the
+// project's zeropage_internal1-4 keys entirely removed does NOT silently
+// no-op - it proceeds into InitSqrt16 with empty-string zero page
+// addresses and fails at the assembly stage with a real, if confusing,
+// error ("Opcode type not implemented or illegal: sty type 0", from an
+// `sty <empty>` instruction). This is a real bug with a real, wrong
+// documented symptom for the "silent no-op" case: a hard, correctly-
+// triggered compile failure, just with an unhelpful error message instead
+// of the clear "not enough internal zero-page scratch configured"
+// diagnostic the fix direction calls for.
+//
+// This snippet needs a project file that's missing all 4 zeropage_internal
+// keys (2_62_sqrt_missing_zp_scratch.trse, alongside this file) instead of
+// the shared project.trse every other snippet uses; run_regressions.sh
+// picks it up automatically (a <stem>.trse file next to a snippet
+// overrides the shared project.trse).
+//
+// Method B: compile-error check, no VICE step. Pre-fix: fails with the
+// wrong/confusing "sty type 0" opcode error. Post-fix (once the bare
+// `return;` becomes a real ErrorHandler::e.Error(...) call): still a
+// compile error - this project genuinely lacks the 4 zero-page scratch
+// slots Sqrt needs - but with the correct, documented diagnostic instead.
+var
+	value : integer;
+	result : byte;
+
+begin
+	value := 200;
+	result := Sqrt(value);
+	loop();
+end.

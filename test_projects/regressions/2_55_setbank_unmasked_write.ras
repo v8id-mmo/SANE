@@ -1,0 +1,32 @@
+Program Bug_2_55_SetBank_Unmasked_Write;
+// Bug 2.55: SetBank writes CIA#2 port A ($DD00) with an unconditional
+// `sta $dd00`, no preceding read/mask, so every call also zeroes bits
+// 2-7 of that register (the serial IEC bus's ATN/CLK/DATA OUT lines and
+// the RS-232 TXD bit), not just the VIC-bank bits it's documented to
+// control. Methods6502::SetBank (methods6502.cpp ~5974-5984).
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	poke(^$DD00,0,%11111100);
+	SetBank(vic_bank1);
+	b := peek(^$DD00,0) & %11111100;
+	Vars::text := "2.55";
+	if (b = %11111100) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

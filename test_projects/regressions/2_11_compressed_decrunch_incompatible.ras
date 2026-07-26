@@ -1,0 +1,24 @@
+// Bug 2.11: `compressed`/`@compress` (LZ4) and `decrunch()` (Exomizer)
+// are two unrelated, non-interoperable compression schemes. A
+// `compressed`-flagged array compiles and does shrink, but there is no
+// working path back to the original bytes at runtime: decrunch() only
+// accepts a variable of type INCBIN, and rejects a `compressed` array
+// outright.
+// Method B (compile-time only, no VICE step): expect COMPILE_ERROR
+// ("Decrunch : parameter 0 must be a pointer to a IncBin block or
+// address!") pre-fix. Post-fix (either a real LZ4 decompressor wired up,
+// or this constraint documented instead) this snippet's exact expected
+// behavior needs revisiting; see KNOWN_BUGS.md's two fix directions.
+program Bug_2_11_CompressedDecrunchIncompatible;
+var
+	packedData : array[32] of byte compressed = (
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+		1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+	);
+	x : byte;
+
+begin
+	x := packedData[0];
+	decrunch(#packedData);
+	loop();
+end.

@@ -1,0 +1,43 @@
+Program Bug_2_58_SpritePos_Bad_Num_Corrupts_Registers;
+// Bug 2.58: SpritePos with a compile-time-constant sprite number of 8 or
+// more writes straight into $D010/$D011 (VIC-II's sprite-MSB and main
+// control registers) instead of a per-sprite slot. Methods6502::SetSpritePos
+// (methods6502.cpp ~2462-2501): `ldx #(spriteNum*2)` becomes `ldx #16` for
+// spriteNum=8, so the X/Y writes meant for a per-sprite register at
+// $D000,x/$D000,y land on $D010/$D011 instead, with no range check.
+//
+// This snippet assumes the "mask spriteNum to 3 bits" fix direction
+// KNOWN_BUGS.md offers as a minimum fix (spriteNum=8 wraps to 0), not the
+// alternative "reject at compile time" direction; if the eventual fix
+// instead rejects spriteNum>=8 with a compile error, this snippet will
+// need to become a Method-B compile-error check instead (same judgment
+// call flagged for 2.41 in batch 4).
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	// $D011 sentinel: SpritePos(100,50,8) should never touch this
+	// register at all (a real sprite-0 write only touches $D000/$D001
+	// and, for an X>255 carry, bit 0 of $D010 - never $D011).
+	poke(^$D011,0,$77);
+	SpritePos(100,50,8);
+	b := peek(^$D011,0);
+	Vars::text := "2.58";
+	if (b = $77) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

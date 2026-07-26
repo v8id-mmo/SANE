@@ -1,0 +1,46 @@
+Program Bug_2_14_ForForiWraparound;
+// Bug 2.14: `for`/`fori` compile to a post-test loop (assign start, run
+// body, increment, compare against end, loop if not equal). There's no
+// comparison before the very first run, so the loop can never execute
+// zero times: a `to` value already behind the start doesn't skip the
+// loop, it wraps around the full byte range before the counter
+// coincidentally lands back on the end value.
+@use "unittests/common"
+
+var
+	i : byte;
+	cnt : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	cnt := 0;
+	for i:=5 to 0 do
+		cnt := cnt + 1;
+	// correct: end (0) is already behind start (5), so the loop shouldn't
+	// run at all, cnt stays 0; buggy: runs once at i=5, then wraps the
+	// full byte range before landing back on 0 (251 more passes, 252 total)
+	Vars::text := "2.14a";
+	if (cnt = 0) then Common::PASS() else Common::FAIL();
+
+	cnt := 0;
+	fori i:=0 to 255 do
+		cnt := cnt + 1;
+	// confirmed-harmless control case (KNOWN_BUGS.md): a byte counter's
+	// full range still terminates correctly today, after exactly 256
+	// passes - this should keep passing before and after any 2.14 fix
+	Vars::text := "2.14b";
+	if (cnt = 256) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

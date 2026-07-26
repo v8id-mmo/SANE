@@ -1,0 +1,43 @@
+Program Bug_2_46_LeftRightBitShift_RotateNotShift;
+// Bug 2.46: Methods6502::RightBitShift (methods6502.cpp ~2857, shared by
+// LeftBitShift/RightBitShift via an isRight flag) always feeds the bit that
+// falls off one end of the num-byte-wide strip back onto the other end -
+// a rotate, not a shift, at every width including num=1. A real shift
+// should drop the outgoing bit and fill the vacated bit with 0.
+//
+// Single-column (num=1) 8-row block, all rows = $81 (10000001) so both the
+// outgoing bit (bit 7 for left, bit 0 for right) is 1 in each direction,
+// distinguishing shift (0 fed in) from rotate (the outgoing 1 fed back in).
+@use "unittests/common"
+
+var
+	shapeL : array[8] of byte = ($81,$81,$81,$81,$81,$81,$81,$81);
+	shapeR : array[8] of byte = ($81,$81,$81,$81,$81,$81,$81,$81);
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	leftbitshift(#shapeL,1);
+	// correct (shift): $81 << 1, bit7 dropped, bit0 filled with 0 = $02
+	// buggy (rotate): bit7's outgoing 1 fed back into bit0 = $03
+	Vars::text := "2.46a";
+	if (shapeL[0] = $02) then Common::PASS() else Common::FAIL();
+
+	rightbitshift(#shapeR,1);
+	// correct (shift): $81 >> 1, bit0 dropped, bit7 filled with 0 = $40
+	// buggy (rotate): bit0's outgoing 1 fed back into bit7 = $C1
+	Vars::text := "2.46b";
+	if (shapeR[0] = $40) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

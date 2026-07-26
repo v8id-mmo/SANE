@@ -1,0 +1,26 @@
+Program Bug_2_51_RasterIrqWedge_Kernal_Mode;
+// Bug 2.51: RasterIRQWedge's KERNAL-vector mode (<mode>=1) is a hard,
+// permanent compile error. Methods6502::RasterIRQWedge (methods6502.cpp
+// ~5634, else branch) always calls ErrorHandler::e.Error("Error! Kernal
+// wedge not implemented. Nag the developer (leuat)."), whenever <mode> is
+// non-zero, even though a full commented-out implementation sits right
+// above the error call. Mode 0 (hardware IRQ vector) works fine; only
+// mode 1 is affected.
+//
+// Method B (compile-time only, no VICE step): pre-fix, this always fails
+// to compile with the exact error text above. Post-fix (once the
+// commented-out $0314/$0315 branch is wired up), this should compile
+// clean.
+@define useKernal 1
+
+interrupt RasterBar();
+begin
+	closeirqwedge();
+end;
+
+begin
+	preventirq();
+	disableciainterrupts();
+	RasterIRQWedge(RasterBar(), 100, @useKernal);
+	loop();
+end.

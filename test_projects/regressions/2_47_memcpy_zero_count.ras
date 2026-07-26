@@ -1,0 +1,52 @@
+Program Bug_2_47_MemcpyZeroCount;
+// Bug 2.47: Methods6502::MemCpy (shared by MemCpy/MemCpyFast via an
+// isFast flag) has no `count == 0` guard before its copy loop. The
+// non-fast path loops `inx`/`cpx <count>`/`bne`, exiting only once the
+// index register wraps all the way back around to equal a runtime count
+// of 0; the fast path starts its index at `count - 1`, which wraps to 255
+// when count is 0. Either way, a runtime count of 0 copies a full 256
+// bytes instead of 0, silently overwriting whatever follows `dest`.
+//
+// This snippet gives `dest` a sentinel-filled guard region right after
+// the 4-byte destination array and confirms it's undisturbed - the
+// bug's actual "blast radius" (2.47's own description), not just an
+// indirect count check.
+@use "unittests/common"
+
+var
+	source : array[4] of byte = (11,22,33,44);
+	dest : array[4] of byte = (0,0,0,0);
+	guard : array[4] of byte = ($AA,$AA,$AA,$AA);
+	n : byte;
+	g : byte;
+	ok : boolean;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	n := 0;
+	memcpy(#source,0,#dest,n);
+
+	// correct: n=0 copies nothing, `guard` stays untouched ($AA x4);
+	// buggy: the copy wraps and runs 256 times, overwriting `guard` (and
+	// everything else for 256 bytes past `dest`) with `source`'s repeating
+	// bytes
+	ok := true;
+	for g:=0 to 3 do
+		if (guard[g] <> $AA) then ok := false;
+
+	Vars::text := "2.47";
+	if (ok) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

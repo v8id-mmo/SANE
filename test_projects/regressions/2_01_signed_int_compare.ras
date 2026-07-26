@@ -1,0 +1,52 @@
+Program Bug_2_01_SignedIntCompare;
+// Bug 2.1: signed 16-bit `integer` comparison is incomplete - only '<' and
+// '<=' are implemented; '>', '>=', '=', '<>' all hit an unconditional
+// compile error ("Signed integer comparison: only 'less' ... is currently
+// implemented.") in CodeGen6502::BinaryClauseInteger.
+//
+// Pre-fix expected behavior: this file fails to COMPILE (not a runtime
+// FAIL) as soon as the parser reaches the first non-</<=  comparison
+// below (2.01c, using '>'). That compile failure IS the documented bug;
+// there is nothing to run in VICE until it's fixed. Once BinaryClauseInteger
+// supports all six operators, this should compile clean and every
+// assertion below should read PASS.
+@use "unittests/common"
+
+var
+	a : signed integer = -100;
+	b : signed integer = 50;
+	c : signed integer = -100;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	Vars::text := "2.01a";
+	if (a < b) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.01b";
+	if (a <= c) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.01c";
+	if (b > a) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.01d";
+	if (b >= a) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.01e";
+	if (a = c) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.01f";
+	if (a <> b) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

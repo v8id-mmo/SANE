@@ -62,6 +62,19 @@ test_projects/*.prg
 test_projects/*.asm
 test_projects/*.sym
 test_projects/README.md
+test_projects/regressions/*.prg
+test_projects/regressions/*.asm
+test_projects/regressions/*.sym
+test_projects/regressions/results.bin
+test_projects/regressions/README.md
+test_projects/regressions/2_20_pathtool_desync_out_*.bin
+test_projects/regressions/2_10_bin2inc_generated.inc
+test_projects/regressions/2_13_export_bw.bin
+test_projects/regressions/2_13_export_frame.bin
+test_projects/regressions/2_16_importchar_work.flf
+test_projects/regressions/2_21_perlinnoise_out.bin
+test_projects/regressions/2_21_perlinnoise_out.bin.png
+test_projects/regressions/2_27_vbmcompilechunk_generated.inc
 
 # Docs site build output and the copy-step-generated files
 # (see DOCS_SITE_GUIDE.md at /home/dey/.claude/projects/-home-dey-SANE/)

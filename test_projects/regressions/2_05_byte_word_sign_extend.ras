@@ -1,0 +1,50 @@
+Program Bug_2_05_ByteWordSignExtend;
+// Bug 2.5: byte -> word promotion always zero-extends, never
+// sign-extends. Two confirmed spots share the same "ldy #0 / lda #0 with
+// no isSigned() check" shape: CodeGen6502::HandleGenericBinop16bit (a
+// binary op mixing a byte and a word/integer) and CodeGen6502::Mul16x8
+// (covered separately by bug 2.3/batch 4, not re-tested here). This
+// snippet exercises HandleGenericBinop16bit directly (2.05b) plus the
+// simpler plain-assignment widening case documented in
+// Publish/tutorials/C64/docs-examples/byte.ras (2.05a).
+//
+// `widened`/`sum` are plain (unsigned-flagged) `integer`, same
+// bit-pattern-comparison workaround as 2_03/2_04, to avoid bug 2.1's
+// broken signed-integer '='; compared against 65535 (the positive
+// unsigned 16-bit equivalent of -1), not the negative literal itself -
+// see 2_03_signed_multiply.ras's header note for why.
+@use "unittests/common"
+
+var
+	sb : signed byte = -1;
+	zero_int : integer = 0;
+	widened : integer;
+	sum : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	widened := sb;
+	// correct: -1, i.e. 65535 unsigned (0xFFFF, sign-extended); buggy:
+	// 255 (0x00FF, zero-extended)
+	Vars::text := "2.05a";
+	if (widened = 65535) then Common::PASS() else Common::FAIL();
+
+	sum := zero_int + sb;
+	// same check via a binary op instead of a plain assignment, to land
+	// specifically in HandleGenericBinop16bit
+	Vars::text := "2.05b";
+	if (sum = 65535) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

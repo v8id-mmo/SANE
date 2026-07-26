@@ -1,0 +1,26 @@
+Program Bug_2_61_StartIRQWedge_NonConstant_Crash;
+// Bug 2.61: RasterIRQ, RasterIRQWedge, and StartIRQWedge each skip
+// validating an argument that's later dereferenced unconditionally,
+// crashing the compiler process itself (segfault) instead of reporting a
+// clean compile error. This snippet exercises the smallest reproduction:
+// StartIRQWedge(cycles) reads num->m_val (methods6502.cpp ~4732-4735)
+// with no null check, unlike its sibling StartIRQ, which correctly calls
+// RequireNumber() first. Passing a runtime variable (not a compile-time
+// constant) makes the qSharedPointerDynamicCast<NodeNumber> cast return
+// null, and the very next line dereferences it unconditionally.
+//
+// Verification is a process-exit-code/crash check (the "Method-B-style
+// crash check" the batch-6 plan calls for), not a register comparison:
+// pre-fix, the compiler process itself crashes (SIGSEGV, exit 139 under
+// bash) while compiling this file. Post-fix (once StartIRQWedge gets the
+// same RequireNumber() guard StartIRQ already has), this should instead
+// report a clean compile error (nonzero exit, no crash signal, an actual
+// error message) - not COMPILE_OK, since `cyc` genuinely isn't a
+// compile-time constant.
+var
+	cyc : byte = 5;
+
+begin
+	StartIRQWedge(cyc);
+	loop();
+end.

@@ -1,0 +1,38 @@
+Program Bug_2_57_SetMemoryConfig_Substitution;
+// Bug 2.57: the C64/MEGA65 branch of Methods6502::SetMemoryConfig
+// (methods6502.cpp ~4590-4612) silently reassigns its own third argument
+// before computing the byte written to $01:
+//   if (n1==1 && n2==0 && n3==0) n3=1; // Bit 2 must be toggled
+// so setmemoryconfig(1,0,0) - by far the most common invocation in this
+// fork's own tutorials/templates - computes val = n1<<2|n2<<1|n3<<0 = 5
+// ($05) instead of the 4 ($04) a literal reading of the three arguments
+// predicts. Bits 3-7 of $01 are preserved (masked read/OR/store), so a
+// known baseline is poked first to make the low 3 bits the only variable.
+@use "unittests/common"
+
+var
+	r : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	poke(^$01,0,%00110000); // deterministic baseline for bits 3-7
+	setmemoryconfig(1,0,0); // the call under test
+	r := peek(^$01,0);
+
+	// correct: bits 2-0 = %100 (4); buggy: n3 forced to 1, giving %101 (5)
+	Vars::text := "2.57";
+	if ((r & %00000111) = 4) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

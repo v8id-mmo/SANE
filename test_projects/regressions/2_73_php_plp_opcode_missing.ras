@@ -1,0 +1,23 @@
+Program Bug_2_73_PhpPlpOpcodeMissing;
+// Bug 2.73: OrgAsm's opcode table (resources/text/opcodes.txt) has no
+// entry for `php`/`plp` (push/pull processor status): Orgasm::LoadCodes
+// reads that file once at startup and populates m_opCodes.m_opCycles from
+// its rows alone, and the file has a row for every legal 6502 mnemonic
+// except these two. Orgasm::ProcessInstructionData's lookup then fails
+// and hits the "Unknown opcode" throw. Not a fork regression: identically
+// missing in leuat/TRSE's own current upstream master, and confirmed
+// absent from this file's git history all the way back to the first
+// Orgasm commit (Oct 2018). Confirmed for both mnemonics; this snippet
+// exercises `php` (the one that came up in practice, needed for a direct
+// status-flag read while writing the batch-7 snippet for bug 2.39).
+//
+// Method B (compile-time only), no VICE step: fails at the assembly
+// stage, not the parser, but same "check exit code + expected error
+// text" shape as every other Method B snippet in this suite. Pre-fix
+// expected behavior: compile failure with "Unknown opcode: php". Post-fix
+// (php/plp rows added to opcodes.txt), this should compile clean.
+
+begin
+	asm(" php ");
+	loop();
+end.

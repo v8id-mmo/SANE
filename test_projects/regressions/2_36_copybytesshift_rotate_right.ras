@@ -1,0 +1,39 @@
+Program Bug_2_36_CopyBytesShift_RotateRight;
+// Bug 2.36: CopyBytesShift's mode 3 ("rotate right") never actually
+// rotates. Methods6502::CopyBytesShift (methods6502.cpp ~2108-2187) emits
+// a `clc` once before the repeat loop and, for mode 2 ("rol", rotate
+// left), an extra and/bcc/ora correction after each individual `rol` that
+// forces bit 0 to always equal the bit that just fell off bit 7 - a real
+// circular rotate. The `ror` branch (mode 3) has no equivalent correction
+// (the fixup code only checks `if (cmd=="rol")`), so it's indistinguishable
+// from mode 1's plain logical shift right: the bit that falls off the
+// bottom is discarded and 0 is always shifted in from the top.
+//
+// Rotating %10000001 right by 1 should give %11000000 ($C0); the bug
+// instead gives %01000000 ($40), the plain-shift result.
+@use "unittests/common"
+
+var
+	src : array[1] of byte = (%10000001);
+	dst : array[1] of byte = (0);
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	copybytesshift(#src, #dst, 1, 1, 3); // mode 3 = rotate right
+
+	Vars::text := "2.36";
+	if (dst[0] = %11000000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

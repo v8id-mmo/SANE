@@ -1,0 +1,49 @@
+Program Bug_2_66_AddressVarUnusable;
+// Bug 2.66: a non-`const` `address` variable is completely unusable.
+// `CodeGen6502::LoadVariable` (codegen_6502.cpp ~1965-1985) routes any
+// TokenType::ADDRESS symbol through the same compile-time-constant
+// byte-blob path as STRING/CSTRING/INCBIN (CodeGen6502::LoadByteArray).
+// A `const ... : address = $NNNN` declaration fits that shape (the
+// "data" is just the one address value, substituted like a label), but
+// a plain `var` declaration has no backing blob and no compile-time
+// constant index to look up, so codegen fails with "Could not find
+// variable 'ADDRESS'." This happens unconditionally, even for a
+// completely unused declaration.
+//
+// Same shape as bug 2.53 in batch 4: this is a compile-time failure, not
+// a wrong-runtime-value bug, so pre-fix this snippet is expected to be
+// COMPILE_ERROR (no .prg produced, nothing to run through VICE). Once
+// fixed (either given real 2-byte storage like `pointer`, per
+// KNOWN_BUGS.md's "real fix" direction), the assignment/read/Poke usage
+// below should compile and run correctly, exercised the same way
+// docs-examples/address.ras exercises a const address (Poke/Peek through
+// a named address instead of a bare literal, per bug 2.37's own literal-
+// address workaround).
+@use "unittests/common"
+
+var
+	y : address;
+	readBack : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	y := $D020;
+	Poke(y, 6, 0);
+	readBack := Peek(y, 0);
+
+	Vars::text := "2.66";
+	if (readBack = 6) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

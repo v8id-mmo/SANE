@@ -1,0 +1,37 @@
+Program Bug_2_26_UnrollForiExclusive;
+// Bug 2.26: AbstractCodeGen::dispatch(NodeForLoop)'s `unroll` branch is a
+// hardcoded C-style `for (i = from; i < cnt; i++)`, unrolled directly into
+// that many copies of the loop body; it never reads node->m_inclusive (the
+// flag that distinguishes `fori` from `for` everywhere else in the same
+// function), so unrolling always reproduces `for`'s exclusive-end
+// semantics even when the source wrote `fori`, silently dropping the last
+// pass.
+@use "unittests/common"
+
+var
+	i : byte;
+	cnt : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	cnt := 0;
+	fori i:=0 to 3 unroll do
+		cnt := cnt + 1;
+	// correct (fori is inclusive): 4 unrolled passes (i=0,1,2,3); buggy:
+	// unroll's hardcoded exclusive bound emits only 3 (i=0,1,2)
+	Vars::text := "2.26";
+	if (cnt = 4) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,25 @@
+program Bug_2_22_NoCliWarningsShown;
+// Bug 2.22: ErrorHandler::Warning (errorhandler.cpp) only appends an
+// HTML-formatted string to ErrorHandler::e.m_teOut, a member that exists
+// purely to feed the removed GUI's own rich-text console widget. Nothing
+// in the -cli compile path (trc.cpp, ClascExec::CompileFromProject) ever
+// reads or prints it, so every warning routed through ErrorHandler::Warning
+// is silently discarded on a successful CLI compile - not just
+// @raisewarning's own message, but the parser's built-in deprecation
+// notices too (Parser::InitObsolete, currently used for rand/getkey).
+// Calling getkey() queues "Funtion 'GetKey()' is scheduled to be
+// deprecated soon...", but a clean compile (exit 0) never prints it
+// anywhere - confirmed live via a plain-text grep of the full compile log.
+//
+// New harness mechanism (see REGRESSION_SUITE_GUIDE.md): <stem>.stdoutcheck,
+// PRESENT:<pattern> - FAIL if <pattern> is absent from the compile log
+// despite a successful compile (today's bug: the queued warning never
+// surfaces), PASS if present (post-fix: trc.cpp prints
+// ErrorHandler::e.m_teOut/m_warnings at the end of a -cli compile).
+var
+	k : byte;
+begin
+	k := getkey();
+	screen_bg_col := k;
+	loop();
+end.

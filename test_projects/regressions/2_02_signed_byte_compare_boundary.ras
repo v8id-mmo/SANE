@@ -1,0 +1,51 @@
+Program Bug_2_02_SignedByteCompareBoundary;
+// Bug 2.2: byte-level signed compare (CodeGen6502::PrintCompare) substitutes
+// bmi/bpl for bcc/bcs in the signed case, but has no V-flag (overflow)
+// correction. The classic case this breaks is comparing two signed bytes
+// whose difference overflows the signed byte range, e.g. -128 vs 127:
+// $80 - $7F = $01 (N=0, no borrow), so a naive N-flag-only test concludes
+// "-128 > 127", the wrong answer.
+//
+// Unlike bug 2.1, this is a silent-wrong-runtime-result bug, not a compile
+// error: all four comparisons below are expected to COMPILE fine either
+// way. 2.02a-d are the boundary case; 2.02e is a no-overflow control case
+// that should already pass even with the bug present, to confirm the
+// harness/snippet itself isn't broken.
+@use "unittests/common"
+
+var
+	a : signed byte = -128;
+	b : signed byte = 127;
+	c : signed byte = -1;
+	d : signed byte = -2;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	Vars::text := "2.02a";
+	if (a < b) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.02b";
+	if (b > a) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.02c";
+	if (a <= b) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.02d";
+	if (b >= a) then Common::PASS() else Common::FAIL();
+
+	Vars::text := "2.02e";
+	if (c > d) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

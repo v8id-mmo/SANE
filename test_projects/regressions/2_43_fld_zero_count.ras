@@ -1,0 +1,67 @@
+Program Bug_2_43_FldZeroCount;
+// Bug 2.43: Methods6502C64::FLD (methods6502c64.cpp ~42-76) loads its
+// count parameter into X once via `tax`, places the loop label
+// immediately after (before any comparison), then per pass: busy-waits
+// for the *next* raster line (`lda $d012`/`cmp $d012`/`beq *-3`), pokes a
+// new value into $D011 (the classic FLD y-scroll trick), then
+// `dex`/`bne` back to the label. There's no check before the first pass
+// that skips the body when count is 0, so X wraps from 0 to 255 on the
+// first `dex` and the body - including its one-raster-line wait - runs
+// 256 times instead of 0.
+//
+// Verification: each pass waits for exactly one new raster line before
+// doing anything else, so fld(0,0)'s total real-time cost is directly
+// observable as elapsed raster lines via $D012 (same technique as
+// 2_64's Wait(0) check; CIA/raster IRQs are disabled above, so this is
+// deterministic). $D012 only gives the low 8 bits of the raster line, so
+// this combines it with $D011 bit 7 (the 9th bit) into a 0-311 value and
+// corrects for at most one PAL-frame wrap (312 lines), rather than
+// comparing the raw low byte directly: 256 buggy iterations is an exact
+// multiple of the low byte's own 256-wraparound period, which would
+// otherwise cancel out to a false delta of ~0 (the same kind of modular
+// coincidence documented in REGRESSION_SUITE_PROGRESS.md for batch 1's
+// literal-widening finding).
+@use "unittests/common"
+
+var
+	r1lo,r2lo,hi1,hi2 : byte;
+	r1full,r2full,delta : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	r1lo := peek(^$D012,0);
+	hi1 := peek(^$D011,0) & $80;
+
+	fld(0,0);
+
+	r2lo := peek(^$D012,0);
+	hi2 := peek(^$D011,0) & $80;
+
+	r1full := r1lo;
+	if (hi1 <> 0) then r1full := r1full + 256;
+	r2full := r2lo;
+	if (hi2 <> 0) then r2full := r2full + 256;
+
+	if (r2full < r1full) then
+		delta := (r2full + 312) - r1full
+	else
+		delta := r2full - r1full;
+
+	// correct: fld(0,0) should return immediately, delta near 0; buggy:
+	// 256 one-raster-line passes elapse, delta near 256
+	Vars::text := "2.43";
+	if (delta <= 5) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

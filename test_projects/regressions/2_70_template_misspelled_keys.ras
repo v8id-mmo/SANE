@@ -1,0 +1,13 @@
+// Bug 2.70: shipped C64 project templates spell two of their own
+// settings keys wrong (override_target_settings_ignore_sys/_ignore_prg
+// instead of override_target_settings_sys/_prg; exomize_toggle instead
+// of exomizer_toggle), so setting them by hand-editing a .trse file has
+// no effect. See KNOWN_BUGS.md and CLAUDE.md section 2.70.
+//
+// Minimal program; the override_target_settings_ignore_sys half of this
+// bug's reproduction (see the companion .trse fixture and .sh script) is
+// about whether the BASIC "SYS" stub token gets emitted, which any
+// program - even a totally empty one - triggers.
+Program Bug_2_70_TemplateMisspelledKeys;
+begin
+end.

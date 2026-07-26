@@ -1,0 +1,23 @@
+Program Bug_2_59_SetSpriteLoc_No_Range_Check;
+// Bug 2.59: SetSpriteLoc's own error message for its third argument
+// ("bank") reads "must be constant 0-3", implying the value is range
+// checked. It isn't: Methods6502::SetSpriteLoc (methods6502.cpp
+// ~5847-5871) only verifies the argument is a compile-time constant at
+// all (`qSharedPointerDynamicCast<NodeNumber>` non-null), never that
+// num3->m_val is actually inside 0-3. A bank of 4 or higher compiles
+// clean with no error.
+//
+// Inverted expectation (same shape as 2.25 in batch 5): the bug is a
+// *missing* error, so clean compilation IS the currently-buggy state.
+// Pre-fix: COMPILE_OK. Post-fix (once the documented 0-3 range check is
+// actually implemented): this should become COMPILE_ERROR ("SetSpriteLoc
+// parameter 2 (bank) must be constant 0-3"). No VICE step either way -
+// what's being verified is the presence/absence of the compile-time
+// check itself, not a runtime register value.
+begin
+	SetSpriteLoc(0, $80, 4); // bank=4, outside the documented 0-3 range
+	sprite_color[0] := light_red;
+	togglebit(sprite_bitmask, 0, 1);
+	SpritePos(100,100,0);
+	loop();
+end.

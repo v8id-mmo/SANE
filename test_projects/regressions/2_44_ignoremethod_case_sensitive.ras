@@ -1,0 +1,36 @@
+Program Bug_2_44_IgnoremethodCaseSensitive;
+// Bug 2.44: `@ignoremethod <name>`'s argument is matched case-sensitively
+// against an always-lowercase internal name. Parser::InitBuiltinFunction
+// checks m_ignoreMethods.contains(builtinFunctionName.toLower()), but
+// Parser::Statement (where @ignoremethod's own argument token is parsed)
+// appends that token's value to m_ignoreMethods verbatim, with no
+// .toLower() applied. QStringList::contains is case-sensitive by default,
+// so writing the argument in the routine's normally-documented casing
+// (e.g. "initGetKey", matching how it's spelled everywhere else including
+// syntax.txt) never matches, and the auto-init insertion this directive
+// is meant to suppress silently stays active. `initGetKey` specifically
+// has no re-entry guard (unlike most other auto-init routines), so the
+// automatic call plus this file's own manual `initgetkey()` call both
+// pull in the same external assembly file, producing a hard duplicate-
+// symbol assembly failure. Writing the argument in all-lowercase
+// ("initgetkey") - see Publish/tutorials/C64/docs-examples/initgetkey.ras
+// - works correctly.
+//
+// Method B (compile-time), no VICE step. Confirmed live: fails during
+// assembly with "OrgAsm error: symbol 'key_columntab' already defined" -
+// the exact documented symptom. Pre-fix expected behavior: compile
+// failure with that error. Post-fix, once Parser::Statement lowercases
+// the argument before appending it to m_ignoreMethods, this should
+// compile clean, same as the all-lowercase spelling already does today.
+
+@ignoremethod initGetKey
+
+var
+	k : byte;
+
+begin
+	initgetkey();
+	k := getkey();
+	screen_bg_col := k;
+	loop();
+end.

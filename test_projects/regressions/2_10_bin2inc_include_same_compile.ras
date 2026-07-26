@@ -1,0 +1,15 @@
+// Bug 2.10: @bin2inc's output cannot be @include'd in the same compile
+// that generates it. @bin2inc's file write does happen before
+// @include's own lookup pass runs (Parser::PreprocessAll before
+// Parser::PreprocessIncludeFiles, per Parser::Parse's pass order), but
+// the generated file is still not found on a clean build.
+// Method B (compile-time only, no VICE step): expect COMPILE_ERROR
+// ("Could not open file for inclusion") pre-fix, exit 0 post-fix.
+program Bug_2_10_Bin2IncIncludeSameCompile;
+
+@bin2inc "sample_data.bin" "2_10_bin2inc_generated.inc" myData
+@include "2_10_bin2inc_generated.inc"
+
+begin
+	loop();
+end.

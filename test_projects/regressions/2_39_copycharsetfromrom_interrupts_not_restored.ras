@@ -1,0 +1,55 @@
+Program Bug_2_39_CopyCharsetFromRom_InterruptsNotRestored;
+// Bug 2.39: CopyCharsetFromRom emits `sei` (to safely bank out
+// KERNAL/BASIC while reading the character ROM at $D000) but has no
+// matching `cli` anywhere in the routine (methods6502.cpp ~4520-4552),
+// unlike other routines in the same file that pair a sei/memory-config
+// change with a cli before returning. Interrupts are left permanently
+// masked after the call returns.
+//
+// Verified directly via the 6510 status register's I (interrupt disable)
+// bit, not real-time interrupt timing: `php`/`pla` right after the call
+// reads the processor flags back into a variable, masked to just bit 2.
+// OrgAsm's own opcode table (resources/text/opcodes.txt) has no entry for
+// `php`/`plp` (`pha`/`pla` exist, `php`/`plp` don't - a real gap in this
+// custom assembler, unrelated to this bug, confirmed present upstream too
+// and tracked separately as bug 2.73), so the flag is pushed via a raw
+// opcode byte (`dc.b $08`, PHP's opcode) instead of the mnemonic.
+// Confirmed via two scratch controls before finalizing this snippet: the identical
+// dc.b-$08/pla/and/sta sequence reads back 0 when a manual `cli` is
+// inserted right after the call (simulating the fix), and reads back
+// %00000100 (bit 2 set) without one (today's actual behavior) - so the
+// technique correctly distinguishes both directions.
+@use "unittests/common"
+
+var
+	dest : ^byte;
+	iflag : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	dest := $3000;
+	copycharsetfromrom(dest);
+
+	asm("
+		dc.b $08
+		pla
+		and #%00000100
+		sta iflag
+	");
+
+	Vars::text := "2.39";
+	if (iflag = 0) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

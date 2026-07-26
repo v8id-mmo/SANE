@@ -1,0 +1,43 @@
+Program Bug_2_20_PathtoolDesync;
+// Bug 2.20: `@pathtool` never compiles, in any configuration. This
+// compiler parses the whole file more than once across different phases.
+// On an early phase, `@pathtool` runs through the normal preprocessor
+// dispatch table and its handler correctly consumes all five of its
+// tokens (directive name, two string args, two integer args), running
+// its real side effects (reading the input file, fitting the curve,
+// writing the three output .bin files) in the process. On the later
+// code-generation phase, the same directive is instead reached through a
+// separate "skip already-executed directives" table, whose `pathtool`
+// entry only consumes four tokens - one integer short of what the
+// directive actually has. The trailing `degreeSteps` integer is left in
+// the token stream, desyncing everything parsed afterward (same dropped-
+// token shape as 2.8/2.12). `@perlinnoise`'s equivalent skip-table entry
+// correctly consumes all of its tokens, which is why it doesn't fail the
+// same way.
+//
+// Method B (compile-time desync), no VICE step. Confirmed live: this
+// fails with "After declarations, BEGIN is expected", a confusing error
+// that doesn't point at the `@pathtool` line itself. The directive's own
+// side effects DO run first: 2_20_pathtool_desync_out_x.bin/_y.bin/_t.bin
+// are written to this directory before the error surfaces (confirmed by
+// checking the files exist with the expected size after a compile
+// attempt). Pre-fix expected behavior: compile failure with that error.
+// Post-fix, once the code-generation-phase skip-table entry for
+// `pathtool` consumes all five tokens like its real handler does, this
+// should compile clean.
+//
+// 2_20_pathtool_input.svg is a minimal path-tool input: despite the .svg
+// extension, Tool::PathTool doesn't parse real SVG/XML, it just reads
+// whitespace-simplified "x,y ..." triples (only the first token of every
+// 3 is actually used as a coordinate pair) and fits a degree-4 spline
+// through them.
+
+var
+
+@pathtool "2_20_pathtool_input.svg" "2_20_pathtool_desync_out_" 4 8
+
+	dummy : byte;
+
+begin
+	loop();
+end.

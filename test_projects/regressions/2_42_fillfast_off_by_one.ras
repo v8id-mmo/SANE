@@ -1,0 +1,38 @@
+Program Bug_2_42_FillFast_OffByOne;
+// Bug 2.42: FillFast writes count+1 bytes, not count. Methods6502::FillFast
+// (methods6502.cpp ~2646-2682) loads the count straight into the loop
+// register and uses a decrement-then-branch-if-non-negative pattern
+// (dex; bpl label), which runs once for every value from the initial
+// count down to and including 0 - count+1 iterations. Fill's own loop
+// (increment-then-compare) doesn't have this problem.
+//
+// Guard-region technique, same as 2.47: a sentinel byte placed immediately
+// after the destination buffer should stay untouched by
+// FillFast(#buf, value, count); pre-fix it gets overwritten by the extra
+// iteration.
+@use "unittests/common"
+
+var
+	buf : array[5] of byte = (0,0,0,0,0);
+	guard : byte = $AA;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	fillfast(#buf, 65, 5);
+
+	Vars::text := "2.42";
+	if (guard = $AA) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,46 @@
+Program Bug_2_33_NotClauseNegation;
+// Bug 2.33: `not` has no real clause-negation support. Two related, but
+// distinct, failure modes documented in KNOWN_BUGS.md:
+//   1. `not (a > 5)` (parenthesized comparison) is a PARSE ERROR ("Expected
+//      'RPAREN' but found '>'"), since TokenType::NOT is only ever consumed
+//      inside Parser::Factor (parser.cpp ~2886/2545), a numeric-expression
+//      production that doesn't understand a comparison operator inside its
+//      parens. Not exercised in this file: including it would abort
+//      compilation of the whole snippet before the runtime assertion below
+//      could even run, the same reason 2.1 (batch 1) is COMPILE_ERROR-only.
+//   2. `not a > 5` (unparenthesized) compiles cleanly but silently parses
+//      as `(not a) > 5` instead of the intended `not (a > 5)`, since `not`
+//      only ever binds to the single Factor immediately next to it. This is
+//      the failure mode exercised here: it's the more dangerous of the two
+//      since it produces a wrong answer with no error at all, unlike case 1
+//      which at least fails loudly.
+@use "unittests/common"
+
+var
+	a : byte = 10;
+	took_true_branch : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	took_true_branch := 0;
+	if not a > 5 then
+		took_true_branch := 1;
+	// intended meaning: not (a > 5) = not (10 > 5) = not true = false, so
+	// the true branch should NOT be taken. Buggy: parses as (not a) > 5 =
+	// (not 10) > 5 = 245 > 5 = true, so the true branch IS taken.
+	Vars::text := "2.33";
+	if (took_true_branch = 0) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,27 @@
+program Bug_2_17_KrillsLoaderCaseSensitiveValidation;
+// Bug 2.17: Parser::HandleKrillsLoader (parser.cpp ~6521) parses the
+// three address tokens normally, then reconstructs its own idea of the
+// canonical source text ("@use KrillsLoader " + hex + " " + hex + " " +
+// hex) and checks whether that EXACT string literally appears in
+// m_lexer->m_text - the only real validation the directive does. Every
+// other directive in the language matches its own keyword
+// case-insensitively (via .toLower()), but this reconstructed string uses
+// the fixed casing "KrillsLoader", so writing the keyword in any other
+// casing (lowercase "krillsloader" here) fails validation even though the
+// three parsed address values are entirely valid and identical to a
+// working line (docs-examples/initkrill.ras uses the exact same three
+// addresses with the documented "KrillsLoader" casing and compiles fine).
+//
+// Method B (compile-time), no VICE step. Confirmed live: fails with
+// "Something went wrong with the krill loader implementation: please make
+// sure that the loader line is exactly of the following format (including
+// spaces and letter cases etc): '@use KrillsLoader $0200 $2000 $3000 '".
+// Post-fix (validating the parsed integer values directly instead of
+// re-deriving and string-matching the source line) this should compile
+// clean, same as the "KrillsLoader" casing already does today.
+@use krillsloader $0200 $2000 $3000
+
+begin
+	InitKrill();
+	loop();
+end.

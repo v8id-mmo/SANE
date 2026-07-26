@@ -1,0 +1,28 @@
+Program Bug_2_08_CaseElseDesync;
+// Bug 2.8: `case ... else <single statement>; end;` desyncs the parser.
+// Parser::Case's non-else branch explicitly Eat()s the closing END token;
+// the else branch relies on Block(false) -> CompoundStatement(), which
+// for a single bare statement (no begin/end) consumes only that
+// statement's own trailing semicolon, never the case's own closing
+// `end;`. Every token after that `end;` is then shifted by one.
+//
+// Method B (compile-time desync), no VICE step: this file is expected to
+// FAIL to compile pre-fix, with the error surfacing far from the real
+// cause - at the program's own closing `end.` ("Expected 'DOT' but found
+// ';'") rather than at the `case` statement above. Confirmed workaround
+// (not used here, since the point is to reproduce the bug): wrapping the
+// else branch in `begin...end` compiles clean. Post-fix, this file should
+// compile with exit 0.
+
+var
+	i : byte = 1;
+
+begin
+	case i of
+		0: screen_bg_col := 0;
+		1: screen_bg_col := 1;
+	else
+		screen_bg_col := 2;
+	end;
+	loop();
+end.

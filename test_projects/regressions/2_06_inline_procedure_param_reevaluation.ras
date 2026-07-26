@@ -1,0 +1,54 @@
+Program Bug_2_06_InlineProcedureParamReevaluation;
+// Bug 2.6: an `inline` procedure doesn't evaluate its parameters once and
+// store the result; instead the parameter expression's own TEXT is
+// substituted in at every place the parameter is referenced inside the
+// body (codegen/abstractcodegen.cpp AbstractCodeGen::InlineProcedure, via
+// an m_inlineParameters map redirecting getValue()/getValue8bit()). For a
+// plain variable/literal parameter this is harmless (the same text is
+// always the same value); for a complex expression (here, an array index)
+// referenced more than once, real call semantics (evaluate the argument
+// ONCE, at call time) would give the same value both times, but the
+// actual re-evaluate-at-each-reference behavior sees whatever the index
+// has become by the second reference if the body itself mutates it in
+// between - exactly the shape confirmed live via the generated .asm:
+// `ldx idx / lda arr,x / sta r1` then `inc idx` then `ldx idx / lda
+// arr,x / sta r2`, i.e. r2 re-reads arr[] at the NEW idx instead of
+// reusing the value already computed for r1.
+@use "unittests/common"
+
+var
+	arr : array[4] of byte = (10,20,30,40);
+	idx : byte;
+	r1, r2 : byte;
+
+procedure Test(x : byte) inline;
+begin
+	r1 := x;
+	idx := idx + 1;
+	r2 := x;
+end;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	idx := 0;
+	Test(arr[idx]);
+	// correct (argument evaluated once at call time): r1 = arr[0] = 10,
+	// r2 should still be 10 (same evaluated argument, not re-read)
+	// buggy (re-evaluated at each reference): r1 = arr[0] = 10, then idx
+	// becomes 1 via the body's own mutation, so r2 re-reads arr[1] = 20
+	Vars::text := "2.06";
+	if ((r1 = 10) and (r2 = 10)) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

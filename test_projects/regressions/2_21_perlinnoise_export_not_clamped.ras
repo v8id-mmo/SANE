@@ -1,0 +1,25 @@
+// Bug 2.21: @perlinnoise's exported byte data isn't clamped to
+// [0,255] before being stored (SimplexNoise::CreateNoiseData casts the
+// raw float straight into the output byte array), while the .png
+// preview it saves alongside is correctly clamped afterward on a
+// separate copy of the same value. amp=100000 pushes almost every
+// pixel's true (pre-cast) value far above 255, so a properly clamped
+// output would read back as 0xFF almost everywhere; the actual,
+// unclamped output instead wraps unpredictably across the full byte
+// range (confirmed: virtually never lands on 0xFF by chance).
+// Method C (build-output verification): see the companion .outputcheck
+// file (RAREBYTE). Note the noise field itself is reseeded per process
+// (SimplexNoise::CreateNoiseData's own rs offset uses unseeded rand()),
+// so exact bytes aren't reproducible run to run - only the statistical
+// "how often does 0xFF show up" signal is.
+program Bug_2_21_PerlinNoiseExportNotClamped;
+var
+
+@perlinnoise "2_21_perlinnoise_out.bin" 8 8 2 1 1 100 100000
+	noiseData : incbin("2_21_perlinnoise_out.bin");
+	i : byte;
+
+begin
+	i := noiseData[0];
+	loop();
+end.

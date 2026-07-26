@@ -1,0 +1,39 @@
+Program Bug_2_63_SetSpriteLoc_Hardcoded_Table_Address;
+// Bug 2.63: SetSpriteLoc always computes the sprite-pointer table address
+// as a hardcoded $07F8 + (bank*$4000), the *default* screen location's
+// offset. It never looks at wherever SetScreenLocation last actually
+// moved the screen ($D018's screen-base nibble), so relocating the
+// screen and then calling SetSpriteLoc silently writes the sprite
+// pointer to the wrong (old, default) address.
+// Methods6502::SetSpriteLoc (methods6502.cpp ~5851/5871).
+@use "unittests/common"
+
+var
+	b : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	// Move the screen to $0800 (still bank 0, offset $0800 rather than
+	// the default $0400). The real sprite-pointer table for a screen at
+	// $0800 lives at $0800 + $3F8 = $0BF8, not the default-screen $07F8.
+	poke(^$07F8,0,$00);
+	poke(^$0BF8,0,$00);
+	SetScreenLocation($0800);
+	SetSpriteLoc(0, $80, 0);
+	b := peek(^$0BF8,0);
+	Vars::text := "2.63";
+	if (b = $80) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

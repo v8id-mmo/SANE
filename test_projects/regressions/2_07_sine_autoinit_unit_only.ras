@@ -1,0 +1,42 @@
+Program Bug_2_07_SineAutoinitUnitOnly;
+// Bug 2.7: Parser::InitBuiltinFunction (parser.cpp ~211-380) auto-inserts
+// an up-front `jsr initsine_calculate` the first time it sees the literal
+// text "sine[" - but it only scans `m_lexer->m_text`, the text of
+// whichever parser/lexer instance is CURRENTLY active, which runs
+// separately per file. If "sine[" only appears inside a `@use`d unit's own
+// text, never repeated in the main .ras file's own text, the up-front jsr
+// never gets emitted and nothing else ever calls it either, so
+// InitSinusTable's 256-byte table sits as whatever memory already held
+// forever, and every `sine[angle]` read is garbage, silently, with no
+// compile error.
+//
+// Companion unit: 2_07_sine_autoinit_unit_only.tru (SineUnit::GetSine),
+// whose only "sine[" usage is inside the unit's own function body - this
+// main file never repeats the pattern itself.
+//
+// Verified via a static check on the generated .asm (see the companion
+// .asmcheck file), not a runtime value: the table's own storage (`sine
+// .byte 0` plus a following `org sine+#255`, no data bytes emitted)
+// reserves 256 bytes without giving them a real compile-time value, so
+// "uninitialized" isn't reliably 0 at runtime - VICE's own default RAM
+// fill pattern can leave nonzero garbage there (confirmed live: an
+// earlier version of this snippet asserting a bare "sine[64]<>0" false-
+// PASSed even with the jsr genuinely absent). A same-file sentinel poke
+// doesn't work either: the up-front jsr, when present, runs unconditionally
+// at the very top of the program, before any of this file's own code -
+// there's no source-level point after which a sentinel could still
+// distinguish "never ran" from "already ran and we clobbered its result".
+// The generated .asm text itself is the only reliable signal: confirmed
+// live that `jsr initsine_calculate` is completely absent from the whole
+// program in this unit-only-usage shape, while `jsr SineUnit_GetSine` (the
+// actual call site) is present as expected.
+@use "2_07_sine_autoinit_unit_only"
+
+var
+	v : byte;
+
+begin
+	v := SineUnit::GetSine(64);
+	screen_bg_col := v;
+	loop();
+end.

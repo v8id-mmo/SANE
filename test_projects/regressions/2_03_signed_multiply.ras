@@ -1,0 +1,61 @@
+Program Bug_2_03_SignedMultiply;
+// Bug 2.3: `a * b` byte multiplication always calls the unsigned
+// multiply_eightbit routine (CodeGen6502::EightBitMul), never the existing
+// but unwired multiply_8bit_signed. Multiplying two bytes whose true
+// (signed) product doesn't fit in 8 bits and gets widened into a 16-bit
+// result exposes this: a negative operand's widened product comes out
+// zero-extended/unsigned instead of properly negative.
+//
+// NOTE: `result`/`result_pos` are deliberately declared as plain
+// (unsigned-flagged) `integer`, not `signed integer`. This snippet only
+// wants to check the raw bit pattern of the product; comparing a
+// *signed*-flagged variable with '=' would instead hit bug 2.1 (only
+// '<'/'<=' are implemented for signed integer comparison) and fail to
+// compile for an unrelated reason.
+//
+// Comparisons below use the *positive*, unsigned 16-bit equivalent of
+// each expected negative value (e.g. 65516 for -20) rather than a
+// negative literal. Confirmed by inspecting the generated .asm: a
+// negative literal compared against a plain unsigned `integer` variable
+// gets zero-extended by the compiler the same buggy way bug 2.5
+// describes for a runtime value (high byte compiled as $00 instead of
+// $FF), which would silently make the literal itself wrong instead of
+// only the value under test. The positive unsigned form has no sign to
+// extend and always compiles to the exact intended bit pattern.
+@use "unittests/common"
+
+var
+	a : signed byte = -5;
+	b : signed byte = 4;
+	p : signed byte = 5;
+	result : integer;
+	result_pos : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	result := a * b;
+	// correct: -20, i.e. 65516 unsigned (0xFFEC widened); buggy: 1004
+	// (0x03EC, the raw unsigned 8x8->16 product of 251*4, never
+	// sign-corrected)
+	Vars::text := "2.03a";
+	if (result = 65516) then Common::PASS() else Common::FAIL();
+
+	result_pos := p * b;
+	// both-positive control case: correct and buggy agree (=20), since
+	// there's no sign to get lost when neither operand is negative
+	Vars::text := "2.03b";
+	if (result_pos = 20) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,41 @@
+Program Bug_2_41_CreatePointerNoXRegister;
+// Bug 2.41: `CreateInteger`/`CreatePointer` share one implementation
+// (Methods6502::CreateInteger, methods6502.cpp ~2978-2984); the `reg`
+// argument each dispatch site passes ("y" for CreateInteger, "x" for
+// CreatePointer) is never read inside the function body, so CreatePointer
+// never actually loads/stores X despite the name implying it should.
+//
+// X is loaded with a known distractor value (via inline asm) immediately
+// before the call, so the pre-fix behavior (X left untouched) is
+// deterministic instead of accidentally matching the expected high byte
+// by chance.
+@use "unittests/common"
+
+var
+	target : pointer;
+	highval : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	highval := 0;
+	asm(" ldx #$63 "); // 99, a distractor value distinct from the expected 20
+	target := CreatePointer(10, 20); // target = 10 + 20*256 = 5130
+	asm(" stx highval ");
+
+	// expected: X holds the high byte (20) passed to CreatePointer
+	Vars::text := "2.41";
+	if (highval = 20) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

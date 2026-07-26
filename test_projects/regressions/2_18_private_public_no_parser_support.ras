@@ -1,0 +1,32 @@
+Program Bug_2_18_PrivatePublicNoParserSupport;
+// Bug 2.18: `private`/`public` are reserved keywords with zero parser
+// support. Parser::Record() (parses both `record` and `class` bodies)
+// only special-cases PROCEDURE/FUNCTION/INTERRUPT tokens; anything else
+// falls through to VariableDeclarations(), which immediately Eat()s
+// TokenType::ID. Since PRIVATE/PUBLIC are their own distinct token types
+// (not ID), that Eat() fails immediately. There is currently no way to
+// mark a class/record member private; every member is effectively
+// public.
+//
+// Method B (compile-time), no VICE step. Confirmed live: this fails with
+// "Expected 'ID' but found 'Point_PRIVATE'" (the class-name-prefixed form
+// of the PRIVATE token) right where the `private` section starts. Pre-fix
+// expected behavior: compile failure with that error. There is no
+// known-good variant to fall back on: no configuration of `private`/
+// `public` in a record/class body compiles today. Post-fix, once
+// Parser::Record() gains real visibility-section handling, this should
+// compile clean (or, at minimum, the same construct should no longer be
+// a hard parse error).
+
+var
+	Point = record
+		private
+		x, y : byte;
+	end;
+
+	p1 : Point;
+
+begin
+	p1.x := 10;
+	loop();
+end.

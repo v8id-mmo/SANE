@@ -1,0 +1,19 @@
+// Bug 2.71: the settings-file key optimizer_remove_unused_symbols looks
+// like the unused-symbol-removal switch but is never read anywhere; the
+// real switch is a differently-named, differently-located key,
+// remove_unused_symbols, in the PROJECT file instead. See KNOWN_BUGS.md
+// and CLAUDE.md section 2.71.
+//
+// unused_var_xyz/UnusedProcXyz are deliberately never called from
+// begin/end - genuinely dead code a correct unused-symbol pass should be
+// able to strip.
+Program Bug_2_71_OptimizerRemoveUnusedSymbolsDead;
+var unused_var_xyz : byte;
+
+procedure UnusedProcXyz();
+begin
+    unused_var_xyz := 1;
+end;
+
+begin
+end.

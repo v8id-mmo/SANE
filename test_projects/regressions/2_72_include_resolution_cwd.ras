@@ -1,0 +1,49 @@
+Program Bug_2_72_IncludeResolutionCwd;
+// Bug 2.72: `@include` inside a `.tru` unit only resolves its
+// units/<SYSTEM>/.../units/cpu_specific/<PROCESSOR>/... fallback paths
+// correctly when the compiler is invoked with the repo root as the
+// current working directory. Parser::HandleUseTPU (@use's .tru lookup)
+// anchors its search dirs with Util::GetSystemPrefix(), which resolves
+// relative to wherever the compiler binary lives, regardless of cwd.
+// Parser::PreprocessIncludeFiles (@include's fallback lookup, reached
+// once the local-directory check fails) instead anchors its fallback
+// paths with the always-empty Util::path, so on Linux the fallback is
+// silently relative to the process's CURRENT WORKING DIRECTORY instead -
+// this only "works" by coincidence when cwd happens to be the repo root
+// (where a real units/ directory happens to sit at that relative path).
+//
+// units/C64/output/pbm.tru (@use "output/pbm") does `@include
+// "output/pbm/macro.ras"` right after its var block opens, making it a
+// minimal real-world trigger for this bug: it needs no PBM setup beyond
+// the 5 @define values the unit itself requires before it'll even parse
+// that far.
+//
+// Method B (compile-time), no VICE step, and CWD-DEPENDENT: run
+// run_regressions.sh normally (it cd's into this folder, NOT the repo
+// root), so this reproduces the documented pre-fix failure exactly as
+// filed: "Could not open file for inclusion:
+// units/cpu_specific/MOS6502/output/pbm/macro.ras" (the file genuinely
+// exists, just at units/C64/output/pbm/macro.ras instead - the SYSTEM-dir
+// fallback attempt failed the same cwd-relative way just before this,
+// final one shown is the last one tried). Confirmed live: invoking the
+// identical file from the repo root instead gets past this error
+// entirely and fails later for an unrelated, expected reason (this
+// snippet does no real PBM initialization). Post-fix, once
+// PreprocessIncludeFiles's fallback paths anchor to
+// Util::GetSystemPrefix() like HandleUseTPU already does, this should hit
+// that same later, cwd-independent failure regardless of where the
+// compiler is invoked from - proving the fix, not full PBM correctness.
+
+var
+
+@define PBMADDRESS $0400
+@define PBMDISPLAYWIDTH 40
+@define PBMSCREENWIDTH 40
+@define PBMBUFFERWIDTH 40
+@define PBMBUFFERHEIGHT 25
+
+@use "output/pbm"
+
+begin
+	loop();
+end.

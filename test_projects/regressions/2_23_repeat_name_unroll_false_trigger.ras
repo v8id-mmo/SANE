@@ -1,0 +1,37 @@
+Program RepeatBugCheck;
+// Bug 2.23: a program/procedure/variable name starting with "repeat"
+// (case-insensitive) can falsely trigger the inline-assembler `repeat N`/
+// `repend` unroll parser. Orgasm::ProcessUnrolling scans the generated
+// assembly text line by line and treats ANY line whose simplified,
+// lowercased text starts with "repeat" as the opening of an unroll block
+// (a bare startsWith("repeat") check, no word-boundary/shape check).
+// Asm6502::Program emits the program's own name as a bare assembly label
+// at the very top of the generated code; since this program is named
+// "RepeatBugCheck", that label line itself gets misidentified as an
+// unroll directive, fails to parse a valid repeat count from it, and
+// throws - even though this program never uses `repeat N`/`repend`
+// unrolling at all. The ordinary Pascal `repeat...until` loop below is
+// completely unrelated to this feature and compiles/runs fine on its own
+// merits; it's only the PROGRAM NAME that trips the bug.
+//
+// Method B (compile-time), no VICE step. Confirmed live: fails during
+// assembly (not parsing) with "Repeat count must be either 1 or
+// 2-dimensional." - the exact documented message. Confirmed control:
+// renaming only the program to anything not starting with "repeat"
+// (tested: "NotTheBug") makes this identical source compile clean, so
+// the fix direction (require the line to actually match
+// `repeat\s+\d+(\s+\d+)?$` rather than a bare prefix check) should make
+// this program-name spelling compile clean too, still producing a
+// correct repeat...until loop.
+
+var
+	i : byte;
+
+begin
+	i := 0;
+	repeat
+		i := i + 1;
+	until i = 3;
+	screen_bg_col := i;
+	loop();
+end.

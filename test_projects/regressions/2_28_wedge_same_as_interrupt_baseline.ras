@@ -1,0 +1,25 @@
+program Bug_2_28_WedgeSameAsInterrupt;
+// Baseline twin for 2_28_wedge_same_as_interrupt.ras's .diffcheck:
+// byte-identical except `wedge` -> `interrupt`, same internal program name
+// (so the emitted label text matches too). Not a bug snippet on its own;
+// excluded from run_regressions.sh's default sweep (any *_baseline.ras is
+// skipped when no explicit names are given).
+var
+	frameCount : byte = 0;
+
+interrupt RasterHandler();
+begin
+	startirq(0);
+	inc(frameCount);
+	screen_bg_col := frameCount&15;
+	closeirq();
+end;
+
+begin
+	preventirq();
+	disableciainterrupts();
+	RasterIRQ(RasterHandler(),0,0);
+	EnableIRQ();
+	EnableRasterIRQ();
+	loop();
+end.

@@ -1,0 +1,23 @@
+Program Bug_2_09_AbsolutePointerDecl;
+// Bug 2.9: `absolute` is not accepted on pointer declarations, only `at`
+// is. Parser::TypeSpec's plain scalar/array/string branches check both
+// TokenType::AT and TokenType::ABSOLUT, but the two pointer-declaration
+// branches (`^byte`/`^integer`, and `pointer of <type>`) only check AT.
+//
+// Method B (compile-time), no VICE step. Confirmed live: `^byte at $9000;`
+// compiles clean, but `^byte absolute $9000;` fails immediately with
+// "Expected 'SEMI' but found 'ABSOLUTE'" - the pointer branch doesn't even
+// recognize ABSOLUT as a valid continuation, so it demands a semicolon
+// right after the pointer type instead. Pre-fix expected behavior: this
+// file fails to compile with that exact error. Once the pointer branches
+// also accept ABSOLUT (mirroring the plain-variable branches), this
+// should compile clean, identically to the same declaration spelled with
+// `at` instead of `absolute`.
+
+var
+	p : ^byte absolute $9000;
+
+begin
+	p := 5;
+	loop();
+end.

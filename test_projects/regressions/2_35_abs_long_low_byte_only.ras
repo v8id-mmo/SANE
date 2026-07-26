@@ -1,0 +1,39 @@
+Program Bug_2_35_AbsLongLowByteOnly;
+// Bug 2.35: `abs()` on a `long` value only negates the low byte.
+// Methods6502::Abs (methods6502.cpp ~3790-3834) branches only on
+// isWord() (true = 16-bit integer path, false = plain byte path); `long`
+// never satisfies isWord() so it falls into the byte path, which checks
+// bit 7 of the low byte alone and negates only that byte, leaving the
+// middle/high bytes untouched.
+//
+// -100000 as a 24-bit two's-complement value is $FE79E0 (low byte $E0,
+// bit 7 set). Correct abs() = 100000 ($0186A0). Buggy: only the low byte
+// gets two's-complemented ($E0 -> $20), middle/high bytes pass through
+// unchanged, giving $FE7920 (16677152), not 100000.
+@use "unittests/common"
+
+var
+	lv : long;
+	r : long;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	lv := -100000;
+	r := abs(lv);
+
+	Vars::text := "2.35";
+	if (r = 100000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

@@ -1,0 +1,41 @@
+Program Bug_2_37_LiteralAddressAssemblyFail;
+// Bug 2.37: a bare numeric literal address fails to assemble for Call,
+// ClearBitmap, CopyCharsetFromRom, CopyFullScreen, CopyHalfScreen,
+// TransformColors, and (via a different code path) Poke. All of the
+// first group call Node::getValue(as)/Accept() directly on the parameter
+// node, which formats a plain NodeNumber literal in immediate ("#") form
+// - correct for a register load, wrong for a memory-address operand.
+// CopyFullScreen($0400, $4400) emits `sta #$4400 + $0,x`, an invalid 6502
+// instruction; OrgAsm aborts with "opcode type not implemented or
+// illegal". Routing the same address through a ^-prefixed literal, a
+// named address constant, or a pointer variable assembles correctly
+// instead (methods6502.cpp's CopyFullScreen, ~lines around the getValue()
+// call this bug traces to).
+//
+// Same shape as 2.1/2.53/2.61: this is an assembly-stage failure, not a
+// wrong runtime value, so pre-fix this snippet is expected to be
+// COMPILE_ERROR (no .prg produced, nothing to run through VICE).
+@use "unittests/common"
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	poke(^$0400,0,$41); // seed one visible screen byte so the copy is checkable
+
+	copyfullscreen($0400, $4400); // bare numeric literal addresses: fails at assembly
+
+	Vars::text := "2.37";
+	if (peek(^$4400,0) = $41) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

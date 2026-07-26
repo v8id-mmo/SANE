@@ -1,0 +1,25 @@
+Program Bug_2_50_PlaySound_GateOverwrite;
+// Bug 2.50: Methods6502::PlaySound (methods6502.cpp ~2950) writes both of
+// its last two "waveform" parameters to the exact same SID control
+// register address (54272 +$4 +<voice offset>), back to back with nothing
+// in between:
+//   lda #<param5>   ; typically the gate-set control byte
+//   sta 54272 +$4 + $0
+//   lda #<param6>   ; typically the gate-clear control byte
+//   sta 54272 +$4 + $0
+// The second write immediately overwrites the first before the SID chip
+// has any opportunity to act on it, so param 5 has no observable effect.
+//
+// This can't be verified by peeking the real SID control register at
+// runtime: it's write-only on real hardware (and in VICE), so a `peek`
+// there doesn't reliably read back the last value written (confirmed by a
+// scratch test: reading it back after this exact call gave neither
+// parameter's value). Verified instead via a static check on the
+// generated .asm (see the companion .asmcheck file): the buggy shape is
+// two "sta 54272 +$4 + $0" lines with only the intervening "lda" for
+// param 6 between them (i.e., truly adjacent, gap of 2 lines) - proving
+// param 5's write is clobbered before anything else can observe it.
+begin
+	playsound(SID_CHANNEL1, 13, 20, 0, 3*16+12, 1+SID_SAW, SID_SAW);
+	loop();
+end.

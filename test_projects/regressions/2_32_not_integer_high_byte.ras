@@ -1,0 +1,43 @@
+Program Bug_2_32_NotIntegerHighByte;
+// Bug 2.32: `not` on an integer/long value only complements the low byte;
+// the upper byte(s) pass straight through unchanged. Parser::Factor
+// (parser.cpp ~2884-2903) rewrites `not <expr>` into `<expr> xor 255`
+// where 255 is always a byte-width constant; CodeGen6502::HandleVarBinopB16bit
+// treats a #0 high byte on the RHS constant as a no-op shortcut correct for
+// +/- but not for XOR, so the high byte of a 16-bit `not` is never touched.
+// `not` on a plain byte value is unaffected (control case 2.32b).
+@use "unittests/common"
+
+var
+	x : integer = $00FF;
+	int_result : integer;
+	bval : byte = $0F;
+	byte_result : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	int_result := not x;
+	// correct 16-bit complement of $00FF is $FF00 (65280 unsigned); buggy:
+	// only the low byte flips ($00), high byte passes through unchanged
+	// ($00), giving $0000
+	Vars::text := "2.32a";
+	if (int_result = 65280) then Common::PASS() else Common::FAIL();
+
+	byte_result := not bval;
+	// byte-width control case: not $0F = $F0 = 240, already correct
+	Vars::text := "2.32b";
+	if (byte_result = 240) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

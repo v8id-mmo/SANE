@@ -1,0 +1,48 @@
+Program Bug_2_53_ReturnValueLongAssemblyFail;
+// Bug 2.53: `ReturnValue` fails to assemble when the enclosing function
+// returns `long`. The ReturnValue command handler (methods6502.cpp ~190)
+// calls the generic LoadVar helper, which opens an `lda` Term buffer and
+// then delegates to the operand's own codegen; for a `long` operand that
+// visit emits its own complete, self-terminated 3-register (A/Y/X) load,
+// leaving LoadVar's still-open, empty `lda` Term to flush afterward as a
+// stray operand-less `lda`, which fails at the assembly stage
+// ("Opcode type not implemented or illegal: lda type 0").
+//
+// Same shape as bug 2.1 in batch 1: this is a compile/assembly-time
+// failure, not a wrong-runtime-value bug, so pre-fix this snippet is
+// expected to be COMPILE_ERROR (no .prg produced, nothing to run through
+// VICE). The plain `<functionName> := <longExpr>;` return form is
+// unaffected for `long` and is not what this snippet exercises.
+@use "unittests/common"
+
+function GetLongVal() : long;
+var
+	lv : long;
+begin
+	lv := $030201;
+	returnvalue(lv);
+end;
+
+var
+	result : long;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	result := GetLongVal();
+
+	Vars::text := "2.53";
+	if (result = $030201) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

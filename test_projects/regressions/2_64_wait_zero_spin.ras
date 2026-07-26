@@ -1,0 +1,49 @@
+Program Bug_2_64_WaitZeroSpin;
+// Bug 2.64: Methods6502::Wait generates `tax`/`dex`/`bne *-1` with no
+// `count == 0` check before the `dex`; when the loaded count is 0, X
+// wraps to 255 on the first decrement and the loop spins ~256 times
+// instead of returning immediately. Same "loop body runs at least once"
+// shape as 2.14/2.43/2.47.
+//
+// Wait() has no memory side effect to check directly, so this snippet
+// measures elapsed time indirectly via the VIC-II raster line register
+// ($D012), the same technique the existing headless-VICE harness already
+// relies on for its own timing (CIA/raster IRQs are disabled above, so
+// this is deterministic, not flaky). Empirically measured on this
+// machine before any fix: Wait(0)'s delta is 23 raster lines, Wait(1)'s
+// is 1 - confirming the ~256-iteration wraparound (256 vs 1 iteration is
+// roughly the same 17-vs-1 ratio measured for Wait(200) in the same
+// session). Threshold below (<=5 lines) sits comfortably between the
+// correct expectation (~1-2 lines, same ballpark as Wait(1)) and the
+// buggy measurement (23), so it isn't sensitive to minor cycle-count
+// differences from a future fix's exact implementation.
+@use "unittests/common"
+
+var
+	n : byte;
+	r1,r2,delta : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	n := 0;
+	r1 := peek(^$D012,0);
+	wait(n);
+	r2 := peek(^$D012,0);
+	delta := r2 - r1;
+
+	Vars::text := "2.64";
+	if (delta <= 5) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

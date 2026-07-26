@@ -1,0 +1,41 @@
+program Bug_2_28_WedgeSameAsInterrupt;
+// Bug 2.28: Parser::ProcDeclarations (parser.cpp ~4012-4018) sets an
+// integer `type` to 1 for `interrupt` and 2 for `wedge`, stored as
+// NodeProcedureDecl::m_type. The only codegen read of that field
+// (AbstractCodeGen::dispatch(NodeProcedureDecl), abstractcodegen.cpp
+// ~1040) only branches on m_type==0 (plain procedure) vs. non-zero
+// (interrupt-style rti epilogue); it never distinguishes 1 from 2. In
+// standard C64 terminology a "wedge" specifically means chaining onto an
+// already-installed interrupt vector rather than replacing it outright -
+// a real, distinct code path from a plain interrupt handler - but nothing
+// about `wedge` as a declaration keyword does this. Compiling matching
+// `wedge RasterHandler()` / `interrupt RasterHandler()` declarations with
+// the same body (same internal program name, so even the emitted
+// top-of-file label text matches) should, once this bug is fixed (real
+// vector-chaining codegen for `wedge`), produce two DIFFERENT .asm
+// outputs; today they come out byte-for-byte IDENTICAL, confirmed live
+// via a raw diff.
+//
+// New harness mechanism (see REGRESSION_SUITE_GUIDE.md): <stem>.diffcheck
+// names a baseline stem to compile and diff .asm against - FAIL if
+// identical (today's bug: no distinct chaining behavior), PASS if
+// different.
+var
+	frameCount : byte = 0;
+
+wedge RasterHandler();
+begin
+	startirq(0);
+	inc(frameCount);
+	screen_bg_col := frameCount&15;
+	closeirq();
+end;
+
+begin
+	preventirq();
+	disableciainterrupts();
+	RasterIRQ(RasterHandler(),0,0);
+	EnableIRQ();
+	EnableRasterIRQ();
+	loop();
+end.

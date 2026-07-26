@@ -1,0 +1,24 @@
+Program Bug_2_65_ToggleBit_ConstantDoublePass;
+// Bug 2.65: Methods6502::ToggleBit (methods6502.cpp ~6503-6546) emits its
+// fast constant-bit-index and/ora directly when parameter 1 (the bit
+// index) is a compile-time constant, but never `return`s afterward:
+// execution falls straight through into the generic path, which
+// re-evaluates the bit index through BitShiftX (a runtime shift loop
+// building the identical bitmask) and performs the same and/ora again.
+// Harmless at runtime (toggling the same bit the same way twice is a
+// no-op), so this can't be caught by a value assertion - the final byte
+// is correct either way. Verified instead via a static check on the
+// generated .asm (see the companion .asmcheck file): BitShiftX's
+// "shiftbit"/"shiftbitdone" labels are only ever emitted from that one
+// function, so their presence proves the generic runtime path ran even
+// though the bit index here is the literal constant 2. GetBit
+// (methods6502.cpp ~6549) has the same constant/variable split for
+// reading a bit but doesn't have this problem: its constant branch ends
+// with a `return;` its ToggleBit counterpart is missing.
+var
+	flags : byte = %00000000;
+
+begin
+	togglebit(flags,2,1);
+	loop();
+end.

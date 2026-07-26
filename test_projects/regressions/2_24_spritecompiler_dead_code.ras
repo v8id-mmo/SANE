@@ -1,0 +1,18 @@
+// Bug 2.24: @spritecompiler is dead code on every target, not just
+// C64. Its handler calls img->SpriteCompiler(...) and appends whatever
+// it returns to Parser::m_parserAppendix, but the base LImage::
+// SpriteCompiler (the only one reachable on this fork's C64-only image
+// classes) is a no-op stub, and m_parserAppendix itself is never read
+// by anything else in the compiler even when it does hold real text.
+// Compilation succeeds, but nothing about the sprite name ever reaches
+// the generated assembly: no new symbol, no data.
+// Method C (static .asm-check, reusing the existing .asmcheck PRESENT
+// mode): expect the sprite's own name to be entirely absent from the
+// generated .asm pre-fix (FAIL), present post-fix (PASS).
+program Bug_2_24_SpriteCompilerDeadCode;
+
+@spritecompiler "sample_sprite.flf" "bug224sprite" 0 0 8 8
+
+begin
+	loop();
+end.
