@@ -125,6 +125,7 @@ public:
     static QVector<QSharedPointer<Parser>> m_tpus;
     QString m_vicMemoryConfig;
     QStringList m_initJumps;
+    QStringList m_unitInitJumps;
     QVector<QSharedPointer<MemoryBlock>> m_userBlocks;
     bool isInBuiltInMethod = false;
     QString m_overrideOutputTarget="";

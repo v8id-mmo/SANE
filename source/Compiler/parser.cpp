@@ -209,7 +209,13 @@ int Parser::findSymbolLineNumber(QString symbol) {
 }
 
 void Parser::InitBuiltinFunctions() {
-    m_initJumps.clear();
+    // Seed with whatever @use'd unit files already found via their own,
+    // independent text scan (HandleUseTPU merges each unit's resolved
+    // m_initJumps into m_unitInitJumps): this file's own scan below only
+    // ever sees its own m_lexer->m_text, so a builtin only ever triggered
+    // from inside a unit's code would otherwise never get its init jump
+    // emitted at all.
+    m_initJumps = m_unitInitJumps;
     int oldBlock = Node::m_staticBlockInfo.m_blockID;
     if (m_preprocessorDefines.contains("BuiltinMethodsLocation")) {
 
@@ -463,7 +469,7 @@ void Parser::InitBuiltinFunction(QStringList methodName,
                 Token(TokenType::PROCEDURE, builtinFunctionName),
                 builtinFunctionName));
             m_ignoreBuiltinFunctionTPU.append(builtinFunctionName);
-            if (initJump != "")
+            if (initJump != "" && !m_initJumps.contains("\tjsr " + initJump))
                 m_initJumps << "\tjsr " + initJump;
             return;
         }
@@ -6937,6 +6943,13 @@ void Parser::HandleUseTPU(QString fileName) {
   Node::m_staticBlockInfo.m_blockName = "unit";
 */
     m_symTab->Merge(p->m_symTab.get(), true);
+    // Merge in whatever auto-init builtins this unit's own text triggered
+    // (e.g. sine[]'s table-fill init), so they still get emitted at
+    // program start even if nothing in the main file's own text repeats
+    // the trigger pattern.
+    for (QString j : p->m_initJumps)
+        if (!m_unitInitJumps.contains(j))
+            m_unitInitJumps.append(j);
     // Merge types as well
     for (QString s : p->m_types.keys()) {
         m_types[s] = p->m_types[s];

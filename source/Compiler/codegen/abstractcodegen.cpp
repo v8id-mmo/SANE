@@ -1172,14 +1172,47 @@ void AbstractCodeGen::InlineProcedure(QSharedPointer<NodeProcedure> p) {
     QSharedPointer<NodeVar> var =
         qSharedPointerDynamicCast<NodeVar>(nv->m_varNode);
     if (!var->m_isRegister) {
-      m_inlineParameters[var->value] = p->m_parameters[cur];
-      QString val = p->m_parameters[cur]->getValue(as);
-      if (p->m_parameters[cur]->isPureNumeric())
-        val = val.replace("#", "");
+      if (p->m_parameters[cur]->isPure()) {
+        m_inlineParameters[var->value] = p->m_parameters[cur];
+        QString val = p->m_parameters[cur]->getValue(as);
+        if (p->m_parameters[cur]->isPureNumeric())
+          val = val.replace("#", "");
 
-      p->m_procedure->m_block->ReplaceInlineAssemblerVariables(
-          as, "[" + var->value + "]", val);
+        p->m_procedure->m_block->ReplaceInlineAssemblerVariables(
+            as, "[" + var->value + "]", val);
+      } else {
+        // Non-pure parameter (array index, pointer dereference, computed
+        // expression, ...): real call semantics evaluate it ONCE. Do that
+        // here and stash the result in a real generated temp variable,
+        // instead of re-substituting (and so re-evaluating) the
+        // expression's own text at every reference inside the inlined
+        // body, which can both duplicate side effects and, for raw asm()
+        // blocks, insert text that isn't a valid standalone operand.
+        QSharedPointer<NodeVarType> vt =
+            qSharedPointerDynamicCast<NodeVarType>(nv->m_typeNode);
+        QString declType = vt->value.toUpper();
+        QString storeType = "byte";
+        QString symType = "byte";
+        if (declType == "LONG") {
+          storeType = "long";
+          symType = "long";
+        } else if (declType != "BYTE" && declType != "BOOLEAN") {
+          // integer, pointer, address, ... are all 16-bit here
+          storeType = "word";
+          symType = "integer";
+        }
 
+        p->m_parameters[cur]->Accept(this);
+        QString lbl = as->StoreInTempVar(var->value, storeType);
+        as->m_symTab->Define(QSharedPointer<Symbol>(new VarSymbol(lbl, symType)),
+                              true);
+
+        m_inlineParameters[var->value] =
+            NodeFactory::CreateVariable(var->m_op, lbl);
+
+        p->m_procedure->m_block->ReplaceInlineAssemblerVariables(
+            as, "[" + var->value + "]", lbl);
+      }
     } else {
       QSharedPointer<NodeAssign> na = QSharedPointer<NodeAssign>(new NodeAssign(
           nv->m_varNode, p->m_parameters[cur]->m_op, p->m_parameters[cur]));
