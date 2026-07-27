@@ -49,10 +49,12 @@ void Methods6502C64::FLD(Assembler *as)
     int val = num->m_val;
 
     QString lbl = as->NewLabel("fld");
+    QString lblDone = as->NewLabel("flddone");
     as->Comment("FLD effect");
     m_node->m_params[0]->Accept(m_codeGen);
     as->Term();
     as->Asm("tax");
+    as->Asm("beq " + lblDone + " ; count==0, skip the effect entirely");
 
     as->Label(lbl);
     as->Asm("lda $d012 ; Wait for beginning of next line");
@@ -72,5 +74,7 @@ void Methods6502C64::FLD(Assembler *as)
     as->Asm("dex ; Decrease counter");
     as->Asm("bne " + lbl);
 
+    as->Label(lblDone);
+    as->PopLabel("flddone");
     as->PopLabel("fld");
 }

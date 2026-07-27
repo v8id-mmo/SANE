@@ -217,8 +217,32 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeForLoop> node) {
   QString lblLoopStart = as->NewLabel("loopstart");
   QString lblLoopEnd = as->NewLabel("loopend");
 
-  as->Label(lblFor);
   bool offpage = isOffPage(node, node->m_block, nullptr);
+
+  // Maintain b has same type as a
+  if (nVar->m_left->isWord(as))
+    node->m_right->setLoadType(TokenType::INTEGER);
+
+  // Bug 2.14 fix: the loop below is a post-test (assign, run body,
+  // increment, compare) shape, so it can never execute zero times on its
+  // own; an end value already at/behind the start would otherwise only
+  // stop once the counter wraps all the way around back onto it. Skip the
+  // whole loop upfront when the range is already empty: exclusive `for`
+  // is empty when start>=end, inclusive `fori` only when start>end (a
+  // start==end single pass is still valid for `fori`).
+  {
+    TokenType::Type skipOp =
+        node->m_inclusive ? TokenType::GREATER : TokenType::GREATEREQUAL;
+    auto skipJump = NodeFactory::CreateAsm(
+        node->m_op, "\t" + getJmp(offpage) + " " + lblLoopEnd + "\n");
+    auto skipBlock = NodeFactory::CreateBlockFromStatements(
+        node->m_op, QVector<QSharedPointer<Node>>() << skipJump);
+    auto skipCond = NodeFactory::CreateSingleConditional(
+        node->m_op, skipOp, offpage, v, node->m_right, skipBlock);
+    skipCond->Accept(this);
+  }
+
+  as->Label(lblFor);
 
   Token t_cond = node->m_op;
   /*
@@ -230,10 +254,6 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeForLoop> node) {
   NodeConditional(t_cond,offpage,clause,node->m_block,true,nullptr));
   cond->Accept(this);
  */
-
-  // Maintain b has same type as a
-  if (nVar->m_left->isWord(as))
-    node->m_right->setLoadType(TokenType::INTEGER);
 
   // Perform block
   node->m_block->Accept(this);

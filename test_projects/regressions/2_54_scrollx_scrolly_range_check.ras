@@ -5,6 +5,16 @@ Program Bug_2_54_ScrollX_ScrollY_Range_Check;
 // clears $D011 bit 7 (the raster-compare high bit) on every call,
 // regardless of any raster-IRQ setup already in place.
 // Methods6502::ScrollX/ScrollY (methods6502.cpp ~2685-2746).
+//
+// The raster-compare high bit itself (2.54b, originally a peek-based
+// check on $D011 bit 7) isn't checked here: $D011 bit 7 is write-only in
+// the sense that matters for a test like this - what you read back is
+// the live raster line's own high bit, not whatever was last written to
+// it. Confirmed live: poking $D011 with bit 7 set and immediately peeking
+// it back reads bit 7 as 0. A peek-based round trip can't demonstrate
+// anything about what ScrollY's write path does to that bit either way;
+// verify bit 7 preservation by reading the fix itself (a mask that keeps
+// bit 7 intact) instead.
 @use "unittests/common"
 
 var
@@ -25,13 +35,16 @@ begin
 	Vars::text := "2.54a";
 	if (b = 0) then Common::PASS() else Common::FAIL();
 
-	// 2.54b: ScrollY(0) must not clear $D011 bit 7 (needed to arm a raster
-	// IRQ on line 256-311); it currently clears it unconditionally.
-	poke(^$D011,0,%10011011);
-	ScrollY(0);
-	b := peek(^$D011,0) & %10000000;
+	// 2.54b: ScrollY(21) - 21 is out of the documented 0-7 range and has
+	// bit 4 (DEN) set. Correct behavior: bits 3-6 (RSEL/DEN/BMM/ECM) of
+	// $D011 are untouched since ScrollY only owns bits 0-2, and Y-scroll
+	// itself ends up masked to the low 3 bits of the input (21 & 7 = 5),
+	// not the raw out-of-range value.
+	poke(^$D011,0,%00011011);
+	ScrollY(21);
+	b := peek(^$D011,0) & %01111111;
 	Vars::text := "2.54b";
-	if (b = %10000000) then Common::PASS() else Common::FAIL();
+	if (b = %00011101) then Common::PASS() else Common::FAIL();
 
 	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
 	addbreakpoint();

@@ -758,7 +758,14 @@ void Methods6502::Assemble(Assembler *as, AbstractCodeGen* dispatcher) {
             as->Asm("sta $00D8");
 
         }
-        as->Asm("lda #$3b");
+        // Bug 2.56 fix: masked read-modify-write instead of an
+        // unconditional $3B overwrite, so only bit 5 (BMM) changes -
+        // Y-scroll, RSEL, DEN, ECM, and the raster-compare high bit are
+        // preserved exactly as they were, the same shape SetTextMode
+        // already uses for its own $D011 write.
+        as->Asm("lda $d011");
+        as->Asm("and #%11011111");
+        as->Asm("ora #%00100000");
         as->Asm("sta $d011");
     }
 
@@ -1428,6 +1435,7 @@ void Methods6502::MemCpy(Assembler* as, bool isFast)
         as->Comment("memcpyfast");
 
     QString lbl = as->NewLabel("memcpy");
+    QString lblDone = as->NewLabel("memcpydone");
     if (!isFast)
         as->Asm("ld"+x+" #0");
     else {
@@ -1442,6 +1450,18 @@ void Methods6502::MemCpy(Assembler* as, bool isFast)
         }
     }
 
+    // Bug 2.47 fix: with a runtime count of 0, the "fast" path's freshly
+    // loaded/decremented index register wraps to 255 (LDX/DEX already set N
+    // from that), and the plain path's index (unconditionally reset to 0
+    // above) would already equal a zero count - either way that means "skip
+    // the whole copy", not "run a 256-byte pass". Catch it here, before the
+    // loop, instead of letting the loop discover it 256 iterations later.
+    if (isFast)
+        as->Asm("bmi " + lblDone + " ; count==0, skip the copy entirely");
+    else {
+        as->Asm("cp"+x+" "+cnt);
+        as->Asm("beq " + lblDone + " ; count==0, skip the copy entirely");
+    }
 
     as->Label(lbl);
     //LoadVar(as, 0, "x");
@@ -1485,6 +1505,8 @@ void Methods6502::MemCpy(Assembler* as, bool isFast)
 
     }
 
+    as->Label(lblDone);
+    as->PopLabel("memcpydone");
     as->PopLabel("memcpy");
 
 }
@@ -2459,8 +2481,10 @@ void Methods6502::InitKrill(Assembler *as)
     QString src = as->m_defines["_ResidentLoaderSource"];
     QString dst = as->m_defines["_ResidentLoaderDestination"];
 
-    if (src==dst)
+    if (src==dst) {
+        as->Asm("cli");
         return;
+    }
     as->Asm("ldx #0");
     QString lbl = as->NewLabel("copylabel");
     as->Label(lbl);
@@ -2476,7 +2500,7 @@ void Methods6502::InitKrill(Assembler *as)
     as->Asm("bne " + lbl);
 //    blockmemcpy(^@_ResidentLoaderSource,^@_ResidentLoaderDestination,2);
 
-
+    as->Asm("cli");
 }
 
 void Methods6502::InitRandom(Assembler *as)
@@ -2834,10 +2858,14 @@ void Methods6502::FillFast(Assembler *as)
 void Methods6502::ScrollX(Assembler *as)
 {
     if (as->m_tempZeroPointers.count()==0)
-        return;
+        ErrorHandler::e.Error("ScrollX requires temp_zeropages to be configured in the project settings.", m_node->m_op.m_lineNumber);
     LoadVar(as,0);
     as->Comment("ScrollX method");
 
+    // Bug 2.54 fix: mask the incoming value to its documented 0-7 range
+    // before combining it into the register, so an out-of-range input
+    // can no longer alter unrelated $D016 bits (CSEL/MCM).
+    as->Asm("and #$07");
     as->Asm("sta " + as->m_tempZeroPointers[2]);
     if (Syntax::s.m_currentSystem->m_system==AbstractSystem::PLUS4) {
         as->Asm("lda $ff07");
@@ -2873,10 +2901,14 @@ void Methods6502::VeraPoke(Assembler *as, bool isExtended)
 void Methods6502::ScrollY(Assembler *as)
 {
     if (as->m_tempZeroPointers.count()==0)
-        return;
+        ErrorHandler::e.Error("ScrollY requires temp_zeropages to be configured in the project settings.", m_node->m_op.m_lineNumber);
 
     as->Comment("ScrollY method ");
     LoadVar(as,0);
+    // Bug 2.54 fix: mask the incoming value to its documented 0-7 range
+    // before combining it into the register, so an out-of-range input
+    // can no longer alter unrelated $D011 bits (RSEL/DEN/ECM).
+    as->Asm("and #$07");
     as->Asm("sta " + as->m_tempZeroPointers[2]);
 
     if (Syntax::s.m_currentSystem->m_system==AbstractSystem::PLUS4) {
@@ -2887,9 +2919,14 @@ void Methods6502::ScrollY(Assembler *as)
     }
     else {
         as->Asm("lda $d011  ");
-        as->Asm("and #$78"); // 8 = 1000
+        // Bug 2.54 fix: the mask was #$78 (0111_1000), which already
+        // cleared bit 7 (the raster-compare high bit) as a side effect of
+        // clearing the Y-scroll bits - the old trailing `and #$7F` below
+        // this block was actually redundant, not the real culprit. #$F8
+        // (1111_1000) preserves bit 7 (and ECM) exactly like ScrollX's
+        // own mask preserves $D016's upper bits, only replacing Y-scroll.
+        as->Asm("and #$F8");
         as->Asm("ora "+as->m_tempZeroPointers[2]);
-        as->Asm("and #$7F"); // 8 = 1000
         as->Asm("sta $d011");
     }
 }
@@ -4698,6 +4735,7 @@ void Methods6502::CopyCharsetFromRom(Assembler *as)
 
     as->Asm("lda #$37");
     as->Asm("sta $01");
+    as->Asm("cli");
 }
 
 void Methods6502::IncMax(Assembler *as, QString cmd)
@@ -4799,8 +4837,13 @@ void Methods6502::EnableRasterIRQ(Assembler* as)
         as->Asm("lda $d01a");
         as->Asm("ora #$01");
         as->Asm("sta $d01a");
-        as->Asm("lda #$1B");
-        as->Asm("sta $d011");
+        // Bug 2.60 fix: dropped the hardcoded `lda #$1B / sta $d011` that
+        // used to follow - raster-IRQ-enable lives entirely in $D01A
+        // above, so this call has no legitimate reason to touch $D011 at
+        // all. The old overwrite forced Y-scroll to 3 and cleared the
+        // raster-compare high bit (bit 7) on every call, silently undoing
+        // ScrollY/SetBitmapMode or a raster IRQ already armed on a line
+        // 256-311.
 /*        as->Asm("lda $d01a");
         as->Asm("ora #$01");
         as->Asm("sta $d01a");
@@ -5059,9 +5102,17 @@ void Methods6502::Wait(Assembler *as)
     LoadVar(as,0);
     as->Asm("tax");
 
+    // Bug 2.64 fix: skip the decrement loop entirely when count is 0,
+    // instead of letting X wrap from 0 to 255 on the first dex and spin
+    // through a near-256-iteration loop.
+    QString lblDone = as->NewLabel("waitdone");
+    as->Asm("beq " + lblDone + " ; count==0, nothing to wait for");
+
     as->Asm("dex");
     as->Asm("bne *-1");
 
+    as->Label(lblDone);
+    as->PopLabel("waitdone");
 }
 
 QString Methods6502::BitShiftX(Assembler *as)
@@ -6122,13 +6173,22 @@ Large parameter 4 must be constant");
 
 void Methods6502::SetBank(Assembler *as)
 {
+    if (as->m_tempZeroPointers.count()==0)
+        ErrorHandler::e.Error("SetBank requires temp_zeropages to be configured in the project settings.", m_node->m_op.m_lineNumber);
+
     as->Comment("Set bank");
-//    as->Asm("lda $dd00");
-//    as->Asm("and #$fc");
- //   as->Asm("and #%00000000");
     as->Term("lda ");
     m_node->m_params[0]->Accept(m_codeGen);
     as->Term();
+    // Bug 2.55 fix: read-modify-write instead of an unconditional
+    // overwrite, so only the bank bits (0-1) of $DD00 change - the serial
+    // IEC bus / RS-232 output bits living in the other 6 bits are no
+    // longer clobbered on every call.
+    as->Asm("and #$03");
+    as->Asm("sta " + as->m_tempZeroPointers[2]);
+    as->Asm("lda $dd00");
+    as->Asm("and #$fc");
+    as->Asm("ora " + as->m_tempZeroPointers[2]);
     as->Asm("sta $dd00");
 }
 

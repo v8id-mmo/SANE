@@ -1,9 +1,17 @@
 Program Bug_2_55_SetBank_Unmasked_Write;
 // Bug 2.55: SetBank writes CIA#2 port A ($DD00) with an unconditional
 // `sta $dd00`, no preceding read/mask, so every call also zeroes bits
-// 2-7 of that register (the serial IEC bus's ATN/CLK/DATA OUT lines and
-// the RS-232 TXD bit), not just the VIC-bank bits it's documented to
-// control. Methods6502::SetBank (methods6502.cpp ~5974-5984).
+// 2-5 (the serial IEC bus's ATN/CLK/DATA OUT lines and the RS-232 TXD
+// bit), not just the VIC-bank bits (0-1) it's documented to control.
+// Methods6502::SetBank (methods6502.cpp ~5974-5984).
+//
+// Checked mask is %00111100 (bits 2-5 only), not the full upper 6 bits:
+// bits 6-7 of $DD00 are genuine hardware INPUT pins (serial CLOCK
+// IN/DATA IN), wired to the real bus state rather than anything ever
+// written to the register, so a poke/peek round trip on those two bits
+// can't demonstrate anything about SetBank's own behavior either way
+// (confirmed live: they read back 0 under VICE with nothing attached to
+// the serial port, regardless of what's poked or what SetBank does).
 @use "unittests/common"
 
 var
@@ -17,9 +25,9 @@ begin
 
 	poke(^$DD00,0,%11111100);
 	SetBank(vic_bank1);
-	b := peek(^$DD00,0) & %11111100;
+	b := peek(^$DD00,0) & %00111100;
 	Vars::text := "2.55";
-	if (b = %11111100) then Common::PASS() else Common::FAIL();
+	if (b = %00111100) then Common::PASS() else Common::FAIL();
 
 	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
 	addbreakpoint();

@@ -7,6 +7,16 @@ Program Bug_2_60_EnableRasterIRQ_D011_Overwrite;
 // Methods6502::EnableRasterIRQ (methods6502.cpp ~4649-4654).
 // StartRasterChain calls EnableRasterIRQ internally, so it inherits the
 // same side effect.
+//
+// Only Y-scroll preservation (2.60a) is checked here by peek, not the
+// raster-compare high bit (bit 7): $D011 bit 7 is write-only in the sense
+// that matters for a test like this - what you read back is the live
+// raster line's own high bit, not whatever was last written to it.
+// Confirmed live: poking $D011 with bit 7 set and immediately peeking it
+// back reads bit 7 as 0. A peek-based round trip can't demonstrate
+// anything about what EnableRasterIRQ's write path does to that bit
+// either way; verify bit 7 preservation by reading the fix itself
+// (dropped the $D011 write entirely) instead.
 @use "unittests/common"
 
 var
@@ -18,17 +28,13 @@ begin
 	setmemoryconfig(1,0,0);
 	Common::TestInit();
 
-	// Baseline $D011 = %10011101: bit7 (raster-compare high) = 1,
-	// Y-scroll (bits 2-0) = 5, DEN/RSEL = 1.
+	// Baseline $D011 = %10011101: Y-scroll (bits 2-0) = 5, DEN/RSEL = 1.
 	poke(^$D011,0,%10011101);
 	EnableRasterIRQ();
 	b := peek(^$D011,0);
 
 	Vars::text := "2.60a";
 	if ((b & %00000111) = 5) then Common::PASS() else Common::FAIL();
-
-	Vars::text := "2.60b";
-	if ((b & %10000000) = %10000000) then Common::PASS() else Common::FAIL();
 
 	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
 	addbreakpoint();

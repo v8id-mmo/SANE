@@ -1262,14 +1262,22 @@ void CodeGen6502::BuildToCmp(QSharedPointer<Node> node)
         b = getValue(node->m_right);
 
     //    qDebug() << "WOOT " <<TokenType::getType(node->m_right->getType(as));
-    if (b=="#$0") {
-        as->Asm("clc");
+    // An unsigned byte compared against literal 0 never borrows, so C is
+    // always 1 and N/Z already come straight off the load below - no real
+    // cmp instruction is needed, just a plain SEC to stand in for it. This
+    // shortcut is only valid when unsigned: a signed compare needs a real
+    // SBC to get a meaningful V flag (see PrintCompare's signed
+    // correction), so signed-against-zero falls through to the normal
+    // SEC+SBC path below instead, the same as any other operand value.
+    bool zeroShortcut = (b=="#$0") && !signedCompare;
+    if (zeroShortcut) {
+        as->Asm("sec");
     }
 
     node->m_left->Accept(this);
     as->Term();
     if (b!="") {
-        if (b!="#$0") {
+        if (!zeroShortcut) {
             as->Comment("Compare with pure num / var optimization");
             if (signedCompare) {
                 as->Asm("sec");
