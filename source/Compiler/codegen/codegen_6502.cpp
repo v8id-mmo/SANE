@@ -85,6 +85,16 @@ void CodeGen6502::HandleGenericBinop16bit(QSharedPointer<Node> node) {
 
     // 255 + k - j doesn't work
     as->Term();
+    // A signed byte was just zero-extended by the "ldy #0" above (bug 2.5);
+    // correct it to a real sign extension before it gets captured into the
+    // word temp var below. Test A's sign right here, before anything else
+    // touches it.
+    if (node->m_right->isSigned(as) && node->m_right->getOrgType(as)==TokenType::BYTE) {
+        QString lblDone = as->NewLabel("genbinop_sext_done");
+        as->Asm("bpl "+lblDone);
+        as->Asm("ldy #$ff");
+        as->Label(lblDone);
+    }
     QString lbl = as->StoreInTempVar("rightvarInteger", "word");
 
     as->Term();
@@ -141,7 +151,8 @@ void CodeGen6502::HandleVarBinopB16bit(QSharedPointer<Node> node) {
         as->BinOP(node->m_op.m_type);
         as->Term(node->m_right->getValue8bit(as,false),true);
         as->Comment("Testing for byte:  " + node->m_right->getValue8bit(as,true));
-        if (node->m_right->getValue8bit(as,true)=="#0" ) {
+        bool rightIsSignedByte = node->m_right->isSigned(as) && node->m_right->getOrgType(as)==TokenType::BYTE;
+        if (node->m_right->getValue8bit(as,true)=="#0" && !rightIsSignedByte) {
             as->Comment("RHS is byte, optimization");
             QString lbl = as->NewLabel("skip");
             if (node->m_op.m_type==TokenType::PLUS) {
@@ -157,6 +168,31 @@ void CodeGen6502::HandleVarBinopB16bit(QSharedPointer<Node> node) {
             as->Label(lbl);
 
 
+        }
+        else if (rightIsSignedByte) {
+            // A signed byte's hi-byte contribution isn't always 0 (bug 2.5):
+            // it's $00 or $FF depending on its own sign. Carry from the low
+            // byte add above (untouched by any lda/branch/jmp below) still
+            // needs folding in too, so do it as a real high-byte add/sub
+            // against a freshly-determined sign-extension byte instead of
+            // the "#0 plus carry" shortcut above.
+            as->Asm("pha    ; save low byte result");
+            as->Asm("lda "+node->m_right->getValue8bit(as,false));
+            QString lblNeg = as->NewLabel("hib_sext_neg");
+            QString lblDone = as->NewLabel("hib_sext_done");
+            as->Asm("bmi "+lblNeg);
+            as->Asm("lda #0");
+            as->Asm("jmp "+lblDone);
+            as->Label(lblNeg);
+            as->Asm("lda #$ff");
+            as->Label(lblDone);
+            QString sextVar = as->StoreInTempVar("hib_sext");
+            as->Asm("tya");
+            as->BinOP(node->m_op.m_type,false);
+            as->Term(sextVar,true);
+            as->Asm("tay");
+            as->Asm("pla ");
+            as->PopTempVar();
         }
         else {
             as->Comment("RHS is word, no optimization");
@@ -580,6 +616,9 @@ void CodeGen6502::Mul16x8(QSharedPointer<Node> node) {
 //    as->Asm(" ;L / R : " + TokenType::getType(node->m_left->getClassvariableType())+  "  " +TokenType::getType(node->m_right->getClassvariableType()));
 //    node->SwapNodes();
     //    Disable16bit();
+    bool leftSigned = node->m_left->isSigned(as);
+    bool rightSigned = node->m_right->isSigned(as);
+
     if (node->m_left->isWord(as) || node->m_left->getClassvariableType()==TokenType::INTEGER) {
         LoadVariable(node->m_left);
         as->Term();
@@ -588,19 +627,101 @@ void CodeGen6502::Mul16x8(QSharedPointer<Node> node) {
         as->Asm("sty mul16x8_num1Hi");
     }
     else {
-        // 8x8 bit
+        // 8x8 bit: widen the byte operand to a word. Sign-extend rather than
+        // always zero-extend when it's a signed byte (bug 2.5), so a negative
+        // left operand's true value is what actually gets multiplied below.
         LoadVariable(node->m_left);
         as->Term();
         as->Asm("sta mul16x8_num1");
-        as->Asm("lda #0");
-        as->Asm("sta mul16x8_num1Hi");
+        if (leftSigned) {
+            // Re-load from the just-stored scratch byte so the sign test isn't
+            // at the mercy of whatever flags as->Term() last left behind, and
+            // branch on it *before* any "lda #.." touches N/Z (see Load16bitVariable).
+            as->Asm("lda mul16x8_num1");
+            QString lblNeg = as->NewLabel("mul16x8_extneg");
+            QString lblDone = as->NewLabel("mul16x8_extdone");
+            as->Asm("bmi "+lblNeg);
+            as->Asm("lda #0");
+            as->Asm("jmp "+lblDone);
+            as->Label(lblNeg);
+            as->Asm("lda #$ff");
+            as->Label(lblDone);
+            as->Asm("sta mul16x8_num1Hi");
+        } else {
+            as->Asm("lda #0");
+            as->Asm("sta mul16x8_num1Hi");
+        }
     }
 
     as->Asm("");
     LoadVariable(node->m_right);
     as->Term();
     as->Asm("sta mul16x8_num2");
+
+    if (!leftSigned && !rightSigned) {
+        as->Asm(getCallSubroutine()+" mul16x8_procedure");
+        return;
+    }
+
+    // Signed 16x8 multiply (bug 2.3): mul16x8_procedure itself is a plain
+    // unsigned word*byte multiply. Get a correct signed result around it the
+    // classic way: remember the result's sign (xor of the operands' signs,
+    // only for operands that are actually declared signed - an unsigned
+    // byte's high bit is magnitude, not a sign, and must never be negated),
+    // normalize both operands to their unsigned magnitude, run the existing
+    // unsigned routine, then negate the 16-bit product if the sign was set.
+    if (leftSigned)
+        as->Asm("lda mul16x8_num1Hi");
+    else
+        as->Asm("lda #0");
+    if (rightSigned)
+        as->Asm("eor mul16x8_num2");
+    as->Asm("and #$80");
+    as->Asm("pha    ; save result sign (bit7) across the multiply call");
+
+    if (leftSigned) {
+        QString lblSkipNeg1 = as->NewLabel("mul16x8s_skipneg1");
+        as->Asm("lda mul16x8_num1Hi");
+        as->Asm("bpl "+lblSkipNeg1);
+        as->Asm("lda mul16x8_num1");
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("sta mul16x8_num1");
+        as->Asm("lda mul16x8_num1Hi");
+        as->Asm("eor #$ff");
+        as->Asm("adc #0");
+        as->Asm("sta mul16x8_num1Hi");
+        as->Label(lblSkipNeg1);
+    }
+    if (rightSigned) {
+        QString lblSkipNeg2 = as->NewLabel("mul16x8s_skipneg2");
+        as->Asm("lda mul16x8_num2");
+        as->Asm("bpl "+lblSkipNeg2);
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("sta mul16x8_num2");
+        as->Label(lblSkipNeg2);
+    }
+
     as->Asm(getCallSubroutine()+" mul16x8_procedure");
+
+    as->Asm("tax    ; save unsigned product lo, A/Y = lo/hi on return");
+    as->Asm("pla    ; restore result sign");
+    QString lblNoNeg = as->NewLabel("mul16x8s_noneg");
+    as->Asm("bpl "+lblNoNeg);
+    as->Asm("txa");
+    as->Asm("eor #$ff");
+    as->Asm("clc");
+    as->Asm("adc #1");
+    as->Asm("tax");
+    as->Asm("tya");
+    as->Asm("eor #$ff");
+    as->Asm("adc #0");
+    as->Asm("tay");
+    as->Label(lblNoNeg);
+    as->Asm("txa    ; final product low byte (A=lo, Y=hi)");
     //  Enable16bit();
 
 }
@@ -608,19 +729,96 @@ void CodeGen6502::Mul16x8(QSharedPointer<Node> node) {
 void CodeGen6502::Div16x8(QSharedPointer<Node> node) {
     as->Comment("16x8 div");
     Disable16bit();
-    as->Asm("ldy #0");
-    node->m_left->Accept(this);
+
+    bool leftSigned = node->m_left->isSigned(as);
+    bool rightSigned = node->m_right->isSigned(as);
+
+    // Route through LoadVariable rather than a bare Accept() so a signed byte
+    // operand gets properly sign-extended (not just zero-extended) when
+    // widened to a word - see Load16bitVariable.
+    LoadVariable(node->m_left);
     as->Term();
     as->Asm("sta initdiv16x8_dividend");
     as->Asm("sty initdiv16x8_dividend+1");
-    as->Asm("ldy #0");
-    node->m_right->Accept(this);
+    LoadVariable(node->m_right);
     as->Term();
     as->Asm("sta initdiv16x8_divisor");
     as->Asm("sty initdiv16x8_divisor+1");
+
+    if (!leftSigned && !rightSigned) {
+        as->Asm(getCallSubroutine()+" divide16x8");
+        as->Asm("lda initdiv16x8_dividend");
+        as->Asm("ldy initdiv16x8_dividend+1");
+        Enable16bit();
+        return;
+    }
+
+    // Signed division (bug 2.4): divide16x8 itself stays a plain unsigned
+    // 16-bit divide. Get a correct truncating (C-style) signed quotient the
+    // classic way: remember the quotient's sign (xor of the operands' signs,
+    // only for operands actually declared signed - an unsigned operand's
+    // high bit is magnitude, not a sign, and must never be negated),
+    // normalize both operands to their unsigned magnitude, run the existing
+    // unsigned routine, then negate the 16-bit quotient if the sign was set.
+    if (leftSigned)
+        as->Asm("lda initdiv16x8_dividend+1");
+    else
+        as->Asm("lda #0");
+    if (rightSigned)
+        as->Asm("eor initdiv16x8_divisor+1");
+    as->Asm("and #$80");
+    as->Asm("pha    ; save quotient sign (bit7) across the divide call");
+
+    if (leftSigned) {
+        QString lblSkipNeg1 = as->NewLabel("div16x8s_skipneg1");
+        as->Asm("lda initdiv16x8_dividend+1");
+        as->Asm("bpl "+lblSkipNeg1);
+        as->Asm("lda initdiv16x8_dividend");
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("sta initdiv16x8_dividend");
+        as->Asm("lda initdiv16x8_dividend+1");
+        as->Asm("eor #$ff");
+        as->Asm("adc #0");
+        as->Asm("sta initdiv16x8_dividend+1");
+        as->Label(lblSkipNeg1);
+    }
+    if (rightSigned) {
+        QString lblSkipNeg2 = as->NewLabel("div16x8s_skipneg2");
+        as->Asm("lda initdiv16x8_divisor+1");
+        as->Asm("bpl "+lblSkipNeg2);
+        as->Asm("lda initdiv16x8_divisor");
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("sta initdiv16x8_divisor");
+        as->Asm("lda initdiv16x8_divisor+1");
+        as->Asm("eor #$ff");
+        as->Asm("adc #0");
+        as->Asm("sta initdiv16x8_divisor+1");
+        as->Label(lblSkipNeg2);
+    }
+
     as->Asm(getCallSubroutine()+" divide16x8");
     as->Asm("lda initdiv16x8_dividend");
     as->Asm("ldy initdiv16x8_dividend+1");
+
+    as->Asm("tax    ; save unsigned quotient lo");
+    as->Asm("pla    ; restore quotient sign");
+    QString lblNoNeg = as->NewLabel("div16x8s_noneg");
+    as->Asm("bpl "+lblNoNeg);
+    as->Asm("txa");
+    as->Asm("eor #$ff");
+    as->Asm("clc");
+    as->Asm("adc #1");
+    as->Asm("tax");
+    as->Asm("tya");
+    as->Asm("eor #$ff");
+    as->Asm("adc #0");
+    as->Asm("tay");
+    as->Label(lblNoNeg);
+    as->Asm("txa");
 
     Enable16bit();
 }
@@ -727,6 +925,28 @@ void CodeGen6502::Load16bitVariable(QSharedPointer<Node> node, QString reg)
     if (node->isLong(as) || (node->getStoreType()==TokenType::LONG) || node->getLoadType()==TokenType::LONG) {
         as->Asm("ldx "+getValue8bit(node,2));
     }
+
+    // A plain byte variable has no real high byte to load (getValue8bit(_,true)
+    // is just the literal "#0"), so widening it into a word/long context always
+    // zero-extends here - wrong for a negative signed byte (bug 2.5). Widen with
+    // real sign-extension code instead whenever the source is a signed byte.
+    if (node->getOrgType(as)==TokenType::BYTE && node->isSigned(as) &&
+            (node->isWord(as) || (node->getStoreType()==TokenType::INTEGER) || node->getLoadType()==TokenType::LONG)) {
+        // Branch on the loaded byte's sign *before* touching the reg register -
+        // "ldNN #0" itself sets N/Z from the immediate 0 it loads, which would
+        // clobber the very flag a naive "lda;ldNN #0;bpl;de NN" sequence relies on.
+        as->Asm("lda "+getValue8bit(node,false));
+        QString lblNeg = as->NewLabel("sext_neg");
+        QString lblDone = as->NewLabel("sext_done");
+        as->Asm("bmi "+lblNeg);
+        as->Asm("ld"+reg+" #0");
+        as->Asm("jmp "+lblDone);
+        as->Label(lblNeg);
+        as->Asm("ld"+reg+" #$ff");
+        as->Label(lblDone);
+        return;
+    }
+
     if (node->isWord(as) || (node->getStoreType()==TokenType::INTEGER) || node->getLoadType()==TokenType::LONG)
         as->Asm("ld"+reg+" "+getValue8bit(node,true));
 
@@ -974,38 +1194,63 @@ QString CodeGen6502::getIncbin() {
 void CodeGen6502::PrintCompare(QSharedPointer<Node> node, QString lblSuccess, QString lblFailed)
 {
 
-    QString bcs ="bcs ";
-    QString bcc ="bcc ";
-    if (node->isSigned(as)) {
-        as->Comment("Signed compare");
-        bcs = "bpl ";
-        bcc = "bmi ";
-    }
-
     if (node->m_op.m_type==TokenType::EQUALS)
         as->Asm("bne " + lblFailed);
     if (node->m_op.m_type==TokenType::NOTEQUALS)
         as->Asm("beq " + lblFailed);
-    if (node->m_op.m_type==TokenType::GREATEREQUAL) {
-        as->Asm(bcc + lblFailed);
+
+    if (!node->isSigned(as)) {
+        if (node->m_op.m_type==TokenType::GREATEREQUAL) {
+            as->Asm("bcc " + lblFailed);
+        }
+        if (node->m_op.m_type==TokenType::GREATER) {
+            as->Asm("bcc " + lblFailed);
+            as->Asm("beq " + lblFailed);
+        }
+        if (node->m_op.m_type==TokenType::LESSEQUAL ) {
+            as->Asm("beq " + lblSuccess);
+            as->Asm("bcs " + lblFailed);
+        }
+        if (node->m_op.m_type==TokenType::LESS)
+            as->Asm("bcs " + lblFailed);
+        return;
     }
-    if (node->m_op.m_type==TokenType::GREATER) {
-        as->Asm(bcc + lblFailed);
+
+    // Signed: after BuildToCmp's sbc, N alone doesn't give a correct signed
+    // compare without the classic V-flag (bvc/eor #$80) correction - the N
+    // flag straight off a subtraction is wrong exactly at the two's-complement
+    // boundary (e.g. -128 vs 127). Any equality check has to read Z *before*
+    // that correction: once eor'd, the accumulator no longer reflects the true
+    // bit difference, so Z can misreport equality on an overflowing pair (e.g.
+    // 0 - (-128) corrects to $00, i.e. a false "equal").
+    as->Comment("Signed compare");
+
+    if (node->m_op.m_type==TokenType::GREATER)
         as->Asm("beq " + lblFailed);
-    }
-    if (node->m_op.m_type==TokenType::LESSEQUAL ) {
+    if (node->m_op.m_type==TokenType::LESSEQUAL)
         as->Asm("beq " + lblSuccess);
-        as->Asm(bcs + lblFailed);
+
+    if (node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL ||
+            node->m_op.m_type==TokenType::LESS || node->m_op.m_type==TokenType::LESSEQUAL) {
+        QString label1 = as->NewLabel("label1");
+        as->Asm("bvc " + label1);
+        as->Asm("eor #$80");
+        as->Label(label1);
+
+        if (node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL)
+            as->Asm("bmi " + lblFailed);
+        else
+            as->Asm("bpl " + lblFailed);
     }
-
-    if (node->m_op.m_type==TokenType::LESS)
-        as->Asm(bcs + lblFailed);
-
 }
 
 void CodeGen6502::BuildToCmp(QSharedPointer<Node> node)
 {
     QString b="";
+    // CMP never touches the V flag, so it can't drive a correct signed
+    // compare (see PrintCompare). SEC+SBC gives the identical N/Z/C result
+    // CMP would, plus a valid V, so use it whenever the comparison is signed.
+    bool signedCompare = node->isSigned(as);
 
     QSharedPointer<NodeVar> varb = qSharedPointerDynamicCast<NodeVar>(node->m_right);
     if (varb!=nullptr && !varb->hasArrayIndex())
@@ -1026,7 +1271,11 @@ void CodeGen6502::BuildToCmp(QSharedPointer<Node> node)
     if (b!="") {
         if (b!="#$0") {
             as->Comment("Compare with pure num / var optimization");
-            as->Asm("cmp " + b+";keep");
+            if (signedCompare) {
+                as->Asm("sec");
+                as->Asm("sbc " + b+";keep");
+            } else
+                as->Asm("cmp " + b+";keep");
         }
         else {
             if (Syntax::s.m_currentSystem->isWDC65())
@@ -1043,7 +1292,11 @@ void CodeGen6502::BuildToCmp(QSharedPointer<Node> node)
         as->Term();
         QString tmpVarA = as->StoreInTempVar("binary_clause_temp_2");
         as->Asm("lda " + tmpVarB);
-        as->Asm("cmp " + tmpVarA +";keep");
+        if (signedCompare) {
+            as->Asm("sec");
+            as->Asm("sbc " + tmpVarA +";keep");
+        } else
+            as->Asm("cmp " + tmpVarA +";keep");
         as->PopTempVar();
         as->PopTempVar();
     }
@@ -1109,36 +1362,44 @@ void CodeGen6502::BinaryClauseInteger(QSharedPointer<Node> node,QString lblSucce
 
     QString bcs ="bcs ";
     QString bcc ="bcc ";
-    if (node->isSigned(as)) {
+    if (node->isSigned(as) &&
+            (node->m_op.m_type==TokenType::LESS || node->m_op.m_type==TokenType::LESSEQUAL ||
+             node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL)) {
         as->Comment("Signed compare");
         bcs = "bpl ";
         bcc = "bmi ";
         QString label1 = as->NewLabel("label1");
         QString label2 = as->NewLabel("label2");
 
-        if (node->m_op.m_type==TokenType::LESS || node->m_op.m_type==TokenType::LESSEQUAL) {
-            as->Asm("sec");
-            as->Asm("lda " + hi1 + "   ; compare high bytes");
-            as->Asm("sbc " + hi2 + " ");
-            as->Asm("bvc " + label1);
-            as->Asm("eor #$80");
-            as->Label(label1);
-            as->Asm("bmi "+lblSuccess);
-            as->Asm("bvc "+label2);
-            as->Asm("eor #$80");
-            as->Label(label2);
-            as->Asm("bne "+lblFailed);
-            as->Asm("lda " + lo1 + "   ; compare high bytes");
-            as->Asm("sbc " + lo2 + " ");
-            as->Asm("bcs "+lblFailed);
-            return;
+        // GREATER(a,b) == LESS(b,a) and GREATEREQUAL(a,b) == LESSEQUAL(b,a),
+        // so reuse the same signed less-than sequence with the operands swapped.
+        bool flip = (node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL);
+        bool orEqual = (node->m_op.m_type==TokenType::LESSEQUAL || node->m_op.m_type==TokenType::GREATEREQUAL);
+        QString cLo1 = flip ? lo2 : lo1;
+        QString cHi1 = flip ? hi2 : hi1;
+        QString cLo2 = flip ? lo1 : lo2;
+        QString cHi2 = flip ? hi1 : hi2;
 
-        }
-        ErrorHandler::e.Error("Signed integer comparison: only 'less' (&le;) is currently implemented.", node->m_op.m_lineNumber);
-        as->PopLabel("label1");
-        as->PopLabel("label2");
-
+        as->Asm("sec");
+        as->Asm("lda " + cHi1 + "   ; compare high bytes");
+        as->Asm("sbc " + cHi2 + " ");
+        as->Asm("bvc " + label1);
+        as->Asm("eor #$80");
+        as->Label(label1);
+        as->Asm("bmi "+lblSuccess);
+        as->Asm("bvc "+label2);
+        as->Asm("eor #$80");
+        as->Label(label2);
+        as->Asm("bne "+lblFailed);
+        as->Asm("lda " + cLo1 + "   ; compare low bytes");
+        as->Asm("sbc " + cLo2 + " ");
+        if (orEqual)
+            as->Asm("beq "+lblSuccess);
+        as->Asm("bcs "+lblFailed);
+        return;
     }
+    // EQUALS/NOTEQUALS are sign-independent bit-pattern comparisons; fall through
+    // to the unsigned blocks below, same as the unsigned case.
 
 
 
@@ -1219,34 +1480,49 @@ void CodeGen6502::BinaryClauseLong(QSharedPointer<Node> node,QString lblSuccess,
 
     QString bcs ="bcs ";
     QString bcc ="bcc ";
-    if (node->isSigned(as)) {
-/*        as->Comment("Signed compare");
-        bcs = "bpl ";
-        bcc = "bmi ";
+    if (node->isSigned(as) &&
+            (node->m_op.m_type==TokenType::LESS || node->m_op.m_type==TokenType::LESSEQUAL ||
+             node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL)) {
+        as->Comment("Signed compare");
         QString label1 = as->NewLabel("label1");
         QString label2 = as->NewLabel("label2");
 
-        if (node->m_op.m_type==TokenType::LESS || node->m_op.m_type==TokenType::LESSEQUAL) {
-            as->Asm("sec");
-            as->Asm("lda " + hi1 + "   ; compare high bytes");
-            as->Asm("sbc " + hi2 + " ");
-            as->Asm("bvc " + label1);
-            as->Asm("eor #$80");
-            as->Label(label1);
-            as->Asm("bmi "+lblSuccess);
-            as->Asm("bvc "+label2);
-            as->Asm("eor #$80");
-            as->Label(label2);
-            as->Asm("bne "+lblFailed);
-            as->Asm("lda " + lo1 + "   ; compare high bytes");
-            as->Asm("sbc " + lo2 + " ");
-            as->Asm("bcs "+lblFailed);
-            return;
+        // Same operand-swap trick as BinaryClauseInteger: GREATER(a,b) == LESS(b,a),
+        // GREATEREQUAL(a,b) == LESSEQUAL(b,a).
+        bool flip = (node->m_op.m_type==TokenType::GREATER || node->m_op.m_type==TokenType::GREATEREQUAL);
+        bool orEqual = (node->m_op.m_type==TokenType::LESSEQUAL || node->m_op.m_type==TokenType::GREATEREQUAL);
+        QString cLo1 = flip ? lo2 : lo1;
+        QString cHi1 = flip ? hi2 : hi1;
+        QString cZHi1 = flip ? zhi2 : zhi1;
+        QString cLo2 = flip ? lo1 : lo2;
+        QString cHi2 = flip ? hi1 : hi2;
+        QString cZHi2 = flip ? zhi1 : zhi2;
 
-        }*/
-        ErrorHandler::e.Error("Signed long comparison not implemented yet.", node->m_op.m_lineNumber);
-
-
+        // Top (most significant) byte carries the sign: signed compare with the
+        // classic sbc/bvc/eor #$80 overflow correction.
+        as->Asm("sec");
+        as->Asm("lda " + cZHi1 + "   ; compare top (sign) bytes");
+        as->Asm("sbc " + cZHi2 + " ");
+        as->Asm("bvc " + label1);
+        as->Asm("eor #$80");
+        as->Label(label1);
+        as->Asm("bmi "+lblSuccess);
+        as->Asm("bvc "+label2);
+        as->Asm("eor #$80");
+        as->Label(label2);
+        as->Asm("bne "+lblFailed);
+        // Top bytes equal: both values share the same sign, so the remaining two
+        // bytes can be compared as plain unsigned magnitude.
+        as->Asm("lda " + cHi1 + "   ; compare middle bytes");
+        as->Asm("cmp " + cHi2 + " ");
+        as->Asm("bcc "+lblSuccess);
+        as->Asm("bne "+lblFailed);
+        as->Asm("lda " + cLo1 + "   ; compare low bytes");
+        as->Asm("cmp " + cLo2 + " ");
+        if (orEqual)
+            as->Asm("beq "+lblSuccess);
+        as->Asm("bcs "+lblFailed);
+        return;
     }
 
 
@@ -2422,6 +2698,15 @@ bool CodeGen6502::isSimpleAeqAOpB16Bit(QSharedPointer<NodeVar> var, QSharedPoint
     if (var->hasArrayIndex())
         return false;
 
+    // This fast path's hi-byte handling below assumes the right operand's
+    // high byte contribution is always 0 (fine for an unsigned byte, since
+    // it's the whole point of the optimization). A signed byte needs a real
+    // sign-extended ($00/$FF) contribution instead - bail out to the general
+    // (correctly sign-aware) codegen path rather than duplicating that logic
+    // here (bug 2.5).
+    if (rterm->m_right->isSigned(as) && rterm->m_right->getOrgType(as)==TokenType::BYTE)
+        return false;
+
     //    QSharedPointer<NodeVar> rrvar = dynamic_cast<QSharedPointer<NodeVar>>(rterm->m_right);
     //    QSharedPointer<NodeNumber> rrnum = dynamic_cast<QSharedPointer<NodeNumber>>(rterm->m_right);
 
@@ -2848,7 +3133,27 @@ void CodeGen6502::HackPointer(QSharedPointer<Node> n)
 }
 
 
-void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to)
+// Widens the byte value already sitting in A into a word's high byte (Y):
+// zero-extend for an unsigned source, or real sign-extension (branch on A's
+// sign *before* touching Y - "ldy #.." itself sets N/Z from the loaded
+// value and would clobber a naive post-hoc sign test) for a signed one.
+void CodeGen6502::CastByteToIntegerY(bool isSigned)
+{
+    if (!isSigned) {
+        as->Asm("ldy #0");
+        return;
+    }
+    QString lblNeg = as->NewLabel("cast_sext_neg");
+    QString lblDone = as->NewLabel("cast_sext_done");
+    as->Asm("bmi "+lblNeg);
+    as->Asm("ldy #0");
+    as->Asm("jmp "+lblDone);
+    as->Label(lblNeg);
+    as->Asm("ldy #$ff");
+    as->Label(lblDone);
+}
+
+void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to, bool isSigned)
 {
     //    qDebug() <<"Cast " <<TokenType::getType(from) << " " << TokenType::getType(to);
     if (from==to)
@@ -2856,7 +3161,7 @@ void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to)
 
     if (from==TokenType::BYTE && (to == TokenType::INTEGER || to ==TokenType::INTEGER_CONST)) {
         as->Comment("Casting from byte to integer");
-        as->Asm("ldy #0");
+        CastByteToIntegerY(isSigned);
     }
  /*   if (from==TokenType::INTEGER && to == TokenType::BYTE) {
         as->Comment("Casting from integer to byte");
@@ -2865,14 +3170,14 @@ void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to)
 */
 }
 
-void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to, TokenType::Type writeType)
+void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to, TokenType::Type writeType, bool isSigned)
 {
     if (from==to && to==writeType)
         return;
     if (from==TokenType::BYTE && to == TokenType::INTEGER) {
         if (writeType==TokenType::INTEGER) {
             as->Comment("Casting from byte to integer to integer");
-            as->Asm("ldy #0");
+            CastByteToIntegerY(isSigned);
         }
         if (writeType==TokenType::BYTE) {
             as->Comment("Casting from byte to integer to byte");
@@ -2887,7 +3192,7 @@ void CodeGen6502::Cast(TokenType::Type from, TokenType::Type to, TokenType::Type
         }
         if (writeType==TokenType::INTEGER) {
             as->Comment("Casting from integer to byte to integer");
-            as->Asm("ldy #0");
+            CastByteToIntegerY(isSigned);
    //         as->Asm("ld h,0");
         }
     }

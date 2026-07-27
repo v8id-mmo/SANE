@@ -52,7 +52,7 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeCast> node) {
               TokenType::getType(node->getLoadType()));
   //    Cast(node->m_right->getOrgType(as), node->m_op.m_type,
   //    node->m_right->getStoreType());
-  Cast(node->m_op.m_type, node->getLoadType());
+  Cast(node->m_op.m_type, node->getLoadType(), node->m_right->isSigned(as));
 }
 /*
  *
@@ -417,7 +417,7 @@ void AbstractCodeGen::GenericAssign(QSharedPointer<NodeAssign> node) {
   //    as->Comment("StoreType: "+TokenType::getType(n));
   if (!node->m_right->isReference()) {
     if (node->m_right->getTypeText(as) == "BYTE")
-      Cast(TokenType::BYTE, node->m_right->getStoreType());
+      Cast(TokenType::BYTE, node->m_right->getStoreType(), node->m_right->isSigned(as));
     if (node->m_right->getTypeText(as) == "INTEGER")
       Cast(TokenType::INTEGER, node->m_right->getStoreType());
   }

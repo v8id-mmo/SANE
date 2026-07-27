@@ -149,8 +149,8 @@ public:
 
     // Casts the internal register values from one type to another
     virtual void Cast(QString from, QString to);
-    virtual void Cast(TokenType::Type from, TokenType::Type to) {}
-    virtual void Cast(TokenType::Type from, TokenType::Type to, TokenType::Type writeType) {}
+    virtual void Cast(TokenType::Type from, TokenType::Type to, bool isSigned=false) {}
+    virtual void Cast(TokenType::Type from, TokenType::Type to, TokenType::Type writeType, bool isSigned=false) {}
 
     // If the current system supports banks (Game boy, SNES etc), this method will
     // return the bank number of a given variable

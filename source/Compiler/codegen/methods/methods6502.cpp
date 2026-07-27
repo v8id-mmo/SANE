@@ -1170,22 +1170,86 @@ void Methods6502::Modulo(Assembler *as)
         return;
     }
     */
+    bool leftSigned = m_node->m_params[0]->isSigned(as);
+    bool rightSigned = m_node->m_params[1]->isSigned(as);
+
     LoadVar(as,1);
     QString val = as->StoreInTempVar("val");
 
     LoadVar(as,0);
-//    QString mod = as->StoreInTempVar("modulo");
+
+    if (!leftSigned && !rightSigned) {
+        as->Asm("sec");
+        QString lbl = as->NewLabel("modulo");
+        as->Label(lbl);
+        as->Asm("sbc "+val);
+        as->Asm("bcs "+lbl);
+        as->Asm("adc "+val);
+        as->PopLabel("modulo");
+        as->PopTempVar();
+        return;
+    }
+
+    // Signed mod (bug 2.4): the remainder takes the sign of the dividend (C
+    // truncating convention), regardless of the divisor's sign. Normalize
+    // both operands to their unsigned magnitude, run the existing unsigned
+    // repeated-subtraction loop, then negate the result if the dividend
+    // was negative.
+    //
+    // A currently holds 'a' (the dividend, freshly loaded by LoadVar(as,0)
+    // above). Branch on its sign *before* any "ldx #.." - loading an
+    // immediate into X sets N/Z from the loaded value and would clobber the
+    // very flag a naive "bpl" right after it relies on (same trap as
+    // Load16bitVariable).
+    QString negFlag = as->StoreInTempVar("modneg", "byte", false);
+    if (leftSigned) {
+        QString lblNeg = as->NewLabel("mods_neg");
+        QString lblDone = as->NewLabel("mods_signdone");
+        as->Asm("bmi "+lblNeg);
+        as->Asm("ldx #0");
+        as->Asm("jmp "+lblDone);
+        as->Label(lblNeg);
+        as->Asm("ldx #1");
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Label(lblDone);
+    } else {
+        as->Asm("ldx #0");
+    }
+    as->Asm("stx "+negFlag);
+
+    if (rightSigned) {
+        as->Asm("pha");
+        QString lblBPos = as->NewLabel("mods_bpos");
+        as->Asm("lda "+val);
+        as->Asm("bpl "+lblBPos);
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("sta "+val);
+        as->Label(lblBPos);
+        as->Asm("pla");
+    }
+
     as->Asm("sec");
-    QString lbl = as->NewLabel("modulo");
+    QString lbl = as->NewLabel("modulos");
     as->Label(lbl);
     as->Asm("sbc "+val);
     as->Asm("bcs "+lbl);
     as->Asm("adc "+val);
+    as->PopLabel("modulos");
 
+    QString lblNoNeg = as->NewLabel("mods_noneg");
+    as->Asm("ldx "+negFlag);
+    as->Asm("beq "+lblNoNeg);
+    as->Asm("eor #$ff");
+    as->Asm("clc");
+    as->Asm("adc #1");
+    as->Label(lblNoNeg);
 
-    as->PopLabel("modulo");
-
-    as->PopTempVar();
+    as->PopTempVar();  // negFlag
+    as->PopTempVar();  // val
 
 }
 
@@ -1193,15 +1257,30 @@ void Methods6502::Modulo16(Assembler *as)
 {
     as->Comment("Modulo16");
 
+    bool leftSigned = m_node->m_params[0]->isSigned(as);   // dividend
+    bool rightSigned = m_node->m_params[1]->isSigned(as);  // divisor
 
 //        InitDiv16x8()
         //as->m_internalZP[0]
         LoadVar(as,1);
         as->Asm("sta "+as->m_internalZP[0]);
-        as->Asm("sty "+as->m_internalZP[0]+"+1");
+        // Was unconditionally trusting Y here regardless of whether the
+        // divisor (this param) is actually word-width; match the same
+        // isWord()-gated widening the dividend below already gets.
+        if (m_node->m_params[1]->isWord(as)) {
+            as->Asm("sty "+as->m_internalZP[0]+"+1");
+        }
+        else {
+            as->Asm("ldy #0 ; force 16-bit");
+            as->Asm("sty "+as->m_internalZP[0]+"+1");
+        }
         LoadVar(as,0);
         as->Asm("sta "+as->m_internalZP[1]);
-        if (m_node->m_params[1]->isWord(as)) {
+        // Bug: this used to check m_params[1] (the divisor) to decide the
+        // *dividend's* own hi byte, discarding a genuine word dividend's
+        // real high byte (forcing it to 0) whenever the divisor happened to
+        // be byte-width. Check the dividend's own param instead.
+        if (m_node->m_params[0]->isWord(as)) {
             as->Asm("sty "+as->m_internalZP[1]+"+1");
 
         }
@@ -1209,9 +1288,79 @@ void Methods6502::Modulo16(Assembler *as)
             as->Asm("ldy #0 ; force 16-bit");
             as->Asm("sty "+as->m_internalZP[1]+"+1");
         }
+
+        if (!leftSigned && !rightSigned) {
+            as->Asm(m_codeGen->getCallSubroutine()+" divide16x8");
+            as->Asm("lda "+as->m_internalZP[2]);
+            as->Asm("ldy "+as->m_internalZP[2]+"+1");
+            return;
+        }
+
+        // Signed mod16 (bug 2.4): the remainder takes the sign of the
+        // dividend (C truncating convention), regardless of the divisor's
+        // sign. Normalize both operands (now in m_internalZP[0]/[1]) to their
+        // unsigned magnitude, run the existing unsigned divide16x8, then
+        // negate the 16-bit remainder if the dividend was negative. (Doesn't
+        // handle a *signed byte* operand that still needs word-widening here;
+        // LoadVar doesn't go through the sign-extending Load16bitVariable
+        // path, only a genuinely word-typed signed operand is covered.)
+        QString negFlag = as->StoreInTempVar("mod16neg");
+        as->Asm("ldx #0");
+        if (leftSigned) {
+            QString lblAPos = as->NewLabel("mod16s_apos");
+            as->Asm("lda "+as->m_internalZP[1]+"+1");
+            as->Asm("bpl "+lblAPos);
+            as->Asm("ldx #1");
+            as->Asm("lda "+as->m_internalZP[1]);
+            as->Asm("eor #$ff");
+            as->Asm("clc");
+            as->Asm("adc #1");
+            as->Asm("sta "+as->m_internalZP[1]);
+            as->Asm("lda "+as->m_internalZP[1]+"+1");
+            as->Asm("eor #$ff");
+            as->Asm("adc #0");
+            as->Asm("sta "+as->m_internalZP[1]+"+1");
+            as->Label(lblAPos);
+        }
+        as->Asm("stx "+negFlag);
+
+        if (rightSigned) {
+            QString lblBPos = as->NewLabel("mod16s_bpos");
+            as->Asm("lda "+as->m_internalZP[0]+"+1");
+            as->Asm("bpl "+lblBPos);
+            as->Asm("lda "+as->m_internalZP[0]);
+            as->Asm("eor #$ff");
+            as->Asm("clc");
+            as->Asm("adc #1");
+            as->Asm("sta "+as->m_internalZP[0]);
+            as->Asm("lda "+as->m_internalZP[0]+"+1");
+            as->Asm("eor #$ff");
+            as->Asm("adc #0");
+            as->Asm("sta "+as->m_internalZP[0]+"+1");
+            as->Label(lblBPos);
+        }
+
         as->Asm(m_codeGen->getCallSubroutine()+" divide16x8");
         as->Asm("lda "+as->m_internalZP[2]);
         as->Asm("ldy "+as->m_internalZP[2]+"+1");
+
+        as->Asm("tax    ; save remainder lo");
+        as->Asm("lda "+negFlag);
+        QString lblNoNeg = as->NewLabel("mod16s_noneg");
+        as->Asm("beq "+lblNoNeg);
+        as->Asm("txa");
+        as->Asm("eor #$ff");
+        as->Asm("clc");
+        as->Asm("adc #1");
+        as->Asm("tax");
+        as->Asm("tya");
+        as->Asm("eor #$ff");
+        as->Asm("adc #0");
+        as->Asm("tay");
+        as->Label(lblNoNeg);
+        as->Asm("txa");
+
+        as->PopTempVar();  // negFlag
         return;
 
 }
