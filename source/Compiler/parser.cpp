@@ -2510,7 +2510,26 @@ QSharedPointer<Node> Parser::Case() {
     }
     if (m_currentToken.m_type == TokenType::ELSE) {
         Eat();
+        // A begin/end-wrapped else body's own CompoundStatement() already
+        // eats its own closing END, which doubles as this case statement's
+        // closing END too (same token, no separate one follows). A single
+        // bare statement (no begin/end) doesn't have that END at all: its
+        // CompoundStatement() -> Statement() only consumes the statement
+        // itself, not even its own trailing semicolon (mirroring the
+        // case-branch loop above, whose Block(false) call is followed by
+        // its own explicit Eat() for the branch's semicolon), so this
+        // case's semicolon and closing END are otherwise left unconsumed
+        // and every subsequent token is shifted by one. Peek before
+        // Block(false) runs (Declarations() is a no-op here since the
+        // else body starts with neither VAR nor a proc/func keyword) to
+        // tell the two shapes apart.
+        bool elseIsBeginEnd = (m_currentToken.m_type == TokenType::BEGIN);
         n->m_elseBlock = Block(false);
+        if (!elseIsBeginEnd) {
+            if (m_currentToken.m_type == TokenType::SEMI)
+                Eat();
+            Eat(TokenType::END);
+        }
     } else
         Eat(); // Eat final END
 
