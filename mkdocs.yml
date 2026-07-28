@@ -2,6 +2,7 @@ site_name: SANE / TRSE Documentation
 site_description: Language reference and examples for SANE, a TRSE-compatible Pascal-like compiler for the Commodore 64.
 repo_url: https://github.com/v8id-mmo/SANE
 repo_name: v8id-mmo/SANE
+site_url: https://v8id-mmo.github.io/SANE
 
 theme:
   name: material
