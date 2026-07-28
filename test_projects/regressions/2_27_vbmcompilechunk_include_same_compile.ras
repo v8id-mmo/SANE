@@ -1,8 +1,10 @@
-// Bug 2.27: @vbmcompilechunk's output cannot be @include'd in the same
-// compile that generates it. Same root cause as 2.10's @bin2inc finding:
-// Parser::HandleVBMCompileChunk (PASS_FIRST) writes its output file
-// before Parser::PreprocessIncludeFiles (PASS_PRE) resolves @include,
-// but the generated file still isn't found on a clean build.
+// Bug 2.27 (FIXED 2026-07-28): @vbmcompilechunk's output cannot be
+// @include'd in the same compile that generates it. Same root cause as
+// 2.10's @bin2inc finding: Parser::Eat()'s over-broad
+// "m_pass >= PASS_CODE" gate in Parser::HandlePreprocessorInParsing()
+// silently swallowed the directive before its real handler
+// (Parser::HandleVBMCompileChunk) ever ran, so the file was never
+// written at all - fixed by tightening that gate to "m_pass == PASS_CODE".
 // Method B (compile-time only, no VICE step): expect COMPILE_ERROR
 // ("Could not open file for inclusion") pre-fix, exit 0 post-fix.
 program Bug_2_27_VbmCompileChunkIncludeSameCompile;

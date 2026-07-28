@@ -1164,7 +1164,17 @@ void Parser::HandlePreprocessorInParsing() {
         return;
     }
 
-    if (m_pass >= PASS_CODE) {
+    // Only the real code-generation pass reaches here to just skip over an
+    // already-handled directive's tokens (its actual effect, e.g. @bin2inc's
+    // file write or @include's file splice, already happened in an earlier
+    // preprocessing pass via PreprocessSingle()/PreprocessIncludeFiles()).
+    // This used to be ">= PASS_CODE", which is also true for PASS_MACROS (8)
+    // and PASS_FIRST (10): those are numerically larger than PASS_CODE (2)
+    // despite running chronologically before it, so this skip-only branch
+    // fired during those two passes too, consuming a directive's tokens here
+    // before PreprocessSingle()/PreprocessIncludeFiles() ever got to actually
+    // act on it (bug 2.10/2.27).
+    if (m_pass == PASS_CODE) {
         if (m_currentToken.m_value == "define") {
             Eat();
             Eat();

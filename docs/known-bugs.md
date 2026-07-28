@@ -289,26 +289,33 @@ is silently not accepted there.
 
 ### `@bin2inc`'s own output can't be `@include`d in the same compile
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a preprocessor directive's tokens were
+being silently swallowed and discarded the very first time the compiler
+ever saw them, before `@bin2inc`'s own handler got a chance to write its
+output file at all (an internal pass-tracking gate was one comparison
+operator too loose). `@bin2inc` and `@include` can now appear in the same
+compile that generates the included file.
 
 A file that both generates an include file with `@bin2inc` and
-`@include`s that same file in the same compile fails on a clean build,
-even though `@bin2inc` runs first. The generated file only becomes
-`@include`-able starting from the next compile onward. The workaround is
-to generate it with one compile first, then `@include` it from a separate
-compile.
+`@include`s that same file in the same compile used to fail on a clean
+build, even though `@bin2inc` runs first. The generated file only became
+`@include`-able starting from the next compile onward. The old workaround
+(generate it with one compile first, then `@include` it from a separate
+compile) is no longer needed.
 
 *Reference page:* [`@bin2inc`](reference/directives/bin2inc.md)
 
 ### `@vbmcompilechunk`'s own output can't be `@include`d in the same compile
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** same fix as `@bin2inc` above (the same
+underlying pass-tracking gate).
 
 The same issue as `@bin2inc` above, confirmed separately for this
-directive: a file that both runs `@vbmcompilechunk` and `@include`s the
-file it just generated fails on a clean build, even though
-`@vbmcompilechunk` runs first. The workaround is the same: generate the
-file with one compile first, then `@include` it from a separate compile.
+directive: a file that both ran `@vbmcompilechunk` and `@include`d the
+file it just generated used to fail on a clean build, even though
+`@vbmcompilechunk` runs first. The old workaround (generate the file with
+one compile first, then `@include` it from a separate compile) is no
+longer needed.
 
 *Reference page:* [`@vbmcompilechunk`](reference/directives/vbmcompilechunk.md)
 

@@ -1,6 +1,8 @@
 # `@vbmcompilechunk`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+can't `@include` `@vbmcompilechunk`'s own output in the same compile that
+generates it; SANE fixes this, see Known limitations below.
 
 A build-time directive that reads a region of an image asset and writes
 out real TRSE source code: one procedure per column, each containing a
@@ -51,9 +53,13 @@ in the same folder)
 
 ## Known limitations
 
-The generated output file cannot be [`@include`](include.md)d in the
-*same* compile that generates it: on a clean build, `@include` for the
-generated file fails with "Could not open file for inclusion", even
-though `@vbmcompilechunk` runs first in the same file, the same failure
-shape as [`@bin2inc`](bin2inc.md#known-limitations). Generate the file
-with one compile first, then `@include` it from a separate compile.
+**In vanilla TRSE, the generated output file cannot be
+[`@include`](include.md)d in the *same* compile that generates it:** on a
+clean build, `@include` for the generated file fails with "Could not open
+file for inclusion", even though `@vbmcompilechunk` runs first in the same
+file, the same failure shape as
+[`@bin2inc`](bin2inc.md#known-limitations). The workaround is to generate
+the file with one compile first, then `@include` it from a separate
+compile. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+same fix as `@bin2inc`; the workaround is no longer needed.

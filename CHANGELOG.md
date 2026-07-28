@@ -8,6 +8,12 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `@bin2inc` and `@vbmcompilechunk`'s generated output file not
+  being `@include`-able in the same compile that generates it: an
+  internal pass-tracking check was one comparison operator too loose, so
+  both directives (and `@include` itself, when reached this way) were
+  silently discarded the first time the compiler ever saw them, before
+  either directive's real handler ran at all.
 - Fixed `SpritePos` corrupting VIC-II registers on a sprite number of `8`
   or higher (now masked to the real `0`-`7` hardware range, for both a
   compile-time-constant and a runtime sprite number); `SetSpriteLoc` not

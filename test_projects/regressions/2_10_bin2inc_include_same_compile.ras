@@ -1,8 +1,11 @@
-// Bug 2.10: @bin2inc's output cannot be @include'd in the same compile
-// that generates it. @bin2inc's file write does happen before
-// @include's own lookup pass runs (Parser::PreprocessAll before
-// Parser::PreprocessIncludeFiles, per Parser::Parse's pass order), but
-// the generated file is still not found on a clean build.
+// Bug 2.10 (FIXED 2026-07-28): @bin2inc's output cannot be @include'd in
+// the same compile that generates it. Root cause: Parser::Eat() hands any
+// PREPROCESSOR token immediately following whatever it just consumed to
+// Parser::HandlePreprocessorInParsing(), whose "already handled, just
+// skip" gate (if (m_pass >= PASS_CODE)) wrongly also matched PASS_FIRST
+// and PASS_MACROS (numerically >= PASS_CODE despite running before it),
+// so @bin2inc's real handler (Parser::PreprocessSingle) never got to run
+// - the file was never written at all, not a write/read timing race.
 // Method B (compile-time only, no VICE step): expect COMPILE_ERROR
 // ("Could not open file for inclusion") pre-fix, exit 0 post-fix.
 program Bug_2_10_Bin2IncIncludeSameCompile;
