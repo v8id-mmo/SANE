@@ -1552,6 +1552,7 @@ void Parser::HandlePreprocessorInParsing() {
         }
         if (m_currentToken.m_value == "donotprefix") {
             Eat();
+            Eat();
             return;
         }
         if (m_currentToken.m_value == "userdata") {
@@ -3345,6 +3346,7 @@ void Parser::PreprocessSingle() {
     } else if (m_currentToken.m_value.toLower() == "donotprefix") {
         Eat(TokenType::PREPROCESSOR);
         m_doNotPrefixSymbols.append(m_currentToken.m_value);
+        Eat();
 
     }
 

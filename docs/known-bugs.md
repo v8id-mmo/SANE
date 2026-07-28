@@ -323,12 +323,14 @@ longer needed.
 
 ### `@donotprefix <symbol>` never compiles
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the directive's symbol-name argument is
+now fully consumed everywhere it's read, so it no longer desyncs the
+tokens that follow it.
 
 Unlike its sibling directive `@donotprefixunit` (which takes no argument
-and works fine), `@donotprefix <symbolName>` fails to compile in every
-configuration tested: the directive reads its symbol-name argument but
-never actually consumes it from the token stream, desyncing everything
+and works fine), `@donotprefix <symbolName>` used to fail to compile in
+every configuration tested: the directive read its symbol-name argument
+but never actually consumed it from the token stream, desyncing everything
 parsed afterward, the same failure shape as the `case`/`else` bug above.
 
 *Reference page:* [`@donotprefix`](reference/directives/donotprefix.md)

@@ -23,8 +23,8 @@ check, and so on).
   (`@name` becomes its value).
 - [`@deletefile`](deletefile.md): deletes a file within the project
   directory at build time, if it exists.
-- [`@donotprefix`](donotprefix.md): meant to exempt one symbol from
-  unit-name prefixing; currently broken, see its Known limitations.
+- [`@donotprefix`](donotprefix.md): exempts one symbol from unit-name
+  prefixing.
 - [`@donotprefixunit`](donotprefixunit.md): disables unit-name prefixing
   for an entire unit file.
 - [`@donotremove`](donotremove.md): protects a symbol from the unused-
