@@ -333,25 +333,25 @@ nav:
           - WaitNoRaster: reference/builtins/waitnoraster.md
       - Operators:
           - Overview: reference/operators/index.md
-          - "<": reference/operators/less-than.md
-          - "<=": reference/operators/less-or-equal.md
-          - ">": reference/operators/greater-than.md
-          - ">=": reference/operators/greater-or-equal.md
-          - "=": reference/operators/equal.md
-          - "<>": reference/operators/not-equal.md
-          - "+": reference/operators/addition.md
-          - "-": reference/operators/subtraction.md
-          - "*": reference/operators/multiplication.md
-          - "/": reference/operators/division.md
-          - "&": reference/operators/bitwise-and.md
-          - "|": reference/operators/bitwise-or.md
-          - "xor / ^": reference/operators/xor.md
-          - "shl / <<": reference/operators/shift-left.md
-          - "shr / >>": reference/operators/shift-right.md
-          - "and": reference/operators/and.md
-          - "or": reference/operators/or.md
-          - "not": reference/operators/not.md
-          - ":=": reference/operators/assignment.md
+          - "< (Less Than)": reference/operators/less-than.md
+          - "<= (Less Than or Equal)": reference/operators/less-or-equal.md
+          - "> (Greater Than)": reference/operators/greater-than.md
+          - ">= (Greater Than or Equal)": reference/operators/greater-or-equal.md
+          - "= (Equal)": reference/operators/equal.md
+          - "<> (Not Equal)": reference/operators/not-equal.md
+          - "+ (Addition)": reference/operators/addition.md
+          - "- (Subtraction)": reference/operators/subtraction.md
+          - "* (Multiplication)": reference/operators/multiplication.md
+          - "/ (Division)": reference/operators/division.md
+          - "& (Bitwise AND)": reference/operators/bitwise-and.md
+          - "| (Bitwise OR)": reference/operators/bitwise-or.md
+          - "xor / ^ (Bitwise XOR)": reference/operators/xor.md
+          - "shl / << (Shift Left)": reference/operators/shift-left.md
+          - "shr / >> (Shift Right)": reference/operators/shift-right.md
+          - "and (Logical AND)": reference/operators/and.md
+          - "or (Logical OR)": reference/operators/or.md
+          - "not (Logical / Bitwise NOT)": reference/operators/not.md
+          - ":= (Assignment)": reference/operators/assignment.md
       - Types:
           - Overview: reference/types/index.md
           - address: reference/types/address.md
