@@ -56,12 +56,15 @@ end.
 A plain procedure call like the one above always evaluates each argument
 exactly once, right before the call, so passing something more complex
 than a bare variable or literal is completely safe here, in both TRSE and
-SANE. **In vanilla TRSE, that was not true for a procedure marked
+SANE.
+
+**In vanilla TRSE, that was not true for a procedure marked
 `inline`**: an inline procedure's parameters were substituted as raw
 expression text at every place they were referenced inside the body, so a
 complex argument referenced more than once could be re-evaluated multiple
 times. See [`inline`](inline.md)'s Known limitations for the full
 explanation and the workaround needed on vanilla TRSE.
+
 :material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 SANE now evaluates a non-pure `inline` parameter once, so that workaround
