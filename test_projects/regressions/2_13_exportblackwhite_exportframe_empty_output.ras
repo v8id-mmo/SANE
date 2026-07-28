@@ -1,16 +1,36 @@
-// Bug 2.13: @exportblackwhite/@exportframe are each only implemented
-// for one asset type (a GUI-imported plain bitmap; a level-editor
-// asset), unreachable from a charset/sprite .flf like sample_sprite.flf.
-// Every other asset type falls through to an empty-stub virtual method
-// (LImage::ExportBlackWhite, CharsetImage::ExportFrame), so both
-// directives compile clean and silently write a zero-byte output file.
-// Method C (build-output verification): see the companion .outputcheck
-// file. Expect both output files to be empty (0 bytes) pre-fix, non-empty
-// post-fix.
-program Bug_2_13_ExportBlackWhiteExportFrameEmptyOutput;
+// Bug 2.13: @exportblackwhite/@exportframe are each only genuinely
+// implemented for one specific asset type: @exportblackwhite for a plain
+// bitmap imported via the (now-removed) GUI's image-import dialog
+// (LImageQImage::ExportBlackWhite), @exportframe for a level-editor asset
+// (ImageLevelEditor::ExportFrame). Every other asset type - including
+// every charset/sprite .flf actually bundled in this repo, like
+// sample_sprite.flf - used to fall through to an empty-stub virtual
+// method (LImage::ExportBlackWhite's `{}` base, CharsetImage::ExportFrame's
+// dead stub that writes an empty QByteArray), so both directives compiled
+// clean and silently wrote a zero-byte output file with no error at all.
+//
+// Fix direction chosen: since implementing real per-asset-type support
+// for either directive is new functionality (not a bugfix), and
+// @exportblackwhite's one working asset type is already unreachable from
+// this GUI-less CLI-only fork (see KNOWN_BUGS.md), both handlers
+// (Parser::HandleExportBW / Parser::HandleExportFrame, parser.cpp) now
+// check the loaded asset's real type with a dynamic_cast before calling
+// into it, and raise a clear ErrorHandler::e.Error(...) instead of
+// silently writing empty output when the asset isn't the one type that
+// actually works.
+//
+// This snippet covers @exportblackwhite specifically; see the companion
+// 2_13_exportframe_wrong_asset_type.ras for @exportframe's own check
+// (a single compile can only ever surface the first Error(), so the two
+// directives need separate snippets for both fixes to get real
+// regression coverage).
+//
+// Method B (compile-time), no VICE step. Pre-fix: compiles clean, writes
+// a 0-byte 2_13_export_bw.bin. Post-fix: fails to compile with a clear
+// "only implemented for a plain bitmap image" error.
+program Bug_2_13_ExportBlackWhiteEmptyOutput;
 
 @exportblackwhite "sample_sprite.flf" "2_13_export_bw.bin" 0 0 8 8
-@exportframe "sample_sprite.flf" "2_13_export_frame.bin" 0 1 0 0 0 0 0 0
 
 begin
 	loop();

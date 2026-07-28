@@ -47,7 +47,9 @@ repeated-subtraction loop, with no awareness of `signed byte` at all**:
 it inherits the same unsigned-only limitation as [`/`](../operators/division.md)'s
 signed division gap, just for the remainder instead of the quotient. A
 negative `signed byte` operand gives a result computed against its
-unsigned bit pattern, not its signed one. :material-check-decagram:
+unsigned bit pattern, not its signed one.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `mod`'s remainder now follows C-style truncating semantics, with its sign
 matching the dividend `<a>`'s sign regardless of the divisor's sign. For

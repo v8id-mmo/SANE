@@ -59,7 +59,9 @@ every read, since its table-fill routine never runs); the others either
 check for the missing setup at compile time and fail loudly instead, or
 don't need a separate setup step to begin with. On vanilla TRSE, adding
 at least one real, uncommented `sine[...]` call somewhere in the main
-file works around it for `sine[]`. :material-check-decagram:
+file works around it for `sine[]`.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 a unit's own resolved auto-init triggers are now merged back into the
 compiled program's, so a call written only inside a `@use`d unit

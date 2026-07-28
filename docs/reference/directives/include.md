@@ -53,7 +53,9 @@ directive runs first in the same file. The workaround was to generate the
 include file with a `@bin2inc`/`@vbmcompilechunk`-only compile first, then
 `@include` it from a separate file, or check the generated file into the
 project ahead of time. See [`@bin2inc`](bin2inc.md)'s own Known
-limitations section for the full writeup. :material-check-decagram:
+limitations section for the full writeup.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `@include` can now pick up a file generated earlier in the same compile;
 the workaround is no longer needed.

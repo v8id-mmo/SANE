@@ -61,25 +61,26 @@ In vanilla TRSE, this operator works correctly for unsigned `byte`,
   something like `127` against `-128`): the generated code used a plain
   positive/negative flag check, without the extra overflow-correction
   step the 16-bit signed `<`/`<=` path applies, so it could give the
-  wrong answer there. :material-check-decagram:
+  wrong answer there.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   the byte-level path now gets the same overflow correction, so it's
   correct at every boundary too.
 - **On a `signed integer`, this operator wasn't implemented at all.**
   Only `<` and `<=` were implemented for a signed 16-bit comparison;
   writing `if (signedWord >= 0) then ...` failed to compile, even though
-  restructuring the condition to use `<`/`<=` instead worked.
+  restructuring the condition to use `<`/`<=` instead worked.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   all six comparison operators now work on `signed integer`.
 - **On a `signed long`, this operator wasn't implemented at all
-  either**; no comparison operator worked on a signed 24-bit value.
+  either**; no comparison operator worked on a signed 24-bit value.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   all six comparison operators now work on `signed long` too.
 - **Comparing an unsigned byte against the literal `0` gave the wrong
   result.** `x >= 0` always evaluated false regardless of `x`'s actual
-  value, and the same applied to a signed comparison against literal `0`.
+  value, and the same applied to a signed comparison against literal `0`.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   this now correctly evaluates for both unsigned and signed operands.

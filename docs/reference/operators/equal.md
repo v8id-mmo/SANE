@@ -64,6 +64,7 @@ ordering comparisons.
   `<`/`<=`) weren't: the compiler only allowed `<`/`<=` on a signed
   16-bit value, and nothing at all on a signed 24-bit value.** Writing
   `if (signedWord = 0) then ...` failed to compile even though equality
-  doesn't inherently need any sign-aware logic. :material-check-decagram:
+  doesn't inherently need any sign-aware logic.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   `=` now works on both `signed integer` and `signed long`.

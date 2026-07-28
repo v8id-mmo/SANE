@@ -57,7 +57,9 @@ end.
 **In vanilla TRSE, signed comparison is incomplete.** For a `signed
 integer`, only `<` and `<=` are implemented; every other comparison
 operator (`>`, `>=`, `=`, `<>`) fails to compile with "Signed integer
-comparison: only 'less' is currently implemented." :material-check-decagram:
+comparison: only 'less' is currently implemented."
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 all six comparison operators now work on `signed integer`. See
 [`signed`](../keywords/signed.md)'s Known limitations for the full

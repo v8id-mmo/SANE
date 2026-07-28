@@ -74,6 +74,7 @@ raw bit pattern represents (`$FF` becomes `$00FF`, i.e. `255`). On vanilla
 TRSE, the example above demonstrates this: `widened` prints `255`, not
 `-1`. A plain (unsigned) `byte` widening into `integer` is unaffected in
 either compiler, always correct, as the `total` line above shows.
+
 :material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 a negative `signed byte` widened into `integer` is now sign-extended

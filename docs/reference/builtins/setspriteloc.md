@@ -46,6 +46,7 @@ computes a sprite-pointer address outside the intended table.
 `spriteNum` has no range check at all, compile-time or runtime; a value
 outside `0`-`7` silently writes past the 8-byte sprite-pointer table into
 whatever memory follows it.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `SetSpriteLoc` now actually enforces the `0`-`3` range on `bank`, erroring
 with the message it already claimed to enforce, and adds a compile-time

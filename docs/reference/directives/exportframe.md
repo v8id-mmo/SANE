@@ -1,6 +1,9 @@
 # `@exportframe`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+silently writes an empty output file when the loaded asset isn't the one
+type this directive actually supports; SANE fails with a clear compile
+error instead.
 
 A build-time directive that exports one or more "frames" from a `.flf`
 image/asset to a raw binary file. What a "frame" means depends on the
@@ -50,9 +53,14 @@ the same folder)
 ## Known limitations
 
 **Only actually implemented for level-editor assets**, which is what the
-example above uses. For every other `.flf` asset type (charset, sprite
-sheets included), the export step is a dead stub: it builds an output
+example above uses. In vanilla TRSE, every other `.flf` asset type
+(charset, sprite sheets included) hits a dead stub: it builds an output
 buffer, never fills it with anything, and writes that empty buffer to the
-output file. Pointing `@exportframe` at anything other than a
-level-editor asset compiles without error but silently produces a
-zero-byte output file.
+output file, with no warning that anything went wrong.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+this directive still only works for level-editor assets; nothing new is
+now supported. What changed is the failure mode: pointing `@exportframe`
+at any other asset type (charset, sprite sheets included) now stops
+compilation with a clear error naming the input file, instead of silently
+writing an empty output file with no warning.

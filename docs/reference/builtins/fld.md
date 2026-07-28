@@ -41,7 +41,9 @@ end.
 **In vanilla TRSE, `FLD`'s loop always runs its body at least once before
 checking the count, so passing a count of `0` doesn't skip the effect:
 the counter wraps around instead, and the effect actually runs 256
-times.** :material-check-decagram:
+times.**
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `FLD` now checks the count before entering the loop, so passing a count
 of `0` correctly skips the effect entirely.

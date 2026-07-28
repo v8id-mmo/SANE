@@ -34,7 +34,9 @@ resets the vertical fine-scroll value to a fixed default and clears the
 raster-compare high bit, regardless of anything you've set up before. On
 vanilla TRSE, if you call `ScrollY` or arm a raster interrupt on a line
 at or past 256, do it *after* calling `SetBitmapMode`, not before, or
-that setup gets silently undone. :material-check-decagram:
+that setup gets silently undone.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `SetBitmapMode` now only changes the single bit needed to enable bitmap
 mode, the same masked read-modify-write shape as its sibling mode-toggle

@@ -49,6 +49,7 @@ range instead of returning immediately. This is the same "loop body runs
 at least once" shape as other counted loops in this fork ([`FOR`](../keywords/for.md),
 `FLD`, `MemCpy`'s runtime count of `0`). On vanilla TRSE, to get an
 actual no-op delay, skip the call entirely rather than passing `0`.
+
 :material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `Wait` now checks the count before entering the loop, so `Wait(0)`

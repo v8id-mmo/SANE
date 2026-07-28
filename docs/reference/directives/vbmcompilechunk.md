@@ -60,6 +60,8 @@ file for inclusion", even though `@vbmcompilechunk` runs first in the same
 file, the same failure shape as
 [`@bin2inc`](bin2inc.md#known-limitations). The workaround is to generate
 the file with one compile first, then `@include` it from a separate
-compile. :material-check-decagram:
+compile.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 same fix as `@bin2inc`; the workaround is no longer needed.

@@ -6096,6 +6096,14 @@ void Parser::HandleExportBW() {
                               m_currentToken.m_lineNumber);
 
     LImage *img = LImageIO::Load(inFile);
+    if (dynamic_cast<LImageQImage *>(img) == nullptr) {
+        ErrorHandler::e.Error(
+            "@exportblackwhite is only implemented for a plain bitmap image "
+            "(one imported via the image-import feature); '" +
+                inFile + "' is a different asset type and would silently produce "
+                         "empty output.",
+            ln);
+    }
     if (QFile::exists(outFile))
         QFile::remove(outFile);
 
@@ -6529,6 +6537,12 @@ void Parser::HandleExportFrame() {
         ErrorHandler::e.Error("File not found : " + inFile, ln);
     }
     LImage *img = LImageIO::Load(inFile);
+    if (dynamic_cast<ImageLevelEditor *>(img) == nullptr) {
+        ErrorHandler::e.Error(
+            "@exportframe is only implemented for a level-editor asset; '" + inFile +
+                "' is a different asset type and would silently produce empty output.",
+            ln);
+    }
     if (QFile::exists(outFile))
         QFile::remove(outFile);
 

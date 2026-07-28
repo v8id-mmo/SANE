@@ -51,6 +51,7 @@ register (screen on/off, text/bitmap mode, Y-scroll, and the
 raster-compare high bit), corrupting core display state instead of moving
 a (nonexistent) ninth sprite. The same lack of range-checking applies to
 a non-constant (runtime variable) `spriteNum` too.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `SpritePos` now masks `spriteNum` to `0`-`7` (`& 7`) before it's used to
 compute the sprite register offset, for both the constant and

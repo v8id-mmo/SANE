@@ -65,6 +65,7 @@ Passing a variable or other non-constant expression there doesn't produce
 a compile error, it crashes the compiler itself with a null-pointer
 dereference (its sibling `StartIRQ` correctly rejects a non-constant
 argument with a clean error; `StartIRQWedge` doesn't do the same check).
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `StartIRQWedge` now gets the same pure-numeric check `StartIRQ` already
 had, so a non-constant `cycles` argument produces a clean compile error

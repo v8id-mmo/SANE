@@ -61,19 +61,21 @@ In vanilla TRSE, this operator works correctly for unsigned `byte`,
   something like `-128` against `127`): the generated code used a plain
   positive/negative flag check, without the extra overflow-correction
   step the 16-bit signed path applies, so it could give the wrong answer
-  there. :material-check-decagram:
+  there.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   the byte-level path now gets the same overflow correction as the
   16-bit path, so it's correct at every boundary too.
 - **On a `signed long`, this operator wasn't implemented at all.** Unlike
   `signed integer` (where `<=` was one of the two operators that did
   work), a signed 24-bit comparison failed to compile no matter which
-  operator was used, this one included. :material-check-decagram:
+  operator was used, this one included.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   all six comparison operators now work on `signed long` too.
 - **Comparing an unsigned byte against the literal `0` gave the wrong
   result.** `x <= 0` always evaluated true regardless of `x`'s actual
-  value, and the same applied to a signed comparison against literal `0`.
+  value, and the same applied to a signed comparison against literal `0`.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   this now correctly evaluates for both unsigned and signed operands.

@@ -43,6 +43,7 @@ end.
 variable declarations, but not for pointer declarations**
 (`^byte`/`^integer` at a fixed address): `^byte absolute $9000;` fails to
 compile there, even though `^byte at $9000;` works fine.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `absolute` is now accepted on pointer declarations too, with the same
 effect as `at`.

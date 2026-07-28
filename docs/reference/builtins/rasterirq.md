@@ -70,6 +70,7 @@ actually is an interrupt procedure reference**; the check exists in the
 source but is disabled. Passing something else there doesn't produce a
 compile error, it crashes the compiler itself with a null-pointer
 dereference.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 the disabled check is re-enabled, so a malformed first argument now
 produces a clean compile error instead of crashing the compiler.

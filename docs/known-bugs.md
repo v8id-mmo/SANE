@@ -428,14 +428,22 @@ unrelated, non-C64 asset type has a working implementation of this step.
 
 ### `@exportblackwhite`/`@exportframe` only work for one asset type each
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** both directives now stop compilation
+with a clear error, naming the input file, when the loaded asset isn't
+the one type each directive actually supports.
 
-Both directives compile without error for any input asset, but silently
-produce an empty output file for every asset type except the one each was
-actually implemented for (`@exportframe` additionally has a second
-implementation that's a dead stub, contributing to the same silent-empty
-outcome for the asset types routed through it). There's no warning when
-this happens, the build just quietly produces nothing useful.
+In vanilla TRSE, both directives compile without error for any input
+asset, but silently produce an empty output file for every asset type
+except the one each was actually implemented for (`@exportframe`
+additionally has a second implementation that's a dead stub, contributing
+to the same silent-empty outcome for the asset types routed through it).
+There's no warning when this happens, the build just quietly produces
+nothing useful.
+
+The fix does not add support for any additional asset type: each
+directive still only works for the same one asset type it always did.
+Only the failure mode changed, from a silent zero-byte output file to a
+clear compile-time error.
 
 *Reference pages:*
 [`@exportblackwhite`](reference/directives/exportblackwhite.md),

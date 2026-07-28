@@ -55,14 +55,14 @@ of those code paths at once:
   [`>=`](../operators/greater-or-equal.md), [`=`](../operators/equal.md),
   [`<>`](../operators/not-equal.md)) threw a compile error instead of
   producing wrong code. Signed comparison for a `signed long` wasn't
-  implemented at all; any comparison operator errored out.
+  implemented at all; any comparison operator errored out.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   all six comparison operators now work on both `signed integer` and
   `signed long`.
 - **Byte-level signed comparison was unverified at the extremes**, such as
   comparing `-128` and `127`, because the generated code didn't correct
-  for 6502 signed-overflow the way the 16-bit `<`/`<=` case did.
+  for 6502 signed-overflow the way the 16-bit `<`/`<=` case did.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   the byte-level path now gets the same overflow correction, so it's
@@ -70,14 +70,15 @@ of those code paths at once:
 - **Signed multiplication ([`*`](../operators/multiplication.md)) silently
   gave the wrong result for a negative operand widened to a wider
   type.** The multiply routine wired up behind `*` was always the
-  unsigned one, regardless of whether either operand was `signed`.
+  unsigned one, regardless of whether either operand was `signed`.  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   a `byte * byte` product widened to an `integer` now correctly accounts
   for the sign of a negative operand.
 - **Signed division ([`/`](../operators/division.md)) wasn't implemented
   at all.** Division always used unsigned arithmetic, ignoring the
-  `signed` modifier entirely. :material-check-decagram:
+  `signed` modifier entirely.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   `mod` and `mod16` (any width), and `/` when the quotient widens to an
   `integer`, now all follow C-style truncating signed division semantics.
@@ -88,7 +89,7 @@ of those code paths at once:
   zero-extended instead of sign-extending.** A negative signed byte
   widened to a 16-bit value should keep its negative value (e.g. `-1`
   becomes `$FFFF`), but instead came out as the small positive value the
-  raw bit pattern represents (`$FF` becomes `$00FF`, i.e. 255).
+  raw bit pattern represents (`$FF` becomes `$00FF`, i.e. 255).  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   a negative `signed byte` mixed into a wider expression is now

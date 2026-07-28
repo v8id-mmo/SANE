@@ -44,7 +44,9 @@ in the *same* compile that generates it.** On a clean build, `@include
 though `@bin2inc` appears earlier in the same file. The workaround is to
 generate the include file with one project first (`@bin2inc` alone, as in
 the example above), then `@include` it from a separate `.ras`/`.tru` file,
-or check the generated file into the project ahead of time. :material-check-decagram:
+or check the generated file into the project ahead of time.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `@bin2inc` and `@include` can now appear in the same compile that
 generates the included file; the workaround is no longer needed.

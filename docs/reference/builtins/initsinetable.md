@@ -52,7 +52,9 @@ the automatic call to this routine never gets inserted, the table is
 never filled, and `sine[angle]` silently returns `0` for every angle
 instead of failing to compile.** Calling `initsinetable()` explicitly (as
 in the example above) sidesteps this on vanilla TRSE too, since it
-doesn't depend on the text scan. :material-check-decagram:
+doesn't depend on the text scan.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 a `sine[` usage anywhere in the program, including inside a `use`d unit
 file, now correctly triggers the automatic call; calling

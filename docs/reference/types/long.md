@@ -58,7 +58,7 @@ or wrong specifically for `long`:
 
 - **In vanilla TRSE, signed comparison isn't implemented at all** for
   `signed long`; every comparison operator fails to compile with "Signed
-  long comparison not implemented yet." (see [`signed`](../keywords/signed.md)).
+  long comparison not implemented yet." (see [`signed`](../keywords/signed.md)).  
   :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   all six comparison operators now work on `signed long` too.

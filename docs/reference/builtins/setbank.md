@@ -42,7 +42,9 @@ them low as a side effect. This is harmless for almost all programs,
 since disk/tape activity has normally already finished by the time
 `SetBank` gets called, but it's worth knowing about if you're writing
 custom fastloader or serial-bus code and might call `SetBank` while a
-transfer is still active. :material-check-decagram:
+transfer is still active.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `SetBank` now does a masked read-modify-write, preserving the register's
 other bits. It depends on the compiling project's `temp_zeropages`

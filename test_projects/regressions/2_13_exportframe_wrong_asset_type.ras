@@ -1,0 +1,20 @@
+// Bug 2.13 (@exportframe half): companion to
+// 2_13_exportblackwhite_exportframe_empty_output.ras, see that file for
+// the full writeup. @exportframe is only genuinely implemented for a
+// level-editor asset (ImageLevelEditor::ExportFrame); every other asset
+// type, including sample_sprite.flf, used to fall through to
+// CharsetImage::ExportFrame's dead stub and silently write a 0-byte file.
+// Parser::HandleExportFrame (parser.cpp) now dynamic_casts the loaded
+// asset to ImageLevelEditor first and raises a clear compile error if it
+// isn't one, instead of writing empty output.
+//
+// Method B (compile-time), no VICE step. Pre-fix: compiles clean, writes
+// a 0-byte 2_13_export_frame.bin. Post-fix: fails to compile with a clear
+// "only implemented for a level-editor asset" error.
+program Bug_2_13_ExportFrameWrongAssetType;
+
+@exportframe "sample_sprite.flf" "2_13_export_frame.bin" 0 1 0 0 0 0 0 0
+
+begin
+	loop();
+end.

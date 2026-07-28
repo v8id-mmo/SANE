@@ -70,6 +70,7 @@ procedure reference as the first argument, or a non-constant expression
 as `<mode>`, doesn't produce a compile error, it crashes the compiler
 itself with a null-pointer dereference (see [`RasterIRQ`](rasterirq.md),
 which has the same gap on its own first argument).
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 both arguments are now validated (a procedure-reference check on
 `<procedure>`, a pure-numeric check on `<mode>`), so a malformed call

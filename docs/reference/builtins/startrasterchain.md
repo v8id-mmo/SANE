@@ -59,7 +59,7 @@ back to back, it inherits both builtins' known limitations directly:
 - **In vanilla TRSE, no validation that `<procedure>` is actually an
   interrupt procedure reference**; passing something else crashes the
   compiler itself with a null-pointer dereference rather than a compile
-  error (see [`RasterIRQ`](rasterirq.md)).
+  error (see [`RasterIRQ`](rasterirq.md)).  
   :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   `RasterIRQ`'s validation fix applies here too, since `StartRasterChain`
   calls it directly; a malformed `<procedure>` now produces a clean
@@ -67,7 +67,8 @@ back to back, it inherits both builtins' known limitations directly:
 - **In vanilla TRSE, `EnableRasterIRQ`'s hardcoded overwrite of the
   VIC-II's main control register, which resets the vertical fine-scroll
   value and clears the raster-compare high bit** (see
-  [`EnableRasterIRQ`](enablerasterirq.md)). :material-check-decagram:
+  [`EnableRasterIRQ`](enablerasterirq.md)).  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   `EnableRasterIRQ` no longer touches that register, so `StartRasterChain`
   no longer disturbs it either.

@@ -58,7 +58,8 @@ end.
   number gave a wrong result, with no compile error or warning.** A plain
   `byte * byte` product kept as a `byte` was never affected, since a
   two's-complement product's low byte is identical whether the inputs are
-  interpreted as signed or unsigned. :material-check-decagram:
+  interpreted as signed or unsigned.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   the word-widening case now correctly accounts for the sign of a
   negative operand.

@@ -63,7 +63,9 @@ and doesn't separately set up its own interrupt chain (e.g. via
 interrupts permanently masked from that point on, breaking KERNAL-driven
 behavior like keyboard scanning. On vanilla TRSE, call `StartRasterChain`
 (or otherwise `cli` explicitly) after using this builtin if the rest of
-the program needs interrupts running. :material-check-decagram:
+the program needs interrupts running.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `CopyCharsetFromRom` now re-enables interrupts before returning, so this
 workaround is no longer necessary on SANE.

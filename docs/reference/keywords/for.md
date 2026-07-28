@@ -62,7 +62,9 @@ counting up and wrapping around the full byte range until the counter
 happens to land back on the end value again, running far more times than
 intended (roughly 250 extra iterations for a byte counter). On vanilla
 TRSE, if the end value can be smaller than the start value at runtime,
-guard the loop with an explicit `if` first. :material-check-decagram:
+guard the loop with an explicit `if` first.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `for`/`fori` now check the range before entering the loop, so `for i:=5
 to 0 do ...` correctly skips the body entirely instead of running it.

@@ -51,6 +51,7 @@ only, with no `signed`-aware code path at all.** A negative `signed
 integer` dividend or `signed byte` divisor is computed against its
 unsigned bit pattern, not its signed value, giving a wrong remainder. See
 [`mod`](mod.md) for the same limitation on the 8-bit builtin.
+
 :material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `mod16`'s remainder now follows C-style truncating semantics, with its

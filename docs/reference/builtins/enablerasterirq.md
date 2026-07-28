@@ -52,6 +52,7 @@ bit, regardless of anything set up beforehand (see
 [`SetBitmapMode`](setbitmapmode.md), which has the same issue on vanilla
 TRSE). [`StartRasterChain`](startrasterchain.md) calls `EnableRasterIRQ`
 internally, so it inherits this exact side effect too on vanilla TRSE.
+
 :material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `EnableRasterIRQ` now only sets the raster-interrupt-enable bit; it no

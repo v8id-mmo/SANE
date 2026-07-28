@@ -59,7 +59,9 @@ an end value).
 **In vanilla TRSE, `fori` shares [`for`](for.md)'s "always runs the body
 at least once" behavior:** `fori i:=5 to 0 do ...` doesn't skip the loop,
 it runs once and then wraps around the full counter range before
-stopping. See that page for the full explanation. :material-check-decagram:
+stopping. See that page for the full explanation.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `fori i:=5 to 0 do ...` now correctly skips the body entirely, the same
 as [`for`](for.md).

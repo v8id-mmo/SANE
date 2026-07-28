@@ -51,7 +51,8 @@ end.
 - **In vanilla TRSE, signed division isn't implemented at all.** Division
   always uses unsigned arithmetic, completely ignoring the `signed`
   modifier on either operand; there's no signed-aware division routine to
-  fall back on. `mod`/`mod16` share the identical gap. :material-check-decagram:
+  fall back on. `mod`/`mod16` share the identical gap.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   `mod` and `mod16` (any width) and `/` **when the quotient widens to an
   `integer`** now follow C-style truncating semantics: the quotient's

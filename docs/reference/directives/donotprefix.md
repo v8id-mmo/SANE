@@ -45,6 +45,7 @@ the resulting error surfaces somewhere else in the file rather than
 pointing at the `@donotprefix` line itself. Its sibling directive,
 `@donotprefixunit` (which takes no argument), is unaffected there, so the
 bug is specific to this argument-taking form.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 the symbol-name argument is now fully consumed in both places it's read,
 and `@donotprefix <symbolName>` compiles correctly, both as a top-level

@@ -58,7 +58,8 @@ end.
   instead of `-1` (`$FFFF`). Same-width subtraction (`signed byte -
   signed byte`, or `signed integer - signed integer`) is unaffected; the
   problem is specific to combining a negative byte with an already-wider
-  operand in the same expression. :material-check-decagram:
+  operand in the same expression.  
+  :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
   a negative `signed byte` mixed into a wider expression is now
   sign-extended correctly.

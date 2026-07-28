@@ -45,6 +45,7 @@ code after declaration, same as any other pointer on the 6502 target.
 
 **In vanilla TRSE, only `at` is recognized on pointer declarations**;
 [`absolute`](absolute.md) fails to compile there with a parse error.
+
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 [`absolute`](absolute.md) is now accepted on pointer declarations too,
 with the same effect as `at` (see its own Known limitations section).

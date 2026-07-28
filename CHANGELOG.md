@@ -8,6 +8,11 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `@exportblackwhite`/`@exportframe` silently writing a zero-byte
+  output file, with no error, when pointed at any asset type other than
+  the one each directive actually supports; both now stop compilation
+  with a clear error naming the input file instead. Neither directive
+  gained support for any new asset type.
 - Fixed `@donotprefix <symbolName>` never compiling: the directive's
   symbol-name argument was read but never consumed from the token stream
   in either of the two places that read it, desyncing everything parsed

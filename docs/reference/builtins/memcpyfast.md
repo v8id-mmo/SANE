@@ -55,7 +55,9 @@ full 256 bytes instead of none, overwriting whatever memory follows
 `<dest>`.** If `<count>` is always a fixed value known at compile time,
 this doesn't come up, since nothing would call `MemCpyFast` with a
 literal `0` count in practice. See [`MemCpy`](memcpy.md), which shares
-this same limitation. :material-check-decagram:
+this same limitation.
+
+:material-check-decagram:
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 a runtime `<count>` that happens to be `0` now correctly copies zero
 bytes.
