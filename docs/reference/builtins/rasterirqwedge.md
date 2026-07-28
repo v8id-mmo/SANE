@@ -1,6 +1,8 @@
 # `RasterIRQWedge`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE never validated `<procedure>` or `<mode>` before dereferencing them,
+crashing the compiler on a malformed call; SANE adds both checks.
 
 The "wedge" counterpart to [`RasterIRQ`](rasterirq.md): hooks an
 `interrupt` procedure to a raster line the same way, but through the
@@ -62,9 +64,13 @@ vector instead, the way plain `RasterIRQ` supports, is a hard compile
 error: "Kernal wedge not implemented." Every real usage of this builtin,
 in this fork's own bundled tutorials included, passes `0`.
 
-Neither `<procedure>` nor `<mode>` is actually validated before use:
-passing something other than an interrupt procedure reference as the
-first argument, or a non-constant expression as `<mode>`, doesn't
-produce a compile error, it crashes the compiler itself with a
-null-pointer dereference (see [`RasterIRQ`](rasterirq.md), which has the
-same gap on its own first argument).
+**In vanilla TRSE, neither `<procedure>` nor `<mode>` is actually
+validated before use**: passing something other than an interrupt
+procedure reference as the first argument, or a non-constant expression
+as `<mode>`, doesn't produce a compile error, it crashes the compiler
+itself with a null-pointer dereference (see [`RasterIRQ`](rasterirq.md),
+which has the same gap on its own first argument).
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+both arguments are now validated (a procedure-reference check on
+`<procedure>`, a pure-numeric check on `<mode>`), so a malformed call
+produces a clean compile error instead of crashing the compiler.

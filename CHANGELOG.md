@@ -8,6 +8,14 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `SpritePos` corrupting VIC-II registers on a sprite number of `8`
+  or higher (now masked to the real `0`-`7` hardware range, for both a
+  compile-time-constant and a runtime sprite number); `SetSpriteLoc` not
+  actually enforcing its documented `0`-`3` `bank` range or checking a
+  constant sprite number against `0`-`7`; and `RasterIRQ`, `RasterIRQWedge`,
+  `StartIRQWedge` (and by extension `StartRasterChain`) crashing the
+  compiler process instead of reporting a clean compile error on a
+  malformed argument.
 - Fixed `FOR`/`FORI`, `FLD`, `MemCpy`/`MemCpyFast`, and `Wait` all running
   their loop body at least once even when the count/range was already
   empty (a `for`/`fori` end value behind the start value, or a runtime

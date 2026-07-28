@@ -1,6 +1,9 @@
 # `SetSpriteLoc`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's `bank` argument check only verified it was a compile-time constant,
+never that it was actually inside the documented `0`-`3` range; SANE
+enforces the real range now, for `bank` and for a constant `spriteNum`.
 
 Points a hardware sprite at its shape data by writing the appropriate
 entry in the sprite-pointer table. Needs to be called for every sprite
@@ -35,14 +38,19 @@ end.
 
 ## Known limitations
 
-Neither argument is actually range-checked. The `bank` argument's own
-compile error message claims it "must be constant 0-3", but only "is
-this a compile-time constant at all" is enforced, not the 0-3 range
-itself; a constant of `4` or higher compiles cleanly and computes a
-sprite-pointer address outside the intended table. `spriteNum` has no
-range check at all, compile-time or runtime; a value outside `0`-`7`
-silently writes past the 8-byte sprite-pointer table into whatever
-memory follows it.
+**In vanilla TRSE, neither argument is actually range-checked.** The
+`bank` argument's own compile error message claims it "must be constant
+0-3", but only "is this a compile-time constant at all" is enforced, not
+the 0-3 range itself; a constant of `4` or higher compiles cleanly and
+computes a sprite-pointer address outside the intended table.
+`spriteNum` has no range check at all, compile-time or runtime; a value
+outside `0`-`7` silently writes past the 8-byte sprite-pointer table into
+whatever memory follows it.
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`SetSpriteLoc` now actually enforces the `0`-`3` range on `bank`, erroring
+with the message it already claimed to enforce, and adds a compile-time
+check rejecting a constant `spriteNum` outside `0`-`7`. A non-constant
+(runtime variable) `spriteNum` still isn't range-checked either way.
 
 Separately, the address this builtin writes to always assumes the
 screen is at its *default* location. If [`SetScreenLocation`](setscreenlocation.md)

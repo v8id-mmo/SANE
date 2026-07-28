@@ -977,7 +977,9 @@ that port back directly and compares it against an expected value.
 
 ### `SpritePos` with sprite number 8 or higher corrupts VIC-II registers
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the sprite number is now masked to
+`0`-`7` before it's used to compute the sprite register offset, for both
+a compile-time-constant and a runtime sprite number.
 
 `SpritePos` expects a sprite number from `0` to `7`, matching the eight
 hardware sprites. That range isn't enforced anywhere. If the sprite
@@ -993,7 +995,10 @@ on every call instead of failing to compile.
 
 ### `SetSpriteLoc` doesn't range-check its own bank or sprite-number arguments
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Partially fixed · **Fixed in:** the `bank` argument now
+actually enforces its documented `0`-`3` range, and a compile-time-constant
+sprite number is now checked against `0`-`7` too. A non-constant (runtime
+variable) sprite number still isn't range-checked.
 
 `SetSpriteLoc`'s own compile error message for its bank argument says it
 "must be constant 0-3", but only "is this actually a constant" gets
@@ -1036,7 +1041,13 @@ lines `0`-`255` work.
 
 ### `RasterIRQ`, `RasterIRQWedge`, and `StartIRQWedge` crash the compiler on a bad argument instead of erroring
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** all three now validate the argument
+before dereferencing it (`RasterIRQ`'s previously-disabled procedure-
+reference check re-enabled; the same check added to `RasterIRQWedge`,
+plus a pure-numeric check on its mode argument; a pure-numeric check
+added to `StartIRQWedge`, matching its sibling `StartIRQ`). A malformed
+call now produces a clean compile error instead of crashing the compiler
+process. `StartRasterChain` inherits the `RasterIRQ` fix automatically.
 
 Three related builtins skip validating an argument that's used
 unconditionally right after, so a malformed call doesn't produce a

@@ -1,6 +1,9 @@
 # `SpritePos`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's constant-`spriteNum` and runtime `spriteNum` codegen paths both
+computed an unbounded index/shift from the raw sprite-number value; SANE
+masks it to the hardware's real `0`-`7` range before it's used.
 
 Sets a hardware sprite's X/Y screen position. `x` is a full 16-bit value
 since sprites can be positioned slightly off the left edge of the
@@ -40,11 +43,16 @@ end.
 
 ## Known limitations
 
-`spriteNum` isn't range-checked. If it's a compile-time constant of `8`
-or higher, the position writes land on the wrong target entirely: `8`
-writes the X value straight into the VIC-II's sprite-MSB register and
-the Y value into the VIC-II's main control register (screen on/off,
-text/bitmap mode, Y-scroll, and the raster-compare high bit), corrupting
-core display state instead of moving a (nonexistent) ninth sprite. Keep
-`spriteNum` in the real `0`-`7` hardware range; nothing in the compiler
-enforces it for you.
+**In vanilla TRSE, `spriteNum` isn't range-checked.** If it's a
+compile-time constant of `8` or higher, the position writes land on the
+wrong target entirely: `8` writes the X value straight into the VIC-II's
+sprite-MSB register and the Y value into the VIC-II's main control
+register (screen on/off, text/bitmap mode, Y-scroll, and the
+raster-compare high bit), corrupting core display state instead of moving
+a (nonexistent) ninth sprite. The same lack of range-checking applies to
+a non-constant (runtime variable) `spriteNum` too.
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`SpritePos` now masks `spriteNum` to `0`-`7` (`& 7`) before it's used to
+compute the sprite register offset, for both the constant and
+non-constant cases, so an out-of-range value wraps to a real sprite slot
+instead of corrupting unrelated VIC-II registers.

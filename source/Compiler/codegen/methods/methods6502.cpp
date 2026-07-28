@@ -2635,11 +2635,15 @@ void Methods6502::SetSpritePos(Assembler *as)
     QSharedPointer<NodeNumber> spriteNum = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[2]);
     if (spriteNum!=nullptr) {
         as->Comment("isi-pisi: value is constant");
-        uchar v = 1 << (uchar)spriteNum->m_val;
+        // Sprite hardware only has 8 sprites (0-7); mask so an out-of-range
+        // constant (e.g. 8) wraps instead of indexing past $D007/$D010 into
+        // unrelated VIC-II registers (bug 2.58).
+        int sn = (int)spriteNum->m_val & 7;
+        uchar v = 1 << (uchar)sn;
         LoadVar(as, 0);
 //        as->Comment("BALLE");
         //as->Asm("tax");
-        as->Asm("ldx #" +QString::number((int)spriteNum->m_val*2) );
+        as->Asm("ldx #" +QString::number(sn*2) );
         as->Asm("sta $D000,x");
 //        qDebug() << "Spritepos : " << m_node->m_params[0]->isWord(as);
         if (m_node->m_params[0]->isWord(as)) {
@@ -2683,6 +2687,10 @@ void Methods6502::SetSpritePos(Assembler *as)
         m_node->m_params[2]->Accept(m_codeGen);
         as->Term();
 
+        // Mask the runtime sprite number to 0-7 the same way the constant
+        // branch above does, so an out-of-range value wraps instead of
+        // indexing past the sprite registers (bug 2.58).
+        as->Asm("and #7");
         as->Asm("pha");
         as->Asm("tax");
 
@@ -4921,6 +4929,7 @@ void Methods6502::StartIRQWedge(Assembler *as)
     QString lbl1 = as->NewLabel("startirqwedge_lbl1");
     QString lbl2 = as->NewLabel("startirqwedge_lbl2");
 
+    m_node->RequireNumber(m_node->m_params[0], "StartIRQWedge", m_node->m_op.m_lineNumber);
     QSharedPointer<NodeNumber> num = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[0]);
 
     as->Asm("txs");
@@ -5718,11 +5727,8 @@ void Methods6502::DisableInterrupts(Assembler *as)
 void Methods6502::RasterIRQ(Assembler *as)
 {
     QSharedPointer<NodeProcedure> addr = qSharedPointerDynamicCast<NodeProcedure>(m_node->m_params[0]);
-//    if (addr==nullptr)
-  //      ErrorHandler::e.Error("First parameter must be interrupt procedure!", m_node->m_op.m_lineNumber);
-
-
-
+    if (addr==nullptr)
+        ErrorHandler::e.Error("First parameter must be interrupt procedure!", m_node->m_op.m_lineNumber);
 
     QString name = addr->m_procedure->m_procName;
 
@@ -5771,8 +5777,11 @@ void Methods6502::RasterIRQ(Assembler *as)
 void Methods6502::RasterIRQWedge(Assembler *as)
 {
     QSharedPointer<NodeProcedure> addr = qSharedPointerDynamicCast<NodeProcedure>(m_node->m_params[0]);
+    if (addr==nullptr)
+        ErrorHandler::e.Error("First parameter must be interrupt procedure!", m_node->m_op.m_lineNumber);
     QString name = addr->m_procedure->m_procName;
 
+    m_node->RequireNumber(m_node->m_params[2], "RasterIRQWedge", m_node->m_op.m_lineNumber);
     QSharedPointer<NodeNumber> num = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[2]);
 
     as->Comment("RasterIRQ Wedge: Hook a wedge");
@@ -6047,6 +6056,12 @@ void Methods6502::SetSpriteLoc(Assembler *as)
     QSharedPointer<NodeNumber> num3 = (QSharedPointer<NodeNumber>)qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[2]);
     if (num3==nullptr)
         ErrorHandler::e.Error("SetSpriteLoc parameter 2 (bank) must be constant 0-3");
+    if (num3->m_val<0 || num3->m_val>3)
+        ErrorHandler::e.Error("SetSpriteLoc parameter 2 (bank) must be constant 0-3");
+
+    QSharedPointer<NodeNumber> spriteNum = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[0]);
+    if (spriteNum!=nullptr && (spriteNum->m_val<0 || spriteNum->m_val>7))
+        ErrorHandler::e.Error("SetSpriteLoc parameter 0 (sprite number) must be 0-7");
 
     QString bank=  "$"+QString::number((int)(num3->m_val*0x4000),16);
 

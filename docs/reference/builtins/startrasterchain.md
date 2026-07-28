@@ -56,10 +56,14 @@ end.
 Since `StartRasterChain` is implemented as `RasterIRQ` + `EnableRasterIRQ`
 back to back, it inherits both builtins' known limitations directly:
 
-- No validation that `<procedure>` is actually an interrupt procedure
-  reference; passing something else crashes the compiler itself with a
-  null-pointer dereference rather than a compile error (see
-  [`RasterIRQ`](rasterirq.md)). Still open.
+- **In vanilla TRSE, no validation that `<procedure>` is actually an
+  interrupt procedure reference**; passing something else crashes the
+  compiler itself with a null-pointer dereference rather than a compile
+  error (see [`RasterIRQ`](rasterirq.md)).
+  :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  `RasterIRQ`'s validation fix applies here too, since `StartRasterChain`
+  calls it directly; a malformed `<procedure>` now produces a clean
+  compile error instead of crashing the compiler.
 - **In vanilla TRSE, `EnableRasterIRQ`'s hardcoded overwrite of the
   VIC-II's main control register, which resets the vertical fine-scroll
   value and clears the raster-compare high bit** (see

@@ -1,6 +1,9 @@
 # `RasterIRQ`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's null check on the first (procedure-reference) argument was
+commented out, so a malformed call crashed the compiler; SANE re-enables
+it.
 
 Hooks an `interrupt` procedure directly to a raster line: the given
 procedure runs the next time the VIC-II beam reaches that line. Unlike
@@ -62,10 +65,14 @@ end.
 
 ## Known limitations
 
-`RasterIRQ` never validates that its first argument actually is an
-interrupt procedure reference; the check exists in the source but is
-disabled. Passing something else there doesn't produce a compile error,
-it crashes the compiler itself with a null-pointer dereference.
+**In vanilla TRSE, `RasterIRQ` never validates that its first argument
+actually is an interrupt procedure reference**; the check exists in the
+source but is disabled. Passing something else there doesn't produce a
+compile error, it crashes the compiler itself with a null-pointer
+dereference.
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the disabled check is re-enabled, so a malformed first argument now
+produces a clean compile error instead of crashing the compiler.
 
 `RasterIRQ` also never sets or touches the raster-compare high bit (bit
 7 of `$D011`), and neither does [`EnableRasterIRQ`](enablerasterirq.md)
