@@ -1,6 +1,9 @@
 # `for`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+always ran the loop body at least once, even when the end value was
+already behind the start value; SANE checks the range before entering the
+loop and skips it when it's already empty.
 
 A counted loop: runs a block of code once per value of a loop variable,
 counting up from a start value to an end value. `for` is the **exclusive**
@@ -50,12 +53,16 @@ end.
 
 ## Known limitations
 
-**The loop body always runs at least once, even if the end value is
-already behind the start value.** `for`/`fori` don't check the range
-before entering the loop, only after each pass through the body. So
-`for i:=5 to 0 do ...` doesn't just skip the loop like a typical exclusive
-range would; it runs the body once with `i=5`, then keeps counting up and
-wrapping around the full byte range until the counter happens to land back
-on the end value again, running far more times than intended (roughly 250
-extra iterations for a byte counter). If the end value can be smaller than
-the start value at runtime, guard the loop with an explicit `if` first.
+**In vanilla TRSE, the loop body always runs at least once, even if the
+end value is already behind the start value.** `for`/`fori` don't check
+the range before entering the loop, only after each pass through the
+body. So `for i:=5 to 0 do ...` doesn't just skip the loop like a typical
+exclusive range would; it runs the body once with `i=5`, then keeps
+counting up and wrapping around the full byte range until the counter
+happens to land back on the end value again, running far more times than
+intended (roughly 250 extra iterations for a byte counter). On vanilla
+TRSE, if the end value can be smaller than the start value at runtime,
+guard the loop with an explicit `if` first. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`for`/`fori` now check the range before entering the loop, so `for i:=5
+to 0 do ...` correctly skips the body entirely instead of running it.

@@ -1,6 +1,8 @@
 # `CopyCharsetFromRom`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+left interrupts disabled after this builtin ran and never re-enabled
+them; SANE re-enables interrupts before returning.
 
 Copies the built-in character ROM font to RAM, so it can be customized
 afterward.
@@ -52,12 +54,16 @@ are covered get redundantly copied more than once. Anything relying on
 this to seed a full custom charset from the stock ROM font will end up
 with a RAM copy missing most of its second half.
 
-**It disables interrupts and never re-enables them.** `CopyCharsetFromRom`
-executes `sei` to safely bank out the KERNAL/BASIC ROM and read the
-character ROM in their place, but nothing in the routine turns interrupts
-back on afterward. Any program that calls this and doesn't separately set
-up its own interrupt chain (e.g. via `StartRasterChain`, which does end
-with a `cli`) will silently run with interrupts permanently masked from
-that point on, breaking KERNAL-driven behavior like keyboard scanning.
-Call `StartRasterChain` (or otherwise `cli` explicitly) after using this
-builtin if the rest of the program needs interrupts running.
+**In vanilla TRSE, it disables interrupts and never re-enables them.**
+`CopyCharsetFromRom` executes `sei` to safely bank out the KERNAL/BASIC
+ROM and read the character ROM in their place, but nothing in the
+routine turns interrupts back on afterward. A program that calls this
+and doesn't separately set up its own interrupt chain (e.g. via
+`StartRasterChain`, which does end with a `cli`) silently runs with
+interrupts permanently masked from that point on, breaking KERNAL-driven
+behavior like keyboard scanning. On vanilla TRSE, call `StartRasterChain`
+(or otherwise `cli` explicitly) after using this builtin if the rest of
+the program needs interrupts running. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`CopyCharsetFromRom` now re-enables interrupts before returning, so this
+workaround is no longer necessary on SANE.

@@ -1,6 +1,8 @@
 # `mod`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+computed the remainder using unsigned arithmetic regardless of a
+`signed byte` operand; SANE makes it sign-aware.
 
 Returns the remainder of dividing one `byte` value by another.
 
@@ -40,11 +42,14 @@ end.
 
 ## Known limitations
 
-`mod` computes its remainder using a plain unsigned repeated-subtraction
-loop, with no awareness of `signed byte` at all: it inherits the same
-unsigned-only limitation as [`/`](../operators/division.md)'s signed
-division gap, just for the remainder instead of the quotient. Passing a
-negative `signed byte` operand gives a result computed against that
-value's unsigned bit pattern, not its signed one. For 16-bit values, see
-[`mod16`](mod16.md), which shares this same limitation for a related
-reason.
+**In vanilla TRSE, `mod` computes its remainder using a plain unsigned
+repeated-subtraction loop, with no awareness of `signed byte` at all**:
+it inherits the same unsigned-only limitation as [`/`](../operators/division.md)'s
+signed division gap, just for the remainder instead of the quotient. A
+negative `signed byte` operand gives a result computed against its
+unsigned bit pattern, not its signed one. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`mod`'s remainder now follows C-style truncating semantics, with its sign
+matching the dividend `<a>`'s sign regardless of the divisor's sign. For
+16-bit values, see [`mod16`](mod16.md), which shared this same
+limitation for a related reason.

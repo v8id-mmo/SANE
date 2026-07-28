@@ -1,6 +1,8 @@
 # `MemCpyFast`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+copied a full 256 bytes instead of 0 for a runtime count of `0`; SANE
+checks for an empty range before entering the copy loop.
 
 A faster variant of [`MemCpy`](memcpy.md), using a tighter decrementing
 loop instead of an incrementing one.
@@ -45,11 +47,15 @@ end.
 
 ## Known limitations
 
-If `<count>` is a runtime value (a variable or computed expression, not a
-literal written in the source) that happens to be `0`, `MemCpyFast`
-doesn't copy zero bytes: its loop counter starts at `count - 1`, which
-wraps to `255` when `count` is `0`, so it copies a full 256 bytes instead
-of none, overwriting whatever memory follows `<dest>`. If `<count>` is
-always a fixed value known at compile time, this doesn't come up, since
-nothing would call `MemCpyFast` with a literal `0` count in practice. See
-[`MemCpy`](memcpy.md), which shares this same limitation.
+**In vanilla TRSE, if `<count>` is a runtime value (a variable or
+computed expression, not a literal written in the source) that happens
+to be `0`, `MemCpyFast` doesn't copy zero bytes: its loop counter starts
+at `count - 1`, which wraps to `255` when `count` is `0`, so it copies a
+full 256 bytes instead of none, overwriting whatever memory follows
+`<dest>`.** If `<count>` is always a fixed value known at compile time,
+this doesn't come up, since nothing would call `MemCpyFast` with a
+literal `0` count in practice. See [`MemCpy`](memcpy.md), which shares
+this same limitation. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a runtime `<count>` that happens to be `0` now correctly copies zero
+bytes.

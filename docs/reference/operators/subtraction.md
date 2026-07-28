@@ -1,6 +1,8 @@
 # `-` (Subtraction)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+zero-extended a negative `signed byte` mixed into a wider expression
+instead of sign-extending it; SANE fixes it.
 
 Subtracts the right-hand value from the left-hand value.
 
@@ -41,11 +43,6 @@ end.
 
 ## Known limitations
 
-Subtraction works correctly for unsigned and `signed` values alike, at
-every supported width (`byte`, `integer`, `long`); like addition, it never
-needs to treat a signed and unsigned value differently, since
-two's-complement subtraction is bit-identical either way.
-
 - **Assigning a `byte - byte` result directly into a wider variable widens
   it correctly**, the same way addition does: `byteA - byteB` assigned
   straight into an `integer` variable produces a correct wider result
@@ -54,10 +51,14 @@ two's-complement subtraction is bit-identical either way.
   when assigning straight into the wider variable; a `byte - byte` result
   used any other way stays 8-bit and wraps on underflow instead (`0 - 1`
   comes out as `255`, not `-1`).
-- **Mixing a negative `signed byte` into a wider expression zero-extends
-  instead of sign-extending its value**, the same limitation described on
-  the [`signed`](../keywords/signed.md) page: a `-1` byte widened into an
-  `integer` comes out as `255` (`$00FF`) instead of `-1` (`$FFFF`). Same-width
-  subtraction (`signed byte - signed byte`, or `signed integer - signed
-  integer`) is unaffected; the problem is specific to combining a negative
-  byte with an already-wider operand in the same expression.
+- **In vanilla TRSE, mixing a negative `signed byte` into a wider
+  expression zero-extends instead of sign-extending its value**, the same
+  limitation described on the [`signed`](../keywords/signed.md) page: a
+  `-1` byte widened into an `integer` comes out as `255` (`$00FF`)
+  instead of `-1` (`$FFFF`). Same-width subtraction (`signed byte -
+  signed byte`, or `signed integer - signed integer`) is unaffected; the
+  problem is specific to combining a negative byte with an already-wider
+  operand in the same expression. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  a negative `signed byte` mixed into a wider expression is now
+  sign-extended correctly.

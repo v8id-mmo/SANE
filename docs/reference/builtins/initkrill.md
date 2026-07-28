@@ -1,6 +1,8 @@
 # `InitKrill`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+left interrupts disabled after `InitKrill` ran and never re-enabled them;
+SANE re-enables interrupts before returning.
 
 Installs Krill's loader into memory, ahead of using
 [`KrillLoad`](krillload.md) or
@@ -37,7 +39,10 @@ end.
 
 ## Known limitations
 
-`InitKrill` disables interrupts (`sei`) as part of installing the loader
-and does not turn them back on afterward; a program that needs interrupts
-running (for a raster IRQ, for example) has to re-enable them itself once
-the install is done.
+**In vanilla TRSE, `InitKrill` disables interrupts (`sei`) as part of
+installing the loader and does not turn them back on afterward**; a
+program that needs interrupts running (for a raster IRQ, for example)
+has to re-enable them itself once the install is done. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`InitKrill` now re-enables interrupts before returning, on every exit
+path, so this is no longer necessary on SANE.

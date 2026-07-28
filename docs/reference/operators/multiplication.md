@@ -1,6 +1,8 @@
 # `*` (Multiplication)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE's
+signed multiplication silently gave the wrong result once the product
+widened to an `integer`; SANE fixes it.
 
 Multiplies two numeric values together.
 
@@ -51,13 +53,12 @@ end.
   or used inside a larger expression with nothing wider around it) keeps
   only the low 8 bits of the product and silently discards the rest, with
   no warning (`20 * 20` would come out as `144`, not `400`).
-- **Signed multiplication silently gives the wrong result for a negative
-  operand**, at every width this operator supports. The multiply routine
-  wired up behind `*` is always the unsigned one, regardless of whether
-  either operand is `signed`. It happens to give the right answer when
-  both operands are positive, since the bit pattern matches the unsigned
-  case, but is wrong as soon as either one is negative, with no warning or
-  error. A correct signed multiply routine exists elsewhere in the
-  compiler's bundled code, but it isn't connected to this operator; using
-  it requires calling it directly rather than writing `*` on signed
-  values.
+- **In vanilla TRSE, multiplying two byte values where the product
+  widened to an `integer` and at least one operand was a negative signed
+  number gave a wrong result, with no compile error or warning.** A plain
+  `byte * byte` product kept as a `byte` was never affected, since a
+  two's-complement product's low byte is identical whether the inputs are
+  interpreted as signed or unsigned. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  the word-widening case now correctly accounts for the sign of a
+  negative operand.

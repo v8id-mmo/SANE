@@ -1,6 +1,10 @@
 # `ScrollX`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never masked its own input value before combining it into the VIC-II
+register, and silently did nothing if `temp_zeropages` wasn't configured;
+SANE masks the input and raises a compile error instead of silently
+no-opping.
 
 Sets the VIC-II's horizontal fine-scroll value, used to smoothly scroll
 the screen sideways in single-pixel steps.
@@ -34,14 +38,21 @@ end.
 
 ## Known limitations
 
-`ScrollX` only masks the VIC-II register's *existing* contents before
-writing the new value in; it never masks the value you pass it. Always
-mask your own scroll counter to `0`-`7` (e.g. `x & 7`) before calling
-`ScrollX`, since a value outside that range gets OR'd straight into the
-scroll register, silently flipping the 38/40-column-select or
-multicolor-mode bits that live in the same register.
+**In vanilla TRSE, `ScrollX` only masks the VIC-II register's *existing*
+contents before writing the new value in; it never masks the value you
+pass it.** On vanilla TRSE, always mask your own scroll counter to `0`-`7`
+(e.g. `x & 7`) before calling `ScrollX`, since a value outside that range
+gets OR'd straight into the scroll register, silently flipping the
+38/40-column-select or multicolor-mode bits that live in the same
+register. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`ScrollX` now masks its own input value to `0`-`7` before combining it in,
+so an out-of-range value can no longer flip those bits.
 
-`ScrollX` also depends on the compiling project's `temp_zeropages`
-setting being non-empty; every shipped project template already
-populates this, but if it's blank, `ScrollX` silently does nothing at
-all, with no compiler error.
+**In vanilla TRSE, `ScrollX` also depends on the compiling project's
+`temp_zeropages` setting being non-empty; every shipped project template
+already populates this, but if it's blank, `ScrollX` silently does
+nothing at all, with no compiler error.** :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+compiling a call to `ScrollX` with `temp_zeropages` blank now fails with
+a clear error instead of silently doing nothing.

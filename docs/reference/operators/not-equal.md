@@ -1,6 +1,8 @@
 # `<>` (Not Equal)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+didn't implement this operator at all for a signed `integer`/`long`
+comparison; SANE fixes it.
 
 Compares two values and is true if they're different. Used anywhere a
 condition is expected: `if`, `while`, `until`, `case`, and similar
@@ -49,19 +51,20 @@ end.
 
 ## Known limitations
 
-This operator works correctly for unsigned `byte`, `integer`, and
-`long` values. Unlike the ordering operators (`<`, `<=`, `>`, `>=`), it
-also works correctly on a **`signed byte`** at every value, including
-right at the `-128`/`127` boundary: equality/inequality only cares whether
-two bit patterns match, not how the sign bit is interpreted, so it isn't
-affected by the boundary-value risk that applies to signed byte ordering
-comparisons.
+In vanilla TRSE, this operator works correctly for unsigned `byte`,
+`integer`, and `long` values. Unlike the ordering operators (`<`, `<=`,
+`>`, `>=`), it also works correctly on a **`signed byte`** at every
+value, including right at the `-128`/`127` boundary: equality/inequality
+only cares whether two bit patterns match, not how the sign bit is
+interpreted, so it isn't affected by the boundary-value risk that applies
+to signed byte ordering comparisons.
 
-- **On a `signed integer` or `signed long`, this operator isn't
+- **On a `signed integer` or `signed long`, this operator wasn't
   implemented, for the same reason the ordering operators (other than
-  `<`/`<=`) aren't: the compiler currently only allows `<`/`<=` on a
-  signed 16-bit value, and nothing at all on a signed 24-bit value.**
-  Writing `if (signedWord <> 0) then ...` fails to compile even though
-  inequality doesn't inherently need any sign-aware logic; this is a gap
-  in what's currently wired up rather than a fundamental limitation of the
-  operator itself.
+  `<`/`<=`) weren't: the compiler only allowed `<`/`<=` on a signed
+  16-bit value, and nothing at all on a signed 24-bit value.** Writing
+  `if (signedWord <> 0) then ...` failed to compile even though
+  inequality doesn't inherently need any sign-aware logic.
+  :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  `<>` now works on both `signed integer` and `signed long`.

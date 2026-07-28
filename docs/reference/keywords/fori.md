@@ -1,6 +1,9 @@
 # `fori`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+always ran the loop body at least once, even when the end value was
+already behind the start value; SANE checks the range before entering the
+loop and skips it when it's already empty.
 
 The **inclusive** counted loop: identical to [`for`](for.md), except the
 end value itself is included as the last value the loop body runs with.
@@ -53,13 +56,16 @@ an end value).
 
 ## Known limitations
 
-Shares [`for`](for.md)'s "always runs the body at least once" behavior:
-`fori i:=5 to 0 do ...` doesn't skip the loop, it runs once and then wraps
-around the full counter range before stopping. See that page for the full
-explanation.
+**In vanilla TRSE, `fori` shares [`for`](for.md)'s "always runs the body
+at least once" behavior:** `fori i:=5 to 0 do ...` doesn't skip the loop,
+it runs once and then wraps around the full counter range before
+stopping. See that page for the full explanation. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`fori i:=5 to 0 do ...` now correctly skips the body entirely, the same
+as [`for`](for.md).
 
 The full-byte-range case shown in the example above (`fori i:=0 to 255
-do ...`) has been checked and does terminate correctly after exactly 256
-iterations, if you were worried it might suffer the same kind of
-wraparound problem; it doesn't, the counter and the end-of-loop check wrap
-in a way that cancels out cleanly at that particular boundary.
+do ...`) has always terminated correctly after exactly 256 iterations, in
+both TRSE and SANE, if you were worried it might suffer the same kind of
+wraparound problem; it doesn't, the counter and the end-of-loop check
+wrap in a way that cancels out cleanly at that particular boundary.

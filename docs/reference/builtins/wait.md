@@ -1,6 +1,8 @@
 # `Wait`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+spun through a near-256-iteration loop instead of returning immediately
+for a count of `0`; SANE checks the count before entering the loop.
 
 Busy-waits for a fixed number of iterations, burning CPU cycles without
 doing anything else. A simple, imprecise delay; for delays synced to the
@@ -15,7 +17,7 @@ screen's own timing, see [`WaitForRaster`](waitforraster.md) /
 ## Parameters
 
 - `<count>`: a `byte` value. Roughly `<count> * 5` CPU cycles are spent
-  spinning (see Known limitations for what `0` actually does).
+  spinning (see Known limitations for what `0` does on each compiler).
 
 ## Example
 
@@ -39,11 +41,15 @@ end.
 
 ## Known limitations
 
-**`Wait(0)` doesn't skip the wait, it wraps around to a near-maximum
-one.** The generated loop always decrements its counter at least once
-before checking it, so a `<count>` of `0` underflows on the very first
-pass and ends up spinning through the full 256-iteration range instead
-of returning immediately. This is the same "loop body runs at least
-once" shape as other counted loops in this fork ([`FOR`](../keywords/for.md),
-`FLD`, `MemCpy`'s runtime count of `0`): to get an actual no-op delay,
-skip the call entirely rather than passing `0`.
+**In vanilla TRSE, `Wait(0)` doesn't skip the wait, it wraps around to a
+near-maximum one.** The generated loop always decrements its counter at
+least once before checking it, so a `<count>` of `0` underflows on the
+very first pass and ends up spinning through the full 256-iteration
+range instead of returning immediately. This is the same "loop body runs
+at least once" shape as other counted loops in this fork ([`FOR`](../keywords/for.md),
+`FLD`, `MemCpy`'s runtime count of `0`). On vanilla TRSE, to get an
+actual no-op delay, skip the call entirely rather than passing `0`.
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`Wait` now checks the count before entering the loop, so `Wait(0)`
+returns immediately without spinning.

@@ -1,6 +1,10 @@
 # `StartRasterChain`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE's
+`EnableRasterIRQ` call inside this builtin overwrote the whole VIC-II main
+control register with a fixed value; SANE's fixed `EnableRasterIRQ` no
+longer touches that register, so this builtin no longer disturbs it
+either.
 
 A one-call shortcut for the setup normally needed to kick off a raster
 interrupt chain: it's exactly equivalent to calling
@@ -55,10 +59,15 @@ back to back, it inherits both builtins' known limitations directly:
 - No validation that `<procedure>` is actually an interrupt procedure
   reference; passing something else crashes the compiler itself with a
   null-pointer dereference rather than a compile error (see
-  [`RasterIRQ`](rasterirq.md)).
-- `EnableRasterIRQ`'s hardcoded overwrite of the VIC-II's main control
-  register, which resets the vertical fine-scroll value and clears the
-  raster-compare high bit (see [`EnableRasterIRQ`](enablerasterirq.md)).
-  Because that high bit is never set anywhere in this chain either, a
-  target `<line>` at or past 256 is currently unreachable through
-  `StartRasterChain`; only `0`-`255` works.
+  [`RasterIRQ`](rasterirq.md)). Still open.
+- **In vanilla TRSE, `EnableRasterIRQ`'s hardcoded overwrite of the
+  VIC-II's main control register, which resets the vertical fine-scroll
+  value and clears the raster-compare high bit** (see
+  [`EnableRasterIRQ`](enablerasterirq.md)). :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  `EnableRasterIRQ` no longer touches that register, so `StartRasterChain`
+  no longer disturbs it either.
+- Nothing in this chain ever sets the raster-compare high bit (see
+  [`EnableRasterIRQ`](enablerasterirq.md)), so a target `<line>` at or
+  past 256 is currently unreachable through `StartRasterChain`; only
+  `0`-`255` works. Still open, in both TRSE and SANE.

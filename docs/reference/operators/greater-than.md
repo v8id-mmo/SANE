@@ -1,6 +1,10 @@
 # `>` (Greater Than)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+didn't implement this operator at all for a signed `integer`/`long`
+comparison, was wrong right at the sign boundary for `signed byte`, and
+gave a wrong result comparing an unsigned byte against the literal `0`;
+SANE fixes all three.
 
 Compares two values and is true if the left-hand value is larger than the
 right-hand value. Used anywhere a condition is expected: `if`, `while`,
@@ -49,21 +53,32 @@ end.
 
 ## Known limitations
 
-This operator works correctly for unsigned `byte`, `integer`, and
-`long` values.
+In vanilla TRSE, this operator works correctly for unsigned `byte`,
+`integer`, and `long` values.
 
 - **On a `signed byte`, this operator is accepted without a compile
-  error, but is unverified at the extreme boundary values** (comparing
-  something like `127` against `-128`): the generated code uses a plain
+  error, but was unverified at the extreme boundary values** (comparing
+  something like `127` against `-128`): the generated code used a plain
   positive/negative flag check, without the extra overflow-correction
-  step the 16-bit signed `<`/`<=` path applies, so it may give the wrong
-  answer there. A `signed byte` comparison near its type boundary
-  shouldn't be trusted without testing it yourself first. Away from the
-  extremes (as in the example above), it behaves correctly.
-- **On a `signed integer`, this operator isn't implemented at
-  all.** Only `<` and `<=` are currently implemented for a signed 16-bit
-  comparison; writing `if (signedWord > 0) then ...` fails to compile,
-  even though the equivalent `signedWord < 0` (or restructuring the
-  condition to use `<`/`<=` instead) does work.
-- **On a `signed long`, this operator isn't implemented at all either**;
-  no comparison operator currently works on a signed 24-bit value.
+  step the 16-bit signed `<`/`<=` path applies, so it could give the
+  wrong answer there. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  the byte-level path now gets the same overflow correction, so it's
+  correct at every boundary too.
+- **On a `signed integer`, this operator wasn't implemented at all.**
+  Only `<` and `<=` were implemented for a signed 16-bit comparison;
+  writing `if (signedWord > 0) then ...` failed to compile, even though
+  the equivalent `signedWord < 0` worked. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  all six comparison operators now work on `signed integer`.
+- **On a `signed long`, this operator wasn't implemented at all
+  either**; no comparison operator worked on a signed 24-bit value.
+  :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  all six comparison operators now work on `signed long` too.
+- **Comparing an unsigned byte against the literal `0` gave the wrong
+  result.** `x > 0` always evaluated false regardless of `x`'s actual
+  value, and the same applied to a signed comparison against literal `0`.
+  :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  this now correctly evaluates for both unsigned and signed operands.

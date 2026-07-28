@@ -1,6 +1,8 @@
 # `case`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+desynced the parser on a `case` statement whose `else` branch was a single
+bare statement; SANE fixes it.
 
 A multi-way branch on a single value, in classic Pascal style: evaluates
 an expression once and runs the statement next to the matching value.
@@ -43,11 +45,11 @@ end.
 
 ## Known limitations
 
-**A `case` statement whose `else` branch is a single statement (not
-wrapped in its own `begin...end`) fails to compile, but the error doesn't
-point at the `case` statement itself.** It surfaces at the very end of
-the file instead, as `Expected 'DOT' but found ';'` on the line of the
-program's own closing `end.`:
+**In vanilla TRSE, a `case` statement whose `else` branch is a single
+statement (not wrapped in its own `begin...end`) fails to compile, but
+the error doesn't point at the `case` statement itself.** It surfaces at
+the very end of the file instead, as `Expected 'DOT' but found ';'` on
+the line of the program's own closing `end.`:
 
 ```pascal
 case i of
@@ -63,7 +65,8 @@ closing `end` of the `case` statement the way its non-`else` branch does,
 so the token stream shifts by one and every line after it gets
 misinterpreted, right up to the file's own final `end.`.
 
-**Workaround:** wrap the `else` block in `begin ... end`:
+**Workaround (needed on vanilla TRSE):** wrap the `else` block in
+`begin ... end`:
 
 ```pascal
 else begin
@@ -71,6 +74,8 @@ else begin
 end;
 ```
 
-This avoids the bug because the block is no longer a single bare
-statement. The example on this page sidesteps the issue entirely by using
-an explicit branch for every tested value instead of `else`.
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a `case` statement's `else` branch can now be a single bare statement or
+a `begin ... end` block, so the workaround above is no longer necessary
+on SANE.

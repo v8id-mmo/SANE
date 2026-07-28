@@ -8,6 +8,35 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `FOR`/`FORI`, `FLD`, `MemCpy`/`MemCpyFast`, and `Wait` all running
+  their loop body at least once even when the count/range was already
+  empty (a `for`/`fori` end value behind the start value, or a runtime
+  count of `0`); all now correctly skip the loop entirely instead of
+  wrapping around.
+- Fixed `CopyCharsetFromRom` and `InitKrill` leaving interrupts disabled
+  and never re-enabling them.
+- Fixed `ScrollX`/`ScrollY`, `SetBank`, `SetBitmapMode`, and
+  `EnableRasterIRQ`/`StartRasterChain` writing their VIC-II/CIA register
+  unmasked or with a hardcoded value, clobbering unrelated bits (serial
+  bus lines, Y-scroll, raster-compare high bit) on every call; all now do
+  a masked read-modify-write. `ScrollX`/`ScrollY`/`SetBank` also now raise
+  a compile error instead of silently no-opping when the project's
+  `temp_zeropages` setting isn't configured.
+- Fixed a relational comparison (`<`, `<=`, `>`, `>=`) between an unsigned
+  byte and the literal `0` giving the wrong result for every operator
+  except `=`/`<>`.
+- Fixed `case ... else <single statement>; end;` desyncing the parser.
+- Fixed `inline` procedure parameters not being reliably evaluated when a
+  complex expression was referenced more than once in the procedure body,
+  and `sine[]`'s auto-init table-fill not triggering when `sine[` was only
+  used inside a `@use`d unit.
+- Fixed signed arithmetic across the board: comparisons (`<`, `<=`, `>`,
+  `>=`, `=`, `<>`) now work for signed `integer` and signed `long` values,
+  not just `<`/`<=` on `integer`; byte-level signed comparisons are now
+  correct at the sign boundary; signed multiplication and division now
+  give correct results (including `mod`/`mod16`); and a negative
+  `signed byte` mixed into a wider expression is now sign-extended instead
+  of zero-extended.
 - Added a Platform Notes page to the documentation site: RAM/ROM
   banking, VIC-II bank switching, raster interrupts, the three unrelated
   compression mechanisms (including a whole-program self-extracting

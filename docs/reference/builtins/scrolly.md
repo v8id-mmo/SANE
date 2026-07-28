@@ -1,6 +1,9 @@
 # `ScrollY`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never masked its own input value, unconditionally cleared the
+raster-compare high bit on every call, and silently did nothing if
+`temp_zeropages` wasn't configured; SANE fixes all three.
 
 Sets the VIC-II's vertical fine-scroll value, used to smoothly scroll
 the screen up or down in single-pixel steps.
@@ -34,19 +37,30 @@ end.
 
 ## Known limitations
 
-`ScrollY` only masks the VIC-II register's *existing* contents before
-writing the new value in; it never masks the value you pass it. Always
-mask your own scroll counter to `0`-`7` (e.g. `y & 7`) before calling
-`ScrollY`, since a value outside that range gets OR'd straight into the
-register, silently flipping the 24/25-row-select, display-enable, or
-extended-color-mode bits that live in the same register.
+**In vanilla TRSE, `ScrollY` only masks the VIC-II register's *existing*
+contents before writing the new value in; it never masks the value you
+pass it.** On vanilla TRSE, always mask your own scroll counter to `0`-`7`
+(e.g. `y & 7`) before calling `ScrollY`, since a value outside that range
+gets OR'd straight into the register, silently flipping the 24/25-row-select,
+display-enable, or extended-color-mode bits that live in the same
+register. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`ScrollY` now masks its own input value to `0`-`7` before combining it
+in, so an out-of-range value can no longer flip those bits.
 
-Every call to `ScrollY` also unconditionally clears the raster-compare
-high bit of that same register, regardless of what value you pass. If
-you've set up a raster interrupt on a line at or past 256 (which needs
-that high bit set), calling `ScrollY` afterward silently disarms it.
+**In vanilla TRSE, every call to `ScrollY` also unconditionally clears
+the raster-compare high bit of that same register, regardless of what
+value you pass.** If a raster interrupt has been set up on a line at or
+past 256 (which needs that high bit set), calling `ScrollY` afterward on
+vanilla TRSE silently disarms it. :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`ScrollY` no longer disturbs the raster-compare high bit, so a raster
+interrupt armed on a line at or past 256 survives a later `ScrollY` call.
 
-`ScrollY` also depends on the compiling project's `temp_zeropages`
-setting being non-empty; every shipped project template already
-populates this, but if it's blank, `ScrollY` silently does nothing at
-all, with no compiler error.
+**In vanilla TRSE, `ScrollY` also depends on the compiling project's
+`temp_zeropages` setting being non-empty; every shipped project template
+already populates this, but if it's blank, `ScrollY` silently does
+nothing at all, with no compiler error.** :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+compiling a call to `ScrollY` with `temp_zeropages` blank now fails with
+a clear error instead of silently doing nothing.

@@ -1,6 +1,8 @@
 # `/` (Division)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never implemented signed division at all, always dividing as if both
+operands were unsigned; SANE adds a real signed division path.
 
 Divides the left-hand value by the right-hand value, keeping only the
 integer part of the result (no fractional/remainder value).
@@ -44,12 +46,15 @@ end.
 
 - **`long` (24-bit) division isn't supported at all**; using `/` with a
   `long` operand fails to compile.
-- **Signed division isn't implemented at all.** Division always uses
-  unsigned arithmetic, completely ignoring the `signed` modifier on either
-  operand; there's no signed-aware division routine anywhere in the
-  compiler to fall back on, so this isn't just an occasionally-wrong
-  result the way signed multiplication is, it's simply never
-  sign-correct.
+- **In vanilla TRSE, signed division isn't implemented at all.** Division
+  always uses unsigned arithmetic, completely ignoring the `signed`
+  modifier on either operand; there's no signed-aware division routine to
+  fall back on. `mod`/`mod16` share the identical gap. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  `/`, `mod`, and `mod16` now follow C-style truncating semantics: the
+  quotient's sign is the xor of the two operands' signs, and, for
+  [`mod`](../builtins/mod.md)/[`mod16`](../builtins/mod16.md), the
+  remainder's sign follows the dividend's own sign.
 - **Dividing by zero at runtime doesn't crash or hang, but doesn't produce
   a meaningful result either.** The generated division routine is a
   fixed-length loop with no zero-check, so it always finishes normally and

@@ -5,9 +5,9 @@ place. Each one is also explained in more detail on the reference page
 for the feature it affects, where one already exists; this page is meant
 as an index and quick-reference, not a duplicate of the full writeup.
 
-Fixing all of these is one of the project's [goals](goals.md). None are
-fixed yet; once one is, it moves to the [changelog](changelog.md) with
-the date of the fix, and this entry gets updated to say so.
+Fixing all of these is one of the project's [goals](goals.md). Once one
+is fixed, it also gets an entry in the [changelog](changelog.md), and
+this entry gets updated to say so.
 
 Individual reference pages sometimes carry their own "Known limitations"
 notes that aren't listed here: those are usually clarifications about how
@@ -17,14 +17,16 @@ the latter.
 
 ## Signed arithmetic
 
-### Signed comparisons: only `<` and `<=` are implemented
+### Signed comparisons: only `<` and `<=` were implemented
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** all six comparison operators (`<`,
+`<=`, `>`, `>=`, `=`, `<>`) now work for signed `integer` and signed
+`long` values.
 
 For signed `integer` (16-bit) values, only the `<` and `<=` operators
-work. `>`, `>=`, `=`, and `<>` all fail to compile in the signed case.
-Signed `long` (24-bit) comparisons aren't implemented at all, for any
-operator.
+used to work; `>`, `>=`, `=`, and `<>` all failed to compile in the
+signed case. Signed `long` (24-bit) comparisons weren't implemented at
+all, for any operator.
 
 *Reference pages:* [`<`](reference/operators/less-than.md),
 [`<=`](reference/operators/less-or-equal.md),
@@ -33,60 +35,74 @@ operator.
 [`=`](reference/operators/equal.md),
 [`<>`](reference/operators/not-equal.md)
 
-### Byte-level signed comparison is suspected to be wrong at the boundaries
+### Byte-level signed comparison was wrong at the boundaries
 
-**Status:** Suspected, not yet confirmed by testing · **Fixed in:** not
-yet fixed
+**Status:** Fixed · **Fixed in:** the byte-level signed comparison path
+now gets the same overflow correction the 16-bit path always used.
 
 Unlike the 16-bit signed comparison path, the byte-level signed comparison
-is missing a correction step that's needed to get the right answer near
-the boundary between positive and negative values (comparisons like
-`-128` against `127`). This has been traced through the code but not yet
-actually run and confirmed; it's listed here as a strong suspicion, not a
-confirmed bug, until it's been tested for real.
+was missing a correction step needed to get the right answer near the
+boundary between positive and negative values (comparisons like `-128`
+against `127`).
 
 *Reference pages:* [`<`](reference/operators/less-than.md),
 [`<=`](reference/operators/less-or-equal.md),
 [`>`](reference/operators/greater-than.md),
 [`>=`](reference/operators/greater-or-equal.md)
 
-### Signed multiplication silently gives the wrong result
+### A comparison against the literal `0` was wrong for every ordering operator
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** comparing a byte against a literal `0`
+now gives the correct result for every operator.
 
-Multiplying two byte values where at least one is a negative signed number
-gives a wrong result, with no compile error or warning. Multiplying two
-positive values happens to work, since their bit pattern matches the
-unsigned case. A correct signed multiply routine already exists elsewhere
-in the compiler's bundled code, it just isn't connected to the `*`
-operator.
+For an unsigned byte, comparing it against the literal `0` gave the wrong
+answer for `>=`, `>`, `<=`, and `<` alike (`=`/`<>` were unaffected):
+`x >= 0` and `x > 0` always evaluated false regardless of `x`'s actual
+value, and `x <= 0`/`x < 0` always evaluated true regardless of `x`'s
+actual value. A signed comparison against the literal `0` was also
+affected for the same four operators.
+
+*Reference pages:* [`<`](reference/operators/less-than.md),
+[`<=`](reference/operators/less-or-equal.md),
+[`>`](reference/operators/greater-than.md),
+[`>=`](reference/operators/greater-or-equal.md)
+
+### Signed multiplication silently gave the wrong result
+
+**Status:** Fixed · **Fixed in:** a `byte * byte` product widened to an
+`integer` now correctly accounts for the sign of a negative operand.
+
+Multiplying two byte values where the product widened to an `integer`
+and at least one operand was a negative signed number gave a wrong
+result, with no compile error or warning. A plain `byte * byte` product
+kept as a `byte` was never affected, since a two's-complement product's
+low byte is identical whether the inputs are interpreted as signed or
+unsigned.
 
 *Reference page:* [`*`](reference/operators/multiplication.md)
 
-### Signed division isn't implemented at all
+### Signed division wasn't implemented at all
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `/`, `mod`, and `mod16` now all follow
+C-style truncating signed division semantics.
 
-Division always uses unsigned arithmetic, regardless of whether either
-operand is a negative signed value. There's no signed-aware division
-routine anywhere in the compiler yet to fall back on. `mod`/`mod16`
-inherit the identical limitation: `mod16` literally shares `/`'s
-16-bit-by-8-bit division routine, and `mod`'s own separate 8-bit routine
-is unsigned for the same underlying reason.
+Division always used unsigned arithmetic, regardless of whether either
+operand was a negative signed value. `mod`/`mod16` had the identical gap:
+`mod16` shares `/`'s 16-bit-by-8-bit division routine, and `mod`'s own
+separate 8-bit routine was unsigned for the same underlying reason.
 
 *Reference pages:* [`/`](reference/operators/division.md),
 [`mod`](reference/builtins/mod.md), [`mod16`](reference/builtins/mod16.md)
 
-### Mixing a signed byte with an integer drops the sign
+### Mixing a signed byte with an integer dropped the sign
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a negative `signed byte` mixed into a
+wider expression is now sign-extended instead of zero-extended.
 
-When a `byte` value is combined with an `integer` (16-bit) value (addition,
-subtraction, multiplication), the byte's value should be sign-extended
-when it's negative (so `-1` becomes `$FFFF`, not `$00FF`). Right now it's
-always zero-extended instead, so any negative byte mixed into a wider
-expression produces a wrong result. Confirmed in at least two separate
-spots in the code generator; there may be more not yet found.
+When a `byte` value was combined with an `integer` (16-bit) value
+(addition, subtraction, multiplication), a negative byte's value should
+have been sign-extended (so `-1` becomes `$FFFF`, not `$00FF`), but was
+always zero-extended instead, producing a wrong result.
 
 *Reference pages:* [`signed`](reference/keywords/signed.md),
 [`+`](reference/operators/addition.md),
@@ -95,19 +111,18 @@ spots in the code generator; there may be more not yet found.
 
 ## Procedures & functions
 
-### Inline procedure parameters aren't reliably evaluated
+### Inline procedure parameters weren't reliably evaluated
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a non-pure parameter expression is now
+evaluated once into a generated temp variable, instead of being
+re-evaluated (or re-inserted as raw text) at every reference.
 
 For procedures marked `inline`, passing anything more complex than a
 plain variable or literal as a parameter (an array index, a pointer
-dereference, a computed expression) can misbehave if the parameter is
-referenced more than once inside the procedure body: the expression gets
-re-evaluated (or re-inserted as raw text) at every use, instead of being
-computed once and reused. The reliable workaround is to copy the value
-into a plain local variable first, and pass that instead. This is
-confirmed specifically for `inline` procedures; regular (non-inline)
-procedures use a different, unaffected mechanism.
+dereference, a computed expression) could misbehave if the parameter was
+referenced more than once inside the procedure body. This was confirmed
+specifically for `inline` procedures; regular (non-inline) procedures use
+a different, unaffected mechanism.
 
 *Reference pages:* [`inline`](reference/keywords/inline.md),
 [`procedure`](reference/keywords/procedure.md)
@@ -157,28 +172,29 @@ itself is affected.
 
 ## Builtin auto-initialization
 
-### `sine[]`'s table-fill only looks for usages in the current file
+### `sine[]`'s table-fill only looked for usages in the current file
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a `@use`d unit's own auto-init triggers
+are now merged back into the compiled program's, so a unit-only `sine[`
+usage correctly fills the table.
 
 A number of builtins (`sine[`, `rand(`, `sqrt(`, `atan2(`, `joystick(`,
 and others) automatically insert a setup call the first time the compiler
 spots a matching usage anywhere in the source text, so a program doesn't
-have to call the setup routine itself. That text scan only looks at
-whichever file is currently being compiled, so in principle a usage that
-only appears inside a unit file brought in with `use` could be missed.
+have to call the setup routine itself. That text scan only looked at
+whichever file was currently being compiled, so a usage that only
+appeared inside a unit file brought in with `use` could be missed.
 
-In practice, testing each of these individually shows only `sine[]` is
+In practice, testing each of these individually showed only `sine[]` was
 actually affected: its auto-inserted setup call fills a 256-byte lookup
-table at program start, and if `sine[` is only ever used from inside a
-`use`d unit, that fill never runs and `sine[angle]` always returns `0`.
-The other builtins in this same auto-init mechanism don't have this
+table at program start, and if `sine[` was only ever used from inside a
+`use`d unit, that fill never ran and `sine[angle]` always returned `0`.
+The other builtins in this same auto-init mechanism didn't have this
 problem in practice, either because their setup is just a self-contained
 routine that gets called directly at each actual use (nothing needs to
 run ahead of time), or because a separate check at compile time catches
 the missing setup and stops the build with an error rather than silently
-producing wrong output. The workaround for `sine[]` is to add one real,
-uncommented `sine[...]` usage in the main file too.
+producing wrong output.
 
 *Reference page:* [`@use`](reference/directives/use.md)
 
@@ -201,16 +217,21 @@ initgetkey`) works correctly.
 
 ## Loops
 
-### `for`/`fori` always run at least once, and can wrap around instead of skipping
+### `for`/`fori` always ran at least once, wrapping around instead of skipping
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** both loop forms now check the range
+before entering the loop and skip it entirely when it's already empty.
 
-Both loop forms only check whether they're done *after* running the loop
-body, never before the first pass. So a loop whose end value is already
-behind its start value, `for i:=5 to 0 do ...` for instance, doesn't just
-skip the loop: it runs the body once, then keeps counting up and wrapping
-around the full byte range before it happens to land back on the end
-value, running far more times than intended.
+Both loop forms used to only check whether they were done *after* running
+the loop body, never before the first pass. So a loop whose end value was
+already behind its start value, `for i:=5 to 0 do ...` for instance,
+didn't just skip the loop: it ran the body once, then kept counting up and
+wrapping around the full byte range before happening to land back on the
+end value, running far more times than intended. This was also the root
+cause behind [`FLD`](reference/builtins/fld.md),
+[`MemCpy`/`MemCpyFast`](reference/builtins/memcpy.md), and
+[`Wait`](reference/builtins/wait.md) each mishandling a count of `0` the
+same way; see each page for its own fix.
 
 *Reference pages:* [`for`](reference/keywords/for.md),
 [`fori`](reference/keywords/fori.md)
@@ -231,15 +252,16 @@ unaffected and correctly includes the end value.
 
 ## Preprocessor directives
 
-### `case ... else <single statement>; end;` desyncs the parser
+### `case ... else <single statement>; end;` desynced the parser
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a `case` statement's `else` branch can
+now be a single bare statement or a `begin ... end` block.
 
-A `case` statement whose `else` branch is a single statement (not wrapped
-in its own `begin...end`) fails to compile, but the reported error points
-at the very end of the file instead of at the actual problem, since the
-parser loses track of one `end` and everything after it shifts by one.
-Wrapping the `else` branch in `begin ... end` works around it.
+A `case` statement whose `else` branch was a single statement (not
+wrapped in its own `begin...end`) used to fail to compile, with the
+reported error pointing at the very end of the file instead of at the
+actual problem, since the parser lost track of one `end` and everything
+after it shifted by one.
 
 *Reference page:* [`case`](reference/keywords/case.md)
 
@@ -693,17 +715,16 @@ get copied several times over.
 *Reference page:*
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
 
-### `CopyCharsetFromRom` disables interrupts and never turns them back on
+### `CopyCharsetFromRom` disabled interrupts and never turned them back on
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `CopyCharsetFromRom` now re-enables
+interrupts before returning.
 
-`CopyCharsetFromRom` disables interrupts partway through (needed to
-safely bank in the character ROM for reading) but never re-enables them
-afterward. There is no interrupt re-enable instruction anywhere in the
-generated program for a call to this builtin. Any program that calls this
-and doesn't separately set up its own interrupt handling afterward will
-silently run with interrupts permanently off from that point on, breaking
-keyboard input and other interrupt-driven behavior.
+`CopyCharsetFromRom` disabled interrupts partway through (needed to
+safely bank in the character ROM for reading) but never re-enabled them
+afterward, leaving any program that didn't separately set up its own
+interrupt handling running with interrupts permanently off from that
+point on.
 
 *Reference page:*
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
@@ -748,26 +769,26 @@ caller asked for every time it's used.
 
 *Reference page:* [`FillFast`](reference/builtins/fillfast.md)
 
-### `FLD` runs 256 times instead of 0 when given a count of 0
+### `FLD` used to run 256 times instead of 0 when given a count of 0
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `FLD` now checks the count before
+entering the loop and skips the effect entirely for a count of `0`.
 
 `FLD(count, mode)` is meant to repeat one step of the effect `count`
-times. Its loop always executes the step at least once before checking
-the count, so passing a count of 0 doesn't skip the effect: the counter
-wraps around instead, and the step ends up running 256 times.
+times. Its loop used to always execute the step at least once before
+checking the count, so passing a count of 0 didn't skip the effect: the
+counter wrapped around instead, and the step ended up running 256 times.
 
 *Reference page:* [`FLD`](reference/builtins/fld.md)
 
-### `InitKrill` disables interrupts and never turns them back on
+### `InitKrill` disabled interrupts and never turned them back on
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `InitKrill` now re-enables interrupts
+before returning, on every exit path.
 
-`InitKrill` disables interrupts partway through installing Krill's
-loader into memory but never re-enables them afterward, the same gap as
-`CopyCharsetFromRom` above, in a separate routine. A program that needs
-interrupts running once the loader is installed (a raster IRQ, for
-example) has to re-enable them itself.
+`InitKrill` disabled interrupts partway through installing Krill's
+loader into memory but never re-enabled them afterward, the same gap as
+`CopyCharsetFromRom` above, in a separate routine.
 
 *Reference page:* [`InitKrill`](reference/builtins/initkrill.md)
 
@@ -786,20 +807,21 @@ effect), just not what the name promises.
 
 *Reference page:* [`LeftBitShift`](reference/builtins/leftbitshift.md)
 
-### `MemCpy`/`MemCpyFast` copy 256 bytes instead of 0 when given a runtime count of 0
+### `MemCpy`/`MemCpyFast` used to copy 256 bytes instead of 0 for a runtime count of 0
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** both builtins now check for an empty
+range before entering the copy loop.
 
 Both builtins are meant to copy exactly `count` bytes. Their copy loops
-only check whether they're done *after* copying a byte, never before the
-first pass, the same "always runs at least once" shape as `FLD`'s count-of-0
-case above. So if `count` is a runtime value that happens to be 0 (not a
-literal `0` written in the source), neither one copies zero bytes: both
-wrap all the way around and copy a full 256 bytes instead, silently
-overwriting whatever memory follows the destination. `MemCpyUnroll`/
-`MemCpyUnrollReverse` don't have this problem, since their count has to be
-a fixed value known at compile time, and a compile-time 0 there correctly
-produces no copy at all.
+used to only check whether they were done *after* copying a byte, never
+before the first pass, the same "always runs at least once" shape as
+`FLD`'s count-of-0 case above. So if `count` was a runtime value that
+happened to be 0 (not a literal `0` written in the source), neither one
+copied zero bytes: both wrapped all the way around and copied a full 256
+bytes instead, silently overwriting whatever memory followed the
+destination. `MemCpyUnroll`/`MemCpyUnrollReverse` never had this problem,
+since their count has to be a fixed value known at compile time, and a
+compile-time 0 there always correctly produced no copy at all.
 
 *Reference pages:* [`MemCpy`](reference/builtins/memcpy.md),
 [`MemCpyFast`](reference/builtins/memcpyfast.md)
@@ -866,63 +888,61 @@ modes work there.
 
 *Reference page:* [`RasterIRQWedge`](reference/builtins/rasterirqwedge.md)
 
-### `ScrollX`/`ScrollY` don't range-check their own input value
+### `ScrollX`/`ScrollY` didn't range-check their own input value
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** both builtins now mask their own input
+to `0`-`7` before combining it into the register; `ScrollY` also no
+longer clears the raster-compare high bit, and both now raise a compile
+error instead of silently no-opping when `temp_zeropages` is blank.
 
-Both builtins expect a value from `0` to `7`. Both correctly mask the
-VIC-II register's *existing* contents before combining in the new value,
-but neither masks the value passed in. A value outside `0`-`7` gets
-OR'd straight into the register, silently flipping unrelated bits:
+Both builtins expect a value from `0` to `7`. Both used to correctly mask
+the VIC-II register's *existing* contents before combining in the new
+value, but neither masked the value passed in. A value outside `0`-`7`
+got OR'd straight into the register, silently flipping unrelated bits:
 for `ScrollX`, the 38/40-column select or multicolor-mode bits of the
 scroll register; for `ScrollY`, the 24/25-row select, display-enable, or
-extended-color-mode bits of its register. Programs that keep their own
-scroll counter masked to `0`-`7` before calling either builtin never hit
-this; nothing inside the builtin itself enforces the range.
+extended-color-mode bits of its register.
 
-`ScrollY` has a second, independent quirk: every call unconditionally
-clears the raster-compare high bit of its register, regardless of the
-value passed in. If a raster interrupt has been set up on a line at or
-past 256 (which needs that high bit set), calling `ScrollY()` afterward
-silently disarms it.
+`ScrollY` also had a second, independent quirk: every call unconditionally
+cleared the raster-compare high bit of its register, regardless of the
+value passed in, silently disarming a raster interrupt set up on a line
+at or past 256.
 
 Both builtins also depend on a specific project setting
-(`temp_zeropages`) being non-empty; if it's blank, both silently do
-nothing at all; no error, no assembly emitted for the call.
+(`temp_zeropages`) being non-empty; it used to silently do nothing at all
+if it was blank, with no error or assembly emitted for the call.
 
 *Reference pages:* [`ScrollX`](reference/builtins/scrollx.md),
 [`ScrollY`](reference/builtins/scrolly.md)
 
-### `SetBank` writes the whole banking register unmasked
+### `SetBank` used to write the whole banking register unmasked
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `SetBank` now does a masked
+read-modify-write, preserving the register's other bits.
 
 `SetBank` selects which 16KB region the VIC-II reads video data from by
 writing to a CIA chip register that also carries the serial (IEC) bus
-and RS-232 output lines in its other bits. `SetBank` writes its value
-straight to that register with no read-modify-write step, so every call
-also forces those other lines low as a side effect. This is harmless in
-the overwhelming majority of programs, since disk/tape activity has
-normally already finished by the time `SetBank` gets called, but it's a
-real hazard for any custom fastloader or serial-bus code that calls
-`SetBank` while a transfer might still be active.
+and RS-232 output lines in its other bits. `SetBank` used to write its
+value straight to that register with no read-modify-write step, so every
+call also forced those other lines low as a side effect, a real hazard
+for any custom fastloader or serial-bus code that called `SetBank` while
+a transfer might still be active.
 
 *Reference page:* [`SetBank`](reference/builtins/setbank.md)
 
-### `SetBitmapMode` overwrites its whole register instead of changing one bit
+### `SetBitmapMode` used to overwrite its whole register instead of changing one bit
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `SetBitmapMode` now does a masked
+read-modify-write, the same shape its sibling mode-toggle builtins
+already used.
 
 Switching into bitmap mode should only need to change one bit of the
 relevant VIC-II register. Every sibling mode-toggle builtin
 (`SetTextMode`, `SetMultiColorMode`, `SetRegularColorMode`) correctly
-changes only the bit(s) it needs to, leaving everything else in the
-register alone. `SetBitmapMode` instead overwrites the entire register
-with one fixed value. In practice this silently resets the vertical
-fine-scroll value to a fixed default and clears the raster-compare high
-bit, so calling `SetBitmapMode` after a `ScrollY` call, or after arming a
-raster interrupt on a line at or past 256, undoes part of that earlier
-setup with no warning.
+changed only the bit(s) it needed to, leaving everything else in the
+register alone; `SetBitmapMode` instead overwrote the entire register
+with one fixed value, silently resetting the vertical fine-scroll value
+and clearing the raster-compare high bit set up beforehand.
 
 *Reference page:* [`SetBitmapMode`](reference/builtins/setbitmapmode.md)
 
@@ -975,27 +995,29 @@ follows it, again with no error.
 
 *Reference page:* [`SetSpriteLoc`](reference/builtins/setspriteloc.md)
 
-### `EnableRasterIRQ` (and `StartRasterChain`) overwrite the whole VIC-II control register, and can't reach raster lines past 255
+### `EnableRasterIRQ` (and `StartRasterChain`) used to overwrite the whole VIC-II control register, and still can't reach raster lines past 255
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Partially fixed · **Fixed in:** `EnableRasterIRQ` no longer
+touches the VIC-II's main control register at all; raster-IRQ-enable now
+lives entirely in the separate register that already needed no fix. The
+raster-line-256+ gap below is still open.
 
 `EnableRasterIRQ` is meant to turn on the raster-interrupt source, a
-single-bit change in one register. It does that correctly, but
-immediately follows it with an unconditional overwrite of the VIC-II's
-entire main control register with one fixed value, the same "hardcoded
-overwrite instead of a masked change" shape already documented for
-`SetBitmapMode` above. This silently resets the vertical fine-scroll
-value and turns off bitmap/extended-color mode, regardless of anything
-set up beforehand. `StartRasterChain` calls `EnableRasterIRQ` internally
-as part of its own one-call setup, so it inherits the exact same side
-effect.
+single-bit change in one register. It used to immediately follow that
+with an unconditional overwrite of the VIC-II's entire main control
+register with one fixed value, the same "hardcoded overwrite instead of a
+masked change" shape `SetBitmapMode` above also had, silently resetting
+the vertical fine-scroll value and turning off bitmap/extended-color mode
+regardless of anything set up beforehand. `StartRasterChain` calls
+`EnableRasterIRQ` internally as part of its own one-call setup, so it
+shares this fix too.
 
-That fixed value also always clears the raster-compare high bit rather
-than setting it, and `RasterIRQ` (the builtin that actually arms a
-raster line) never sets that bit either. Between the two, there's
-currently no way to trigger a raster interrupt on a line at or past 256
-through `RasterIRQ`, `EnableRasterIRQ`, or `StartRasterChain`; only lines
-`0`-`255` work.
+**Still open:** that overwrite also always cleared the raster-compare
+high bit rather than setting it, and `RasterIRQ` (the builtin that
+actually arms a raster line) never sets that bit either. Between the two,
+there's still no way to trigger a raster interrupt on a line at or past
+256 through `RasterIRQ`, `EnableRasterIRQ`, or `StartRasterChain`; only
+lines `0`-`255` work.
 
 *Reference pages:* [`EnableRasterIRQ`](reference/builtins/enablerasterirq.md),
 [`RasterIRQ`](reference/builtins/rasterirq.md),
@@ -1053,17 +1075,18 @@ shape data, with no error.
 *Reference pages:* [`SetSpriteLoc`](reference/builtins/setspriteloc.md),
 [`SetScreenLocation`](reference/builtins/setscreenlocation.md)
 
-### `Wait(0)` spins through a near-256-iteration loop instead of returning immediately
+### `Wait(0)` used to spin through a near-256-iteration loop instead of returning immediately
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `Wait` now checks the count before
+entering the loop and returns immediately for a count of `0`.
 
 `Wait` is meant to busy-loop for a given number of iterations before
-returning. The generated loop always counts down at least once before
-checking whether it's reached zero, so calling it with a count of `0`
-underflows immediately and spins through nearly the full 256-iteration
-range instead of doing nothing. The same "runs the body at least once"
-shape shows up elsewhere in this fork too (`FOR`/`FORI`, `FLD`,
-`MemCpy`/`MemCpyFast` with a runtime count of `0`).
+returning. The generated loop used to always count down at least once
+before checking whether it had reached zero, so calling it with a count
+of `0` underflowed immediately and spun through nearly the full
+256-iteration range instead of doing nothing. The same "runs the body at
+least once" shape showed up elsewhere in this fork too (`FOR`/`FORI`,
+`FLD`, `MemCpy`/`MemCpyFast` with a runtime count of `0`).
 
 *Reference page:* [`Wait`](reference/builtins/wait.md)
 

@@ -1,6 +1,9 @@
 # `@ignoremethod`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE, for
+the casing requirement described below; see [`@use`](use.md) for a
+separate SANE fix to the auto-init mechanism this directive opts a
+routine out of.
 
 Opts a named `init...` routine out of TRSE's automatic initialization scan.
 Several builtins (`sine[`, `rand(`, `sqrt(`, `joystick(`, and others)

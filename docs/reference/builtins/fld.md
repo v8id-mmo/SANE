@@ -1,6 +1,8 @@
 # `FLD`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+always ran `FLD`'s effect at least once, wrapping around to 256 passes for
+a count of `0`; SANE checks the count before entering the loop.
 
 Performs one or more lines of an "FLD" (Flexible Line Distance) raster
 effect: each pass advances the vertical fine-scroll register by one line,
@@ -36,6 +38,10 @@ end.
 
 ## Known limitations
 
-`FLD`'s loop always runs its body at least once before checking the
-count, so passing a count of `0` doesn't skip the effect: the counter
-wraps around instead, and the effect actually runs 256 times.
+**In vanilla TRSE, `FLD`'s loop always runs its body at least once before
+checking the count, so passing a count of `0` doesn't skip the effect:
+the counter wraps around instead, and the effect actually runs 256
+times.** :material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`FLD` now checks the count before entering the loop, so passing a count
+of `0` correctly skips the effect entirely.
