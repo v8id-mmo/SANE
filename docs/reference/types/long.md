@@ -1,6 +1,8 @@
 # `long`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+didn't implement signed `long` comparison at all; SANE implements all six
+comparison operators.
 
 A 24-bit value, stored as three bytes. Available on every MOS6502-family
 target (including the C64), not just wider CPUs; useful for a counter or
@@ -54,10 +56,12 @@ end.
 Several operations that work correctly on `byte`/`integer` are incomplete
 or wrong specifically for `long`:
 
-- **Signed comparison isn't implemented at all** for `signed long`; every
-  comparison operator fails to compile with "Signed long comparison not
-  implemented yet." (`signed integer` at least has `<`/`<=` working; see
-  [`signed`](../keywords/signed.md).)
+- **In vanilla TRSE, signed comparison isn't implemented at all** for
+  `signed long`; every comparison operator fails to compile with "Signed
+  long comparison not implemented yet." (see [`signed`](../keywords/signed.md)).
+  :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  all six comparison operators now work on `signed long` too.
 - **Bitwise `&`/`|`/`xor`/`^` silently miscompute the result** when the
   right-hand operand is a non-trivial expression rather than a plain
   variable: the top byte isn't combined into the result at all (it's

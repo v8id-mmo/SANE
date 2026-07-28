@@ -83,16 +83,27 @@ unsigned.
 
 ### Signed division wasn't implemented at all
 
-**Status:** Fixed · **Fixed in:** `/`, `mod`, and `mod16` now all follow
-C-style truncating signed division semantics.
+**Status:** Partially fixed · **Fixed in:** `mod` and `mod16` (any
+width), and `/` when the quotient widens to an `integer`, now follow
+C-style truncating signed division semantics. A plain `byte / byte`
+division that stays a `byte` result is still open (see below).
 
 Division always used unsigned arithmetic, regardless of whether either
 operand was a negative signed value. `mod`/`mod16` had the identical gap:
 `mod16` shares `/`'s 16-bit-by-8-bit division routine, and `mod`'s own
 separate 8-bit routine was unsigned for the same underlying reason.
 
+**Still open:** a plain `byte / byte` division that stays a `byte`
+result (not widened to `integer`) uses a separate, unsigned-only routine
+that was never touched by this fix. Unlike multiplication, a
+two's-complement quotient's low byte isn't sign-independent the way a
+product's is, so this case doesn't get the "already correct" pass
+multiplication's byte-only path gets: a negative signed operand genuinely
+gives a wrong result here, in both TRSE and SANE.
+
 *Reference pages:* [`/`](reference/operators/division.md),
-[`mod`](reference/builtins/mod.md), [`mod16`](reference/builtins/mod16.md)
+[`mod`](reference/builtins/mod.md), [`mod16`](reference/builtins/mod16.md),
+[`init8x8div`](reference/builtins/init8x8div.md)
 
 ### Mixing a signed byte with an integer dropped the sign
 

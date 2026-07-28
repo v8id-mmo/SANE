@@ -41,5 +41,9 @@ end.
 
 ## Known limitations
 
-Signed `byte * byte` multiplication silently gives the wrong result for a
-negative operand; see [`signed`](../keywords/signed.md).
+A `byte * byte` multiplication that stays a `byte` result (as in the
+example above) is always correct regardless of sign, in both TRSE and
+SANE: a two's-complement product's low byte is identical whether the
+inputs are interpreted as signed or unsigned. Signed multiplication only
+actually misbehaves once the product widens to an `integer`; see
+[`*`](../operators/multiplication.md)'s Known limitations.

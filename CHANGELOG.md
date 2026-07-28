@@ -33,8 +33,11 @@ this switches to that format instead.
 - Fixed signed arithmetic across the board: comparisons (`<`, `<=`, `>`,
   `>=`, `=`, `<>`) now work for signed `integer` and signed `long` values,
   not just `<`/`<=` on `integer`; byte-level signed comparisons are now
-  correct at the sign boundary; signed multiplication and division now
-  give correct results (including `mod`/`mod16`); and a negative
+  correct at the sign boundary; signed multiplication now gives a correct
+  result once the product widens to an `integer`; signed division now
+  gives a correct result for `mod`/`mod16` (any width) and for `/` once
+  the quotient widens to an `integer` (a plain `byte / byte` division
+  staying a `byte` result is still unsigned only); and a negative
   `signed byte` mixed into a wider expression is now sign-extended instead
   of zero-extended.
 - Added a Platform Notes page to the documentation site: RAM/ROM

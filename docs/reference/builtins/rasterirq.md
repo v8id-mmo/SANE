@@ -69,6 +69,7 @@ it crashes the compiler itself with a null-pointer dereference.
 
 `RasterIRQ` also never sets or touches the raster-compare high bit (bit
 7 of `$D011`), and neither does [`EnableRasterIRQ`](enablerasterirq.md)
-(which actively clears it, see that page). Between the two, there's
-currently no way to arm a raster interrupt on a PAL line at or past 256
-through this builtin; only lines `0`-`255` are reachable.
+(see that page for what else used to happen to that register in vanilla
+TRSE). Between the two, there's currently no way to arm a raster
+interrupt on a PAL line at or past 256 through this builtin; only lines
+`0`-`255` are reachable. Still open, in both TRSE and SANE.

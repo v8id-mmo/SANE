@@ -79,8 +79,11 @@ of those code paths at once:
   at all.** Division always used unsigned arithmetic, ignoring the
   `signed` modifier entirely. :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
-  `/`, `mod`, and `mod16` now all follow C-style truncating signed
-  division semantics.
+  `mod` and `mod16` (any width), and `/` when the quotient widens to an
+  `integer`, now all follow C-style truncating signed division semantics.
+  A plain `byte / byte` division that stays a `byte` result is still
+  unsigned only, in both TRSE and SANE; see [`/`](../operators/division.md)'s
+  Known limitations.
 - **Mixing a `signed byte` into a wider expression (`integer`) always
   zero-extended instead of sign-extending.** A negative signed byte
   widened to a 16-bit value should keep its negative value (e.g. `-1`

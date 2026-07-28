@@ -2,7 +2,9 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
 never implemented signed division at all, always dividing as if both
-operands were unsigned; SANE adds a real signed division path.
+operands were unsigned; SANE adds a real signed division path for a
+result that widens to `integer` (see Known limitations for the plain
+`byte / byte` case, which is still open).
 
 Divides the left-hand value by the right-hand value, keeping only the
 integer part of the result (no fractional/remainder value).
@@ -51,10 +53,18 @@ end.
   modifier on either operand; there's no signed-aware division routine to
   fall back on. `mod`/`mod16` share the identical gap. :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
-  `/`, `mod`, and `mod16` now follow C-style truncating semantics: the
-  quotient's sign is the xor of the two operands' signs, and, for
+  `mod` and `mod16` (any width) and `/` **when the quotient widens to an
+  `integer`** now follow C-style truncating semantics: the quotient's
+  sign is the xor of the two operands' signs, and, for
   [`mod`](../builtins/mod.md)/[`mod16`](../builtins/mod16.md), the
   remainder's sign follows the dividend's own sign.
+- **A plain `byte / byte` division that stays a `byte` result (not
+  widened to `integer`) is still unsigned only, in both TRSE and SANE.**
+  Unlike multiplication, a two's-complement quotient's low byte isn't
+  sign-independent the way a product's is, so this case doesn't get the
+  "already correct" pass multiplication's byte-only path gets; a negative
+  signed operand genuinely gives a wrong result here. Still open; see
+  [`init8x8div`](../builtins/init8x8div.md).
 - **Dividing by zero at runtime doesn't crash or hang, but doesn't produce
   a meaningful result either.** The generated division routine is a
   fixed-length loop with no zero-check, so it always finishes normally and
