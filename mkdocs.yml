@@ -371,6 +371,13 @@ nav:
           - record: reference/types/record.md
           - string: reference/types/string.md
       - Constants: reference/constants.md
+      - Errors:
+          - Overview: reference/errors/index.md
+          - Syntax, Types & Variables: reference/errors/syntax-types-and-variables.md
+          - Procedures, Expressions & Control Flow: reference/errors/procedures-expressions-and-control-flow.md
+          - Builtin Function Parameters: reference/errors/builtin-function-parameters.md
+          - Files & Assets: reference/errors/files-and-assets.md
+          - Assembler & Internal Errors: reference/errors/assembler-and-internal-errors.md
   - Examples:
       - Overview: examples/index.md
       - Hello World: examples/hello-world.md
