@@ -5150,7 +5150,8 @@ QSharedPointer<Node> Parser::TypeSpec(bool isInProcedure,
                 m_currentToken.m_lineNumber);
         }
         nvt->VerifyFlags(isInProcedure);
-        if (m_currentToken.m_type == TokenType::AT) {
+        if (m_currentToken.m_type == TokenType::AT ||
+            m_currentToken.m_type == TokenType::ABSOLUT) {
             Eat();
             nvt->initVal = Util::numToHex(GetParsedInt(TokenType::ADDRESS));
             //        Eat();
@@ -5193,7 +5194,8 @@ QSharedPointer<Node> Parser::TypeSpec(bool isInProcedure,
             //            qDebug() <<"HERE points to " <<TokenType::getType(typ)
             //            <<val;
         }
-        if (m_currentToken.m_type == TokenType::AT) {
+        if (m_currentToken.m_type == TokenType::AT ||
+            m_currentToken.m_type == TokenType::ABSOLUT) {
             Eat();
             nvt->initVal = Util::numToHex(GetParsedInt(TokenType::ADDRESS));
             //            Eat();

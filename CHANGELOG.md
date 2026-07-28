@@ -8,6 +8,9 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `absolute` not being accepted on pointer declarations
+  (`^byte absolute $9000;`), even though `at` already worked there; both
+  keywords now behave identically in every declaration position.
 - Fixed `@bin2inc` and `@vbmcompilechunk`'s generated output file not
   being `@include`-able in the same compile that generates it: an
   internal pass-tracking check was one comparison operator too loose, so

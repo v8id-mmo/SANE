@@ -278,14 +278,16 @@ after it shifted by one.
 
 ### `absolute` isn't accepted on pointer declarations
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `absolute` is now accepted on pointer
+declarations, with the same effect as `at`.
 
 `absolute` and `at` are meant to be interchangeable ways to place a
 variable at a fixed memory address, and are, for plain variables. On a
-pointer declaration, though, only `at` is actually recognized; `absolute`
-is silently not accepted there.
+pointer declaration, though, only `at` used to be recognized; `absolute`
+was silently not accepted there, failing with a parse error.
 
-*Reference page:* [`absolute`](reference/keywords/absolute.md)
+*Reference page:* [`absolute`](reference/keywords/absolute.md),
+[`at`](reference/keywords/at.md)
 
 ### `@bin2inc`'s own output can't be `@include`d in the same compile
 

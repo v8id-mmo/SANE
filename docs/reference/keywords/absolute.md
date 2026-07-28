@@ -1,6 +1,9 @@
 # `absolute`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE only accepts `absolute` on plain variable declarations, silently
+rejecting it on a pointer declaration with a parse error; SANE accepts
+`absolute` on pointer declarations too, matching `at`.
 
 Declares a variable at a fixed, specific memory address instead of letting
 the compiler pick where it lives. `absolute` is a synonym for [`at`](at.md);
@@ -36,7 +39,10 @@ end.
 
 ## Known limitations
 
-`absolute` is accepted for plain byte/word/array/string variable
-declarations, but **not** for pointer declarations (`^byte`/`^integer` at
-a fixed address). Use `at` instead of `absolute` when declaring a pointer
-at a fixed address.
+**In vanilla TRSE, `absolute` is accepted for plain byte/word/array/string
+variable declarations, but not for pointer declarations**
+(`^byte`/`^integer` at a fixed address): `^byte absolute $9000;` fails to
+compile there, even though `^byte at $9000;` works fine.
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`absolute` is now accepted on pointer declarations too, with the same
+effect as `at`.
