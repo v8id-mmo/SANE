@@ -839,6 +839,30 @@ void AbstractCodeGen::HandleCompoundBinaryClause(QSharedPointer<Node> node,
                                                  bool offpage) {
   //    QSharedPointer<NodeBinaryClause> bc =
   //    qSharedPointerDynamicCast<NodeBinaryClause>(node);
+  if (node->m_negatedClause) {
+    // A clause-level `not` negates this node's own result, whether it's a
+    // leaf comparison or a compound AND/OR/XOR. Can't just swap lblFailed/
+    // lblSuccess by argument position and recurse: "failed" is always an
+    // explicit jump (safe to redirect anywhere), but "success" is reached by
+    // plain textual fallthrough into whatever the *original* caller of this
+    // whole clause placed immediately afterward - renaming which string
+    // means success doesn't change where that fallthrough physically lands.
+    // Instead, evaluate the un-negated clause into a fresh local label, then
+    // explicitly jump from each of its two outcomes to the real (swapped)
+    // destination. Clear the flag first so this doesn't re-trigger and
+    // recurse forever.
+    QString lblInnerTrue = as->NewLabel("nottrue");
+    node->m_negatedClause = false;
+    HandleCompoundBinaryClause(node, lblSuccess, lblInnerTrue, offpage);
+    // Reached only when the un-negated clause was true - negated, that's
+    // failure.
+    as->Label(lblInnerTrue + ": ;keep");
+    as->Comment("; logical NOT, clause was true");
+    as->Asm(getJmp(offpage) + " " + as->jumpLabel(lblFailed));
+    node->m_negatedClause = true;
+    as->PopLabel("nottrue");
+    return;
+  }
   if (!node->isCompoundClause()) { // IS LEAF
     // Flip A and B if B is complex and A is pure
     if (node->m_left->isPure() && !node->m_right->isPure()) {
@@ -900,6 +924,26 @@ void AbstractCodeGen::HandleCompoundBinaryClause(QSharedPointer<Node> node,
     as->Comment("; logical OR, second chance");
     HandleCompoundBinaryClause(node->m_right, lblFailed, lblSuccess, offpage);
     as->PopLabel("localfailed");
+  }
+  if (node->m_op.m_type == TokenType::XOR) {
+    // Unlike AND/OR, XOR can't short-circuit: both sides always have to be
+    // evaluated, and the result depends on comparing their truth values, not
+    // just one of them. Branch on the left side's own value first, then
+    // decide what the right side needs to be for XOR to hold.
+    QString lblLeftTrue = as->NewLabel("xorlefttrue");
+    QString lblLeftFalse = as->NewLabel("xorleftfalse");
+    HandleCompoundBinaryClause(node->m_left, lblLeftFalse, lblLeftTrue,
+                               offpage);
+    as->Label(lblLeftTrue + ": ;keep");
+    as->Comment("; logical XOR, left true - right must be false");
+    HandleCompoundBinaryClause(node->m_right, lblSuccess, lblFailed, offpage);
+    as->Asm(getJmp(offpage) + " " + as->jumpLabel(lblFailed));
+    as->Label(lblLeftFalse + ": ;keep");
+    as->Comment("; logical XOR, left false - right must be true");
+    HandleCompoundBinaryClause(node->m_right, lblFailed, lblSuccess, offpage);
+    as->Asm(getJmp(offpage) + " " + as->jumpLabel(lblSuccess));
+    as->PopLabel("xorlefttrue");
+    as->PopLabel("xorleftfalse");
   }
 }
 

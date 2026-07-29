@@ -67,7 +67,8 @@ public:
     }
 
     bool isCompoundClause() override {
-        return (m_op.m_type==TokenType::AND || m_op.m_type == TokenType::OR);
+        return (m_op.m_type==TokenType::AND || m_op.m_type == TokenType::OR ||
+                m_op.m_type==TokenType::XOR);
 
     }
 

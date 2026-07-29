@@ -1,6 +1,7 @@
 # `CopyBytesShift`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE's
+mode `3` ("rotate right") never actually rotates; SANE fixes it.
 
 Copies a run of bytes from one array to another, shifting or rotating
 every byte by a fixed number of bits along the way.
@@ -19,8 +20,7 @@ every byte by a fixed number of bits along the way.
     - `0`: shift left (`asl`, fills with `0`)
     - `1`: shift right (`lsr`, fills with `0`)
     - `2`: rotate left (bit that falls off the top wraps to the bottom)
-    - `3`: rotate right (see Known limitations, this one doesn't actually
-      rotate)
+    - `3`: rotate right (bit that falls off the bottom wraps to the top)
 
 ## Example
 
@@ -54,12 +54,15 @@ correctly, including for a shift amount greater than one: rotating
 `%10000001` left by 3 correctly produces `%00001100` (`$0C`), the true
 circular-rotate result.
 
-**Mode `3` (documented as "rotate right") never actually rotates: it
-silently behaves exactly like mode `1` (plain logical shift right) at
-every shift amount, including `1`.** The bit that falls off the bottom is
-simply discarded and `0` is always shifted in from the top, the same as
-mode `1`. Rotating `%10000001` right by one should give `%11000000`
-(`$C0`); this mode instead gives `%01000000` (`$40`), the plain-shift
-result. If you need a true rotate-right, rotate left by
-`8 - <shift amount>` using mode `2` instead, or shift a copy of each byte
-manually.
+- **In vanilla TRSE, mode `3` (documented as "rotate right") never
+  actually rotated: it silently behaved exactly like mode `1` (plain
+  logical shift right) at every shift amount, including `1`.** The bit
+  that falls off the bottom was simply discarded and `0` was always
+  shifted in from the top, the same as mode `1`. Rotating `%10000001`
+  right by one should give `%11000000` (`$C0`); this mode instead gave
+  `%01000000` (`$40`), the plain-shift result.
+
+    :material-check-decagram:
+    **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+    mode `3` now performs a genuine circular rotate right at every shift
+    amount, matching mode `2`'s existing correct rotate-left behavior.

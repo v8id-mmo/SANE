@@ -1,6 +1,7 @@
 # `shr` / `>>` (Shift Right)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never preserves the sign bit on a `signed` `shr`/`>>`; SANE fixes it.
 
 Shifts every bit in a value right by a given number of positions, filling
 the vacated high bits with `0`. Each shift by one position is equivalent
@@ -47,16 +48,20 @@ Shifting an **unsigned** value works correctly at every width (`byte`,
 than the value's own width, which naturally saturates to `0` rather than
 producing garbage.
 
-- **`shr`/`>>` on a `signed` value is always a plain logical shift, never
-  an arithmetic one.** The vacated high bits are always filled with `0`,
-  the same as for an unsigned value, instead of replicating the sign bit
-  the way a proper signed (arithmetic) right shift needs to. This means
-  shifting a negative value right gives a wrong, positive result instead
-  of preserving its sign: `signed byte x := -8; y := x >> 1;` produces
-  `124` instead of the mathematically correct `-4`. There's no way to get
-  a correct sign-preserving right shift on a negative value using this
-  operator right now; shifting an already-non-negative signed value is
-  unaffected.
+- **In vanilla TRSE, `shr`/`>>` on a `signed` value is always a plain
+  logical shift, never an arithmetic one.** The vacated high bits are
+  always filled with `0`, the same as for an unsigned value, instead of
+  replicating the sign bit the way a proper signed (arithmetic) right
+  shift needs to. This means shifting a negative value right gives a
+  wrong, positive result instead of preserving its sign: `signed byte x :=
+  -8; y := x >> 1;` produces `124` instead of the mathematically correct
+  `-4`. Shifting an already-non-negative signed value is unaffected.
+
+    :material-check-decagram:
+    **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+    `shr`/`>>` on a `signed` value now correctly preserves the sign bit at
+    every width (`byte`/`integer`/`long`): `signed byte x := -8; y := x >>
+    1;` now correctly gives `-4`.
 
 There's no automatic widening trick for the result the way there is for
 [`+`](addition.md)/[`-`](subtraction.md)/[`*`](multiplication.md): the

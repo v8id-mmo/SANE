@@ -8,6 +8,31 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `CopyBytesShift`'s rotate-right mode (mode 3) never actually
+  rotating: it silently behaved exactly like plain shift-right (mode 1) at
+  every shift amount, discarding the wraparound bit instead of carrying it
+  back in the way its sibling rotate-left mode (mode 2) already correctly
+  did.
+- Fixed `shr`/`>>` on a `signed` value always being a plain logical shift,
+  never an arithmetic one: the sign bit wasn't preserved, so shifting a
+  negative value right gave a wrong (positive) result instead of
+  replicating the sign into the vacated high bit. Fixed at all three
+  widths (`byte`/`integer`/`long`); `shl` needed no change, since it's
+  bit-identical for signed and unsigned values.
+- Fixed `not` having no real clause-level negation: `not (a > 5)`
+  (parenthesized comparison) was a hard parse error, the unparenthesized
+  `not a > 5` silently parsed as `(not a) > 5` instead of negating the
+  whole comparison, and even `not` directly on a bare boolean flag (`if
+  not someFlag then`) only gave the right answer when the flag was
+  exactly `false`, wrongly still evaluating true after negation for any
+  other nonzero "true" value. All three now correctly negate the whole
+  condition, whether it's a parenthesized or unparenthesized comparison, a
+  bare flag, or an `and`/`or`/`xor` combination.
+- Fixed `xor` used to combine two parenthesized conditions (e.g.
+  `(a>5) xor (b<3)`) always evaluating true regardless of what either side
+  actually was; only `and`/`or` were previously wired up as clause
+  combinators. Plain bitwise `xor`/`^` between two numeric values was
+  unaffected.
 - Fixed a cluster of `long` (24-bit) codegen gaps where an existing
   `integer`-width special case had never been extended to `long`: `&`/
   `|`/`xor`/`^` silently failed to combine the top byte (and could throw

@@ -2549,6 +2549,19 @@ QSharedPointer<Node> Parser::Case() {
 }
 
 QSharedPointer<Node> Parser::BinaryClause() {
+    if (m_currentToken.m_type == TokenType::NOT) {
+        // Clause-level `not`: negate the whole clause that follows, whether
+        // it's parenthesized (`not (a > 5)`) or not (`not a > 5`, which
+        // should mean `not (a > 5)`, not `(not a) > 5` - Factor()'s own NOT
+        // handling only ever binds to the single numeric factor next to it).
+        // Reuses BinaryClause() itself for the operand, so this also covers
+        // a bare boolean (`not someFlag`, parsed as `someFlag <> 0` then
+        // negated) and nested/compound clauses (`not (a>5 and b<3)`).
+        Eat();
+        QSharedPointer<Node> inner = BinaryClause();
+        inner->m_negatedClause = !inner->m_negatedClause;
+        return inner;
+    }
     if (m_currentToken.m_type == TokenType::LPAREN && !nextIsExpr()) {
         // Logical clause AND OR
         Eat(TokenType::LPAREN);

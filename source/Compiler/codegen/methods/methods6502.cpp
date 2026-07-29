@@ -2325,6 +2325,15 @@ void Methods6502::CopyBytesShift(Assembler *as, bool isLeft)
         as->Asm("bcc "+lblSkipInside);
         as->Asm("ora #%00000001");
         as->Label(lblSkipInside);
+    } else if (cmd=="ror") {
+        // Mirror of the `rol` correction above: `ror` sets carry to the bit
+        // that just fell off bit 0, so force bit 7 to match it instead of
+        // whatever carry happened to be left over, turning the repeated
+        // `ror` into a genuine circular rotate.
+        as->Asm("and #%01111111");
+        as->Asm("bcc "+lblSkipInside);
+        as->Asm("ora #%10000000");
+        as->Label(lblSkipInside);
     }
 
 

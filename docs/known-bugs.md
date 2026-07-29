@@ -577,14 +577,16 @@ unrelated assembler feature causes the failure.
 
 ### Signed right shift is always a logical shift, never arithmetic
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `shr`/`>>` on a `signed` value now
+correctly preserves the sign bit, at every width.
 
-Shifting a negative signed value right with `shr`/`>>` gives a wrong
-(positive) result instead of preserving the sign. The shift always fills
-the vacated high bits with `0`, the same way it would for an unsigned
-value, rather than replicating the sign bit the way a proper arithmetic
-right shift needs to. A `signed byte` holding `-8`, shifted right by one,
-produces `124` instead of the mathematically correct `-4`.
+Shifting a negative signed value right with `shr`/`>>` used to give a
+wrong (positive) result instead of preserving the sign. The shift always
+filled the vacated high bits with `0`, the same way it would for an
+unsigned value, rather than replicating the sign bit the way a proper
+arithmetic right shift needs to. A `signed byte` holding `-8`, shifted
+right by one, used to produce `124` instead of the mathematically correct
+`-4`.
 
 *Reference page:* [`shr`](reference/operators/shift-right.md)
 
@@ -608,18 +610,20 @@ evaluating the right-hand expression bleeding into the result.
 
 ### `xor` used to combine two conditions always evaluates true
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `xor` between two parenthesized
+conditions now correctly evaluates to true only when exactly one side is
+true, the same as `and`/`or` already did.
 
 Writing `xor` between two parenthesized conditions, like
-`(a>5) xor (b<3)`, compiles without any error, but the resulting
-condition always behaves as true, no matter what either side actually
-evaluates to; the `else` branch of an `if` using this pattern becomes
-unreachable. Both conditions are evaluated correctly, but the step that's
-supposed to combine them with `xor` and branch on the result is missing:
-only `and`/`or` are actually wired up to combine two conditions this way.
-Plain bitwise `xor`/`^` between two numeric values is unaffected and
-works correctly; this only affects `xor` written between two parenthesized
-conditions.
+`(a>5) xor (b<3)`, used to compile without any error, but the resulting
+condition always behaved as true, no matter what either side actually
+evaluated to; the `else` branch of an `if` using this pattern was
+unreachable. Both conditions were evaluated correctly, but the step that's
+supposed to combine them with `xor` and branch on the result was missing:
+only `and`/`or` were wired up to combine two conditions this way. Plain
+bitwise `xor`/`^` between two numeric values was unaffected and always
+worked correctly; this only affected `xor` written between two
+parenthesized conditions.
 
 *Reference page:* [`xor`](reference/operators/xor.md)
 
@@ -642,19 +646,23 @@ complex expression still falls back to the old byte-width behavior.
 
 ### `not` can't negate a comparison the way it looks like it should
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `not` now has real clause-level
+negation, covering a parenthesized comparison, an unparenthesized
+comparison, and a bare boolean flag alike.
 
-Writing `not (a > 5)`, with the comparison in parentheses, fails to
-compile at all. Writing it without the parentheses, `not a > 5`, does
-compile, but silently means something different from what it looks like:
-it computes `not a` (a bitwise complement) first, and only then compares
-that complemented value against `5`, instead of negating the result of
-`a > 5`. For `a = 10`, this reads as `(not 10) > 5`, which comes out
-true, the opposite of the intended `not (10 > 5)`, which should be false.
-`not`
-directly in front of a plain boolean value or variable (not a
-comparison), like `if not someFlag then`, is unaffected and works
-correctly.
+Writing `not (a > 5)`, with the comparison in parentheses, used to fail
+to compile at all. Writing it without the parentheses, `not a > 5`, used
+to compile, but silently meant something different from what it looked
+like: it computed `not a` (a bitwise complement) first, and only then
+compared that complemented value against `5`, instead of negating the
+result of `a > 5`. For `a = 10`, this read as `(not 10) > 5`, which came
+out true, the opposite of the intended `not (10 > 5)`, which should be
+false. Even `not` directly in front of a bare boolean flag used as a
+condition, like `if not someFlag then`, only gave the right answer when
+the flag held exactly `false` (`0`): any other nonzero "true" value (such
+as `1`) was wrongly still treated as true after negation, since the old
+implementation bitwise-complemented the value and re-tested the
+complement for non-zero rather than actually inverting the truth value.
 
 *Reference page:* [`not`](reference/operators/not.md)
 
@@ -700,16 +708,17 @@ leaving the other two completely unchanged.
 
 ### `CopyBytesShift`'s rotate-right mode never actually rotates
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** rotate right now performs a genuine
+circular rotate, matching rotate left's existing correct behavior.
 
 `CopyBytesShift` supports four modes: shift left, shift right, rotate
 left, and rotate right. Rotate left works correctly at any shift amount.
-Rotate right instead silently behaves exactly like plain shift right at
+Rotate right used to silently behave exactly like plain shift right at
 every shift amount, including a single shift: the bit that falls off the
-bottom is simply discarded and a `0` is always shifted in from the top,
+bottom was simply discarded and a `0` was always shifted in from the top,
 instead of the discarded bit wrapping back around to the top the way a
 real rotate should. Rotating `%10000001` right by one gives `%11000000`
-in a correct rotate, but this builtin gives `%01000000`.
+in a correct rotate; this builtin used to give `%01000000` instead.
 
 *Reference page:* [`CopyBytesShift`](reference/builtins/copybytesshift.md)
 
@@ -838,16 +847,23 @@ loader into memory but never re-enabled them afterward, the same gap as
 
 ### `LeftBitShift`/`RightBitShift` always rotate, never actually shift
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** By design, not planned · **Fixed in:** not applicable - see
+explanation.
 
 Both builtins are named and used as a "shift" across a block of 8-row
 character/bitmap data, `num` bytes wide. At every width, including the
 simplest case (a single byte, 8 rows), the bit that shifts off one end of
 the block doesn't get dropped the way a real shift would drop it: it
 reappears at the opposite end instead. That's a rotate, not a shift, with
-no way to ask for the non-wrapping version. It's usable behavior (one of
-the bundled tutorials leans on the wraparound on purpose for a scrolling
-effect), just not what the name promises.
+no way to ask for the non-wrapping version. This one isn't going to be
+changed: the bundled tutorial `Tutorials/intermediate/06_tech.ras` calls
+`rightbitshift` on the same data unconditionally every single frame,
+forever, for a continuous melt/scroll effect that only keeps working
+*because* the data wraps around instead of eventually shifting to all
+zeros. Changing the default to a true dropping shift would break that
+tutorial outright. Treated as a naming mismatch to document clearly
+rather than a defect to fix - the behavior itself is real, useful, and
+depended on.
 
 *Reference page:* [`LeftBitShift`](reference/builtins/leftbitshift.md)
 

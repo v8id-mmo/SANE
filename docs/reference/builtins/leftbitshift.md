@@ -46,8 +46,12 @@ one end of the `num`-byte-wide strip is never dropped, it reappears at
 the opposite end. That's true even at the simplest width (`num=1`, a
 single byte-wide column): each row's own outgoing bit becomes its own
 incoming bit. There's no way to get a true shift (vacated bit filled
-with `0`, outgoing bit discarded) through this builtin. One of the
-bundled tutorials relies on this wraparound deliberately, for a
-continuous scroll/melt effect, so it's usable behavior, just not what
-"shift" usually implies. [`RightBitShift`](rightbitshift.md) shares the
-same underlying routine and the same behavior.
+with `0`, outgoing bit discarded) through this builtin, and this isn't
+planned to change: the bundled tutorial
+`Tutorials/intermediate/06_tech.ras` relies on this wraparound
+deliberately (via `RightBitShift`, calling it on the same data every
+single frame forever), for a continuous scroll/melt effect that only
+keeps working because the data wraps around instead of eventually
+shifting to all zeros. So it's usable, load-bearing behavior, just not
+what "shift" usually implies. [`RightBitShift`](rightbitshift.md) shares
+the same underlying routine and the same behavior.

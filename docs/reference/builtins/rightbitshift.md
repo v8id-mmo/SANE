@@ -47,5 +47,10 @@ one end of the `num`-byte-wide strip is never dropped, it reappears at
 the opposite end. That's true even at the simplest width (`num=1`, a
 single byte-wide column): each row's own outgoing bit becomes its own
 incoming bit. There's no way to get a true shift (vacated bit filled
-with `0`, outgoing bit discarded) through this builtin. `LeftBitShift`
-shares the same underlying routine and the same behavior.
+with `0`, outgoing bit discarded) through this builtin, and this isn't
+planned to change: a bundled tutorial
+(`Tutorials/intermediate/06_tech.ras`) calls `RightBitShift` on the same
+data every single frame, forever, for a continuous melt effect that only
+keeps working because the data wraps around instead of eventually
+shifting to all zeros. `LeftBitShift` shares the same underlying routine
+and the same behavior.

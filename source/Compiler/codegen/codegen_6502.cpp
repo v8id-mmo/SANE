@@ -467,14 +467,28 @@ void CodeGen6502::RightIsPureNumericMulDiv16bit(QSharedPointer<Node> node) {
 void CodeGen6502::HandleShiftLeftRight(QSharedPointer<NodeBinOP>node)
 {
     QString cmd = node->m_op.m_type==TokenType::SHR?"lsr":"asl";
+    // A signed `shr` needs to be an arithmetic shift (sign bit copied into
+    // the vacated high bit), not the plain logical `lsr` that always shifts
+    // in a 0. `cmp #$80` sets carry to the accumulator's own bit 7, so a
+    // `ror` right after it shifts right while re-inserting that same sign
+    // bit - repeatable for each bit of the shift, since the bit `ror` just
+    // inserted is still the correct sign to propagate on the next round.
+    // `shl` is bit-identical for signed and unsigned in two's complement, so
+    // it doesn't need this.
+    bool arithmeticRight = node->m_op.m_type==TokenType::SHR && node->isSigned(as);
+    if (arithmeticRight)
+        cmd = "ror";
 
     if (node->m_right->isPureNumeric()) {
         node->m_left->Accept(this);
         as->Term();
 
         int val = node->m_right->getValueAsInt(as);
-        for (int i=0;i<val;i++)
+        for (int i=0;i<val;i++) {
+            if (arithmeticRight)
+                as->Asm("cmp #$80");
             as->Asm(cmd);
+        }
         return;
     }
     QString lbl = as->NewLabel("lblShift");
@@ -489,6 +503,8 @@ void CodeGen6502::HandleShiftLeftRight(QSharedPointer<NodeBinOP>node)
     as->Asm("beq "+lblCancel);
     as->Term();
     as->Label(lbl);
+    if (arithmeticRight)
+        as->Asm("cmp #$80");
     as->Asm(cmd);
     as->Asm("dex");
     as->Asm("cpx #0");
@@ -513,9 +529,20 @@ void CodeGen6502::HandleShiftLeftRightInteger(QSharedPointer<NodeBinOP>node, boo
         varName = getValue(node);
 
     //    QString cmd = node->m_op.m_type==TokenType::SHR?"lsr":"asl";
+    // See HandleShiftLeftRight's comment: a signed `shr` needs to propagate
+    // the sign bit into the vacated top bit on each shift instead of always
+    // shifting in a 0. `cmp #$80` against the freshly-loaded top byte sets
+    // carry to that byte's own bit 7, so the `ror` right after it re-inserts
+    // the sign correctly, repeatable per bit of the shift.
+    bool arithmeticRight = node->m_op.m_type==TokenType::SHR && node->isSigned(as);
     QString command = "";
     if (node->m_op.m_type==TokenType::SHR) {
-        command = "\tlsr " + varName +"+1 ;keep"+ "\n";
+        if (arithmeticRight) {
+            command = "\tlda " + varName + "+1 ;keep\n";
+            command += "\tcmp #$80 ;keep\n";
+            command += "\tror " + varName + "+1 ;keep\n";
+        } else
+            command = "\tlsr " + varName +"+1 ;keep"+ "\n";
         command += "\tror " + varName+"+0 ;keep" + "\n";
     }
     else {
@@ -570,9 +597,17 @@ void CodeGen6502::HandleShiftLeftRightLong(QSharedPointer<NodeBinOP>node, bool i
         varName = getValue(node);
 
     //    QString cmd = node->m_op.m_type==TokenType::SHR?"lsr":"asl";
+    // See HandleShiftLeftRight's comment: same sign-propagating `cmp #$80`/
+    // `ror` substitution for the top byte, for a signed `shr`.
+    bool arithmeticRight = node->m_op.m_type==TokenType::SHR && node->isSigned(as);
     QString command = "";
     if (node->m_op.m_type==TokenType::SHR) {
-        command = "lsr " + varName +"+2 ;keep"+ "\n";
+        if (arithmeticRight) {
+            command = "lda " + varName + "+2 ;keep\n";
+            command += "\tcmp #$80 ;keep\n";
+            command += "\tror " + varName + "+2 ;keep\n";
+        } else
+            command = "lsr " + varName +"+2 ;keep"+ "\n";
         command += "\tror " + varName +"+1 ;keep"+ "\n";
         command += "\tror " + varName+"+0 ;keep" + "\n";
     }

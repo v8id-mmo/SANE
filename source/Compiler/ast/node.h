@@ -114,6 +114,11 @@ public:
     bool m_isWord = false;
     // Force page for conditionals (while/if/repeat until etc)
     int m_forcePage = 0;
+    // Set by the parser on a binary clause directly preceded by a clause-level
+    // `not` (e.g. `not (a>5)`, `not a>5`); HandleCompoundBinaryClause swaps its
+    // success/failed labels for this one node, negating the whole clause
+    // regardless of whether it's a leaf comparison or a compound AND/OR/XOR.
+    bool m_negatedClause = false;
     BuiltInFunction::Type m_builtInFunctionParameterType = BuiltInFunction::BYTE;
     // Line number for keeping track of current cycles
     static int m_currentLineNumber;

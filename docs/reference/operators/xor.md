@@ -2,7 +2,8 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
 miscomputes `xor`/`^` on a `long` value when the right-hand side is a
-complex expression; SANE fixes it.
+complex expression, and never implements `xor` as a boolean clause
+combinator between two parenthesized conditions; SANE fixes both.
 
 Combines two numeric values bit by bit: each result bit is `1` where
 exactly one of the two inputs has a `1` in that position (and `0` where
@@ -67,15 +68,19 @@ bits).
     `xor`/`^` on a `long` value now correctly combines the top byte too,
     and no longer picks up leftover carry state on the middle byte,
     regardless of how complex the right-hand side is.
-- **`xor` written between two parenthesized conditions (not two plain
-  numeric values) compiles without error but always evaluates true,
-  regardless of what either condition actually is.** For example,
-  `if ((a>5) xor (b<3)) then ... else ...;` compiles cleanly, but the
-  `else` branch becomes unreachable: both conditions get evaluated
+- **In vanilla TRSE, `xor` written between two parenthesized conditions
+  (not two plain numeric values) compiles without error but always
+  evaluates true, regardless of what either condition actually is.** For
+  example, `if ((a>5) xor (b<3)) then ... else ...;` compiles cleanly, but
+  the `else` branch becomes unreachable: both conditions get evaluated
   correctly, but the step that's supposed to combine them with `xor` and
   branch on the result is missing, so execution always falls through into
-  the "true" branch. Only `and`/`or` are actually wired up to combine two
-  conditions this way; don't use `xor` for this, it silently does the
-  wrong thing with no warning. This is a completely separate case from
-  plain bitwise `xor` between two numeric values (as in the example
-  above), which is unaffected and works correctly.
+  the "true" branch. This is a completely separate case from plain
+  bitwise `xor` between two numeric values (as in the example above),
+  which is unaffected and works correctly.
+
+    :material-check-decagram:
+    **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+    `xor` between two parenthesized conditions now correctly evaluates to
+    true only when exactly one side is true, the same as `and`/`or`
+    already did.
