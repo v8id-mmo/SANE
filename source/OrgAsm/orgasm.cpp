@@ -138,7 +138,8 @@ void Orgasm::ProcessUnrolling()
     int ln =0;
     for (QString& l  : m_lines) {
         ln++;
-        if (l.toLower().simplified().startsWith("repeat")) {
+        static const QRegularExpression repeatDirective("^repeat\\s+\\d+(\\s+\\d+)?$");
+        if (repeatDirective.match(l.toLower().simplified()).hasMatch()) {
             if (isInRepeat)
                 throw OrgasmError("Cannot do nested unrolling.",ln);
             isInRepeat = true;

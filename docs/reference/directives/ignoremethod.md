@@ -1,9 +1,10 @@
 # `@ignoremethod`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE, for
-the casing requirement described below; see [`@use`](use.md) for a
-separate SANE fix to the auto-init mechanism this directive opts a
-routine out of.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+required the argument to be written in all-lowercase, regardless of the
+routine's normal casing; SANE matches it case-insensitively instead. See
+[`@use`](use.md) for a separate SANE fix to the auto-init mechanism this
+directive opts a routine out of.
 
 Opts a named `init...` routine out of TRSE's automatic initialization scan.
 Several builtins (`sine[`, `rand(`, `sqrt(`, `joystick(`, and others)
@@ -24,7 +25,7 @@ instead (for example, to control exactly when it runs).
   `initsinetable` to stop `sine[...]` usages from auto-inserting that call;
   writing `sine` here has no effect, since it doesn't match the name the
   compiler actually checks against). See Known limitations below for a
-  casing requirement on this argument.
+  vanilla-TRSE-only casing requirement on this argument.
 
 ## Example
 
@@ -55,13 +56,18 @@ end.
 
 ## Known limitations
 
-The argument must be written in all-lowercase (`initgetkey`, not
-`initGetKey`), regardless of how the routine's name is normally cased
-everywhere else, including in this site's own examples. Writing it in
-that normal casing silently fails to match, and the automatic insertion
-stays active alongside a program's own explicit call to the routine. For
-most `init...` routines the result is just harmless redundancy (the
-routine guards itself against running its setup twice), but for
-`initGetKey` specifically, there's no such guard, and the mismatch
-produces a hard build failure (a duplicate-symbol error from the
+**In vanilla TRSE, the argument must be written in all-lowercase
+(`initgetkey`, not `initGetKey`), regardless of how the routine's name is
+normally cased everywhere else, including in this site's own examples.**
+Writing it in that normal casing silently fails to match, and the
+automatic insertion stays active alongside a program's own explicit call
+to the routine. For most `init...` routines the result is just harmless
+redundancy (the routine guards itself against running its setup twice),
+but for `initGetKey` specifically, there's no such guard, and the
+mismatch produces a hard build failure (a duplicate-symbol error from the
 keyboard-input code being assembled twice).
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the argument is now lowercased before being matched, so it can be written
+in any casing, including the routine's normal documented spelling.

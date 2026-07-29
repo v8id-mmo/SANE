@@ -1,6 +1,9 @@
 # `Sqrt`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails with a confusing, unrelated assembler error if the project is
+missing its internal zero-page scratch settings; SANE raises a clear
+compile error naming the actual missing settings instead.
 
 Computes the integer square root of a 16-bit value. Auto-init: the first
 time `sqrt(` appears in a file, the compiler automatically includes the
@@ -47,6 +50,15 @@ end.
 `Sqrt` needs 4 of the project's internal zero-page scratch slots
 (configured via the `zeropage_internal1`-`4` project settings) to hold
 its working state. The shipped default project settings always provide
-all 4, so this doesn't affect a normal project, but if a project's
-settings provide fewer than 4, `Sqrt` silently compiles to no code at
-all, with no compiler error.
+all 4, so this doesn't affect a normal project.
+
+**In vanilla TRSE, if a project's settings are missing one or more of
+`zeropage_internal1`-`4`, `Sqrt` fails at the assembly stage with a
+confusing, unrelated error** ("Opcode type not implemented or illegal:
+sty type 0") instead of a clear diagnostic naming the actual problem.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a missing `zeropage_internal1`-`4` setting now raises a clear compile
+error ("Sqrt requires zeropage_internal1-4 to be configured in the
+project settings.") instead of the confusing assembler-stage failure.

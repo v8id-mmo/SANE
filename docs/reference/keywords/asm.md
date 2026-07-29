@@ -1,6 +1,8 @@
 # `asm`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's assembler has no opcode-table entry for `php`/`plp`; SANE adds
+both.
 
 Inserts raw assembler source directly into the compiled program. Use it
 when you need an instruction the language doesn't expose, or to
@@ -27,6 +29,17 @@ one, or it will be parsed as a label. This also means plain, unqualified
 "implied" opcodes such as `dec` or `inc` (valid only on the accumulator on
 later 6502 variants, not the base C64 6502) still need an explicit operand,
 same as writing the same instruction directly in a `.asm` file.
+
+**In vanilla TRSE, the assembler's opcode table has no entry for `php`
+(push processor status) or `plp` (pull processor status), unlike every
+other legal 6502 mnemonic.** `asm(" php ");`/`asm(" plp ");` fail with
+"Unknown opcode: php"/"Unknown opcode: plp" at the assembly stage. This
+is a standing gap in vanilla TRSE's own upstream, not a fork regression.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the opcode table now includes both mnemonics, so `php`/`plp` assemble
+correctly.
 
 ## Example
 

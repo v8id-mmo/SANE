@@ -212,18 +212,19 @@ producing wrong output.
 
 ### `@ignoremethod`'s argument only matches in lowercase
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the argument is now lowercased before
+being matched, so it can be written in any casing.
 
 `@ignoremethod <name>` is meant to opt a named `init...` routine out of
 the automatic-initialization scan described above, so a program can call
 that routine itself instead. Writing `<name>` in the routine's normally
 documented casing, matching how it's written everywhere else (for example
-`@ignoremethod initGetKey`), silently fails to match, and the automatic
-insertion stays active alongside the program's own explicit call. For
-most `init...` routines this doubling is harmless. For `initGetKey`
-specifically it isn't: the build fails outright with a duplicate-symbol
+`@ignoremethod initGetKey`), used to silently fail to match, leaving the
+automatic insertion active alongside the program's own explicit call. For
+most `init...` routines this doubling was harmless. For `initGetKey`
+specifically it wasn't: the build failed outright with a duplicate-symbol
 assembly error. Writing the argument in all-lowercase (`@ignoremethod
-initgetkey`) works correctly.
+initgetkey`) always worked correctly, and still does.
 
 *Reference page:* [`@ignoremethod`](reference/directives/ignoremethod.md)
 
@@ -577,23 +578,42 @@ out too large produces a broken branch with no warning.
 
 ### A program, procedure, or variable name starting with "repeat" can trigger an unrelated unrolling error
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the unrolling detection now requires the
+line to actually match a real `repeat <count>`/`repeat <countX> <countY>`
+shape, not just start with the text "repeat".
 
-The inline-assembler unrolling feature (`repeat N` / `repend`) is
+The inline-assembler unrolling feature (`repeat N` / `repend`) used to be
 detected by scanning the generated assembly line by line for anything
 that starts with the word "repeat", rather than checking for the actual
 "repeat, followed by a number" shape. A program, procedure, or variable
-whose name happens to start with those same letters (`RepeatDemo`, for
-example) produces a line in the generated assembly that starts the same
-way, so it gets mistaken for the start of an unrolling block. Compilation
-then fails with a count-parsing error that has nothing to do with the
+whose name happened to start with those same letters (`RepeatDemo`, for
+example) produced a line in the generated assembly that starts the same
+way, so it was mistaken for the start of an unrolling block. Compilation
+then failed with a count-parsing error that had nothing to do with the
 actual source, even in a project that never uses `repeat`/`repend`
-unrolling at all. The ordinary Pascal `repeat...until` loop is unaffected
-by this and works correctly on its own; only the name collision with the
-unrelated assembler feature causes the failure.
+unrolling at all. The ordinary Pascal `repeat...until` loop was always
+unaffected by this and worked correctly on its own; only the name
+collision with the unrelated assembler feature caused the failure.
 
 *Reference pages:* [`repeat`](reference/keywords/repeat.md),
 [`repend`](reference/keywords/repend.md)
+
+### `php`/`plp` fail to assemble with "Unknown opcode"
+
+**Status:** Fixed · **Fixed in:** the assembler's opcode table now
+includes both mnemonics.
+
+The assembler's opcode table (a hand-maintained data file, not a
+from-spec complete 6502 assembler) used to have no entry for `php`
+(push processor status) or `plp` (pull processor status), unlike every
+other legal 6502 mnemonic, including every other stack- and
+status-adjacent one (`pha`, `pla`, `txs`, `tsx`, `rti`). Writing
+`asm(" php ");` or `asm(" plp ");` failed with "Unknown opcode: php"/
+"Unknown opcode: plp" at the assembly stage. This gap is also present in
+vanilla TRSE's current upstream, confirmed all the way back to the first
+version of the assembler; it isn't a fork regression.
+
+*Reference page:* [`asm`](reference/keywords/asm.md)
 
 ## Bitwise operators
 
@@ -1167,16 +1187,19 @@ compile error, it crashes the compiler process itself:
 [`StartIRQWedge`](reference/builtins/startirqwedge.md),
 [`StartRasterChain`](reference/builtins/startrasterchain.md)
 
-### `Sqrt` silently compiles to nothing if not enough zero-page scratch is configured
+### `Sqrt` fails with a confusing assembler error if not enough zero-page scratch is configured
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a missing `zeropage_internal1`-`4`
+setting now raises a clear compile error naming the actual problem,
+instead of the confusing assembler-stage failure.
 
 `Sqrt` needs 4 of the project's internal zero-page scratch slots to hold
 its working state while it computes. The shipped default project
-settings always provide all 4, so this doesn't affect a normal project,
-but if a project's settings provide fewer than 4, a call to `Sqrt`
-silently compiles to no code at all, with no compiler error pointing at
-the missing setting.
+settings always provide all 4, so this doesn't affect a normal project.
+If a project's settings were missing one or more of them, a call to
+`Sqrt` used to fail at the assembly stage with a confusing, unrelated
+error ("Opcode type not implemented or illegal: sty type 0") instead of a
+diagnostic pointing at the actual missing setting.
 
 *Reference page:* [`Sqrt`](reference/builtins/sqrt.md)
 

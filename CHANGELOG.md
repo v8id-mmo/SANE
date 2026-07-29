@@ -8,6 +8,24 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed the assembler's opcode table having no entry for `php`/`plp`
+  (push/pull processor status): `asm(" php ");`/`asm(" plp ");` failed
+  with "Unknown opcode" at the assembly stage, unlike every other legal
+  6502 mnemonic. Both now assemble correctly.
+- Fixed `Sqrt`/`InitSqrt16` failing with a confusing, unrelated assembler
+  error ("Opcode type not implemented or illegal: sty type 0") when a
+  project's settings were missing one or more of `zeropage_internal1`-`4`;
+  they now raise a clear compile error naming the actual missing setting.
+- Fixed `@ignoremethod <name>` matching its argument case-sensitively
+  against an always-lowercase internal routine name, so writing the
+  argument in its normally-documented casing (e.g. `initGetKey`) silently
+  failed to suppress the auto-init insertion; the argument is now
+  lowercased before matching, so any casing works.
+- Fixed a program, procedure, or variable name starting with "repeat"
+  (case-insensitively) being mistaken for the start of an inline-assembler
+  `repeat N`/`repend` unroll block, aborting compilation with an unrelated
+  count-parsing error; the unroll detection now requires the line to
+  actually match a real `repeat <count>` shape.
 - Fixed `@include`'s standard-library fallback lookup (used once a file
   isn't found in the current project's own directory) only resolving
   correctly when the compiler happened to be invoked with the repository

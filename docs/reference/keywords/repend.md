@@ -1,6 +1,8 @@
 # `repend`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+could misinterpret a program/procedure/variable name starting with
+"repeat" as the start of an unroll block; SANE no longer does.
 
 Closes a `repeat N` inline-assembler unrolling block. This is a separate
 feature from the Pascal-level [`repeat`](repeat.md)/[`until`](until.md)
@@ -64,17 +66,23 @@ up holding 5.
 ## Known limitations
 
 **A program, procedure, or variable name that happens to start with the
-word "repeat" (case-insensitively) can be mistaken for the start of an
+word "repeat" (case-insensitively) used to be mistaken for the start of an
 unroll block, even in code that never uses `repeat`/`repend` at all.** The
-detection works by scanning every line of the already-generated assembly
+detection worked by scanning every line of the already-generated assembly
 text for one that starts with "repeat", rather than checking that the
 rest of the line actually looks like a valid `repeat <count>` directive.
 A program named, say, `RepeatDemo` produces its own name as a label at the
 very top of the generated assembly; since that label's text also starts
-with "repeat", it gets misread as an unroll directive, fails to parse a
-count out of it, and aborts compilation with a "repeat count must be
-either 1 or 2-dimensional" error that has nothing to do with the actual
-source. The fix is simple: don't start a program, procedure, or variable
-name with "repeat" (case-insensitively). Everything else about `repeat`/
-`repend` unrolling, including the example above, works correctly once
-that naming collision is avoided.
+with "repeat", it used to get misread as an unroll directive, fail to
+parse a count out of it, and abort compilation with a "repeat count must
+be either 1 or 2-dimensional" error that had nothing to do with the
+actual source.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the detection now requires the line to actually match a real
+`repeat <count>`/`repeat <countX> <countY>` shape, not just start with
+the text "repeat", so a program/procedure/variable name starting with
+"repeat" no longer collides with it. On vanilla TRSE, the workaround is
+simple: don't start a program, procedure, or variable name with "repeat"
+(case-insensitively).

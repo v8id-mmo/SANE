@@ -4118,8 +4118,8 @@ void Methods6502::Sqrt(Assembler *as)
 {
     as->Comment("Setup sqrt");
     m_node->m_params[0]->Accept(m_codeGen);
-    if (as->m_internalZP.count()<4)
-        return;
+    if (as->m_internalZP[0]=="" || as->m_internalZP[1]=="" || as->m_internalZP[2]=="" || as->m_internalZP[3]=="")
+        ErrorHandler::e.Error("Sqrt requires zeropage_internal1-4 to be configured in the project settings.", m_node->m_op.m_lineNumber);
     if (m_node->m_params[0]->isWord(as)) {
         as->Asm("sta " + as->m_internalZP[0]);
         as->Asm("sty " + as->m_internalZP[1]);
@@ -5659,8 +5659,8 @@ void Methods6502::InitDiv16x8(Assembler *as)
 
 void Methods6502::InitSqrt16(Assembler *as)
 {
-    if (as->m_internalZP.count()<4)
-        return;
+    if (as->m_internalZP[0]=="" || as->m_internalZP[1]=="" || as->m_internalZP[2]=="" || as->m_internalZP[3]=="")
+        ErrorHandler::e.Error("Sqrt requires zeropage_internal1-4 to be configured in the project settings.", m_node->m_op.m_lineNumber);
     as->Label("sqrt16_init");
     as->Asm("ldy #$01 ");
 

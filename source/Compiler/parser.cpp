@@ -3350,7 +3350,7 @@ void Parser::PreprocessSingle() {
 
     else if (m_currentToken.m_value.toLower() == "ignoremethod") {
         Eat(TokenType::PREPROCESSOR);
-        m_ignoreMethods.append(m_currentToken.m_value);
+        m_ignoreMethods.append(m_currentToken.m_value.toLower());
     } else if (m_currentToken.m_value.toLower() == "export") {
         Eat(TokenType::PREPROCESSOR);
         HandleExport();
