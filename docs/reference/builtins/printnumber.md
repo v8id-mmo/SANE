@@ -1,6 +1,9 @@
 # `PrintNumber`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+failed to assemble when this builtin was used with no `MoveTo`/
+`PrintString`/`Tile` call anywhere else in the compile; SANE fixes the
+auto-init trigger so it no longer needs one.
 
 Prints a byte as a 2-character hexadecimal number at the current screen
 cursor position (set with [`MoveTo`](moveto.md)), despite the plain
@@ -39,7 +42,7 @@ end.
 
 ## Known limitations
 
-**Using `PrintNumber` with no [`MoveTo`](moveto.md),
+**In vanilla TRSE, using `PrintNumber` with no [`MoveTo`](moveto.md),
 [`PrintString`](printstring.md), or `Tile` call anywhere else
 in the whole compiled program fails at the assembly stage**, with an
 "unknown operation" error. This has nothing to do with whether `MoveTo`
@@ -49,3 +52,9 @@ rarely comes up, since positioning the cursor with `MoveTo` before
 printing anything is already the normal pattern (as in the example
 above), but `PrintNumber` used completely on its own, with no
 `MoveTo`/`PrintString`/`Tile` anywhere in the program, hits this.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`PrintNumber`/`PrintDecimal` are now themselves part of the auto-init
+trigger list, so either one works standalone with no `MoveTo`/
+`PrintString`/`Tile` call anywhere else in the compile.

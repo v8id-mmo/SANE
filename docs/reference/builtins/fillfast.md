@@ -1,6 +1,8 @@
 # `FillFast`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+wrote one byte more than `<count>` requested; SANE writes exactly
+`<count>` bytes.
 
 A faster variant of [`Fill`](fill.md), for the case where the fill value
 is already a plain numeric/variable expression. Meant to write the same
@@ -37,9 +39,15 @@ end.
 
 ## Known limitations
 
-`FillFast` writes one byte more than the `count` given: with a count of
-5, as in the example above, it actually fills 6 bytes (`buf[0]` through
-`buf[5]`), not 5. `Fill` doesn't have this problem: calling it with the
-same arguments writes exactly the requested number of bytes. If the
-target buffer is exactly `count` bytes long, `FillFast` overwrites one
-byte belonging to whatever comes right after it in memory.
+In vanilla TRSE, `FillFast` writes one byte more than the `count` given:
+with a count of 5, as in the example above, it actually fills 6 bytes
+(`buf[0]` through `buf[5]`), not 5. `Fill` doesn't have this problem:
+calling it with the same arguments writes exactly the requested number of
+bytes. If the target buffer is exactly `count` bytes long, `FillFast`
+overwrites one byte belonging to whatever comes right after it in memory.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`FillFast` now writes exactly `<count>` bytes, matching `Fill`; a runtime
+`<count>` of `0` correctly writes zero bytes too, rather than wrapping
+into a 256-byte pass.

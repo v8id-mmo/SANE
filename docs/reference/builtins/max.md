@@ -1,6 +1,8 @@
 # `max`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+compared `signed byte` operands as if they were unsigned; SANE compares
+them correctly.
 
 Returns the larger of two `byte` values.
 
@@ -41,9 +43,15 @@ end.
 
 ## Known limitations
 
-`max` compares its two `byte` operands as plain unsigned values, with no
-awareness of `signed byte` at all. For a pair straddling the sign
-boundary, this gives the wrong answer: `max(-1, 1)` returns `-1`, not `1`,
-because `-1`'s bit pattern (`$FF`) is unsigned-larger than `1`. If either
-operand can be negative, compare and branch manually instead of relying on
-`max`. See [`min`](min.md) for the same issue on the other side.
+In vanilla TRSE, `max` compares its two `byte` operands as plain unsigned
+values, with no awareness of `signed byte` at all. For a pair straddling
+the sign boundary, this gives the wrong answer: `max(-1, 1)` returns `-1`,
+not `1`, because `-1`'s bit pattern (`$FF`) is unsigned-larger than `1`.
+If either operand can be negative, compare and branch manually instead of
+relying on `max`. See [`min`](min.md) for the same issue on the other
+side.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`max` now compares `signed byte` operands correctly (`max(-1, 1)` returns
+`1`).

@@ -755,7 +755,10 @@ address works correctly there.
 
 ### `CopyCharsetFromRom` only copies part of the character ROM
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the copy loop now uses the correct
+256-byte stride, and (for a `pointer` destination) the destination is
+now advanced between chunks too, so the full 2048-byte ROM font is
+copied correctly.
 
 `CopyCharsetFromRom` is meant to copy the full 2048-byte character ROM
 font to RAM in one call. Its copy loop is built from 8 chunks that are
@@ -763,7 +766,10 @@ each supposed to cover one non-overlapping 256-byte page, but they're
 actually spaced only 100 bytes apart, so they heavily overlap each other
 and the last chunk stops well short of the end. Well over half of the
 character ROM is never copied at all, while the bytes that are covered
-get copied several times over.
+get copied several times over. With a `pointer` destination (the only
+kind this builtin accepts), the real-world impact was actually worse than
+the stride alone suggests: the destination store never advanced between
+chunks either, so only the very last chunk's 256 bytes ever survived.
 
 *Reference page:*
 [`CopyCharsetFromRom`](reference/builtins/copycharsetfromrom.md)
@@ -784,7 +790,8 @@ point on.
 
 ### `CopyImageColorData` silently accepts an invalid bank number
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** an out-of-range bank number now raises
+a compile error instead of silently defaulting to bank 0's address.
 
 `CopyImageColorData`'s bank parameter is meant to be 1, 2, or 3. Passing
 any other value (0, or 4 and above) compiles and assembles without any
@@ -797,7 +804,12 @@ number would suggest.
 
 ### `CreateInteger` and `CreatePointer` are the same builtin under two names
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `CreatePointer` now also loads its
+result's high byte into X, so its result is distinguishable from
+`CreateInteger`'s via X immediately after the call. Fixing this also
+surfaced and fixed a second, previously-uncatalogued bug: both builtins
+used to build their result with the low and high bytes swapped relative
+to their own documented parameter order (see the entry below).
 
 `CreatePointer` sounds like it should build a result usable as a
 `pointer`, distinct from `CreateInteger`. In practice the two compile to
@@ -807,12 +819,25 @@ Assigning the result of `CreatePointer` to a `pointer` variable produces
 exactly the same code as assigning `CreateInteger`'s result to an
 `integer` variable.
 
+### `CreateInteger`/`CreatePointer` built their result with the low/high bytes swapped
+
+**Status:** Fixed · **Fixed in:** the low/high byte order now matches the
+documented `(loByte, hiByte)` parameters.
+
+Found while fixing the bug above. Both builtins are documented as
+`(loByte, hiByte)`, returning `loByte + hiByte*256`. In practice they
+actually built the result the other way round: `CreateInteger(10, 20)`
+did not equal `5130` as documented; `CreateInteger(20, 10)` did. This
+affected both builtins identically, since they share one implementation.
+
 *Reference pages:* [`CreateInteger`](reference/builtins/createinteger.md),
 [`CreatePointer`](reference/builtins/createpointer.md)
 
 ### `FillFast` writes one byte more than it's told to
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `FillFast` now writes exactly `count`
+bytes, matching `Fill`; a runtime count of `0` correctly writes zero
+bytes too.
 
 `FillFast(address, value, count)` is meant to fill exactly `count` bytes,
 the same as the plain `Fill` builtin. `Fill` does that correctly, but
@@ -888,7 +913,9 @@ compile-time 0 there always correctly produced no copy at all.
 
 ### `min`/`max` compare bytes as unsigned, with no signed handling at all
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** both builtins now compare `signed byte`
+operands correctly, reusing the same corrected signed-compare idiom the
+comparison operators use.
 
 `min`/`max` pick the smaller/larger of two `byte` values using a plain
 unsigned comparison. On a `signed byte`, any pair straddling the sign
@@ -903,7 +930,8 @@ attempt a signed-aware branch, even if it's imperfect at the boundary;
 
 ### `PrintNumber`/`PrintDecimal` fail unless `MoveTo`, `PrintString`, or `Tile` is also used somewhere
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `PrintNumber`/`PrintDecimal` are now
+themselves part of the auto-init trigger list, so either works standalone.
 
 Using `PrintNumber` or `PrintDecimal` with no `MoveTo`, `PrintString`, or
 `Tile` call anywhere else in the whole compiled program fails at the

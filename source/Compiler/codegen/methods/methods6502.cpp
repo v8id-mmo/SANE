@@ -2836,6 +2836,7 @@ void Methods6502::Fill(Assembler *as)
 void Methods6502::FillFast(Assembler *as)
 {
     QString lbl = as->NewLabel("fill");
+    QString lblDone = as->NewLabel("filldone");
     m_node->RequireAddress(m_node->m_params[0],"Fill",m_node->m_op.m_lineNumber);
     if (!m_node->m_params[1]->isPure())
         ErrorHandler::e.Error("FillFast parameter 2 must be pure numeric/variable!",m_node->m_op.m_lineNumber);
@@ -2844,7 +2845,16 @@ void Methods6502::FillFast(Assembler *as)
     if (m_node->m_params[0]->getType(as)==TokenType::POINTER) {
 
         LoadVar(as,2);
+        as->Asm("sec");
+        as->Asm("sbc #1");
         as->Asm("tay");
+        // Bug 2.42 fix: the old code loaded the count itself into Y and
+        // stored once per pass down to and including 0 (count+1 stores);
+        // loading count-1 instead makes the loop cover exactly `count`
+        // indices. A runtime count of 0 wraps to 255 here, so skip the
+        // fill entirely rather than run a 256-byte pass, the same
+        // before-the-loop guard already used for MemCpy/MemCpyFast (2.47).
+        as->Asm("bmi "+lblDone+" ; count==0, skip the fill entirely");
         LoadVar(as,1);
         as->Label(lbl);
         as->Term("sta (");
@@ -2852,14 +2862,19 @@ void Methods6502::FillFast(Assembler *as)
         as->Term("),y", true);
         as->Asm("dey");
         as->Asm("bpl "+lbl);
+        as->Label(lblDone);
         as->PopLabel("fill");
+        as->PopLabel("filldone");
 
         return;
     }
 
 
     LoadVar(as,2);
+    as->Asm("sec");
+    as->Asm("sbc #1");
     as->Asm("tax");
+    as->Asm("bmi "+lblDone+" ; count==0, skip the fill entirely");
     LoadVar(as,1);
     as->Label(lbl);
     as->Term("sta ");
@@ -2867,7 +2882,9 @@ void Methods6502::FillFast(Assembler *as)
     as->Term(",x", true);
     as->Asm("dex");
     as->Asm("bpl "+lbl);
+    as->Label(lblDone);
     as->PopLabel("fill");
+    as->PopLabel("filldone");
 
 }
 
@@ -3180,10 +3197,26 @@ void Methods6502::PlaySound(Assembler *as)
 
 void Methods6502::CreateInteger(Assembler *as, QString reg)
 {
-
-    LoadVar(as, 0);
-    as->Asm("tay");
+    // Bug 2.77 fix (found while fixing 2.41): loading param0 first and
+    // transferring it to Y left the true low byte (param1, the last one
+    // loaded, ends up in A) and the true high byte (param0) in Y - the
+    // opposite of the documented (loByte, hiByte) parameter order once the
+    // generic word-assignment epilogue's "sta var / sty var+1" stores
+    // them. Load param1 (hiByte) into Y first, param0 (loByte) last so
+    // it's the one left in A for "sta" to store as the low byte.
     LoadVar(as, 1);
+    as->Asm("tay");
+    LoadVar(as, 0);
+
+    // Bug 2.41 fix: CreatePointer's own name implies its result should
+    // also be usable via X (the register this codegen otherwise uses for
+    // pointer/bank-byte handling), but the shared implementation never
+    // touched X at all. Y already carries the high byte for the
+    // assignment epilogue above; this also mirrors it into X, for
+    // CreatePointer's dispatch only (CreateInteger passes "y" and is
+    // unaffected).
+    if (reg=="x")
+        LoadVar(as, 1, "", "ldx ");
 }
 
 void Methods6502::LoHi(Assembler *as, int type)
@@ -4770,30 +4803,44 @@ void Methods6502::CopyCharsetFromRom(Assembler *as)
     m_node->RequireAddress(m_node->m_params[0],"CopyCharsetFromRom",m_node->m_op.m_lineNumber);
     as->Comment("Copy charset from ROM");
     as->Asm("sei ");
-    QString lbl = as->NewLabel("charsetcopy");
     as->Asm("lda #$33 ;from rom - rom visible at d800");
     as->Asm("sta $01");
 
-    as->Asm("ldy #$00");
-    as->Label(lbl);
-    for (int i=0;i<8;i++) {
-        QString mp = Util::numToHex(i*100);
-    as->Asm("lda $D000 + "+mp+",y");
     if (m_node->m_params[0]->getType(as)==TokenType::POINTER) {
-        as->Term("sta (");
-        m_node->m_params[0]->Accept(m_codeGen);
-        as->Term("),y", true);
-
+        // Indirect indexed addressing ("(ptr),y") can only reach one
+        // 256-byte page per value of the pointer, unlike the absolute-
+        // address branch below where each chunk's own offset can be baked
+        // straight into the operand. So each of the 8 chunks needs its own
+        // full 0..255 pass, with the pointer's own high byte bumped one
+        // page between chunks.
+        QString ptr = m_node->m_params[0]->getValue(as);
+        for (int i=0;i<8;i++) {
+            QString mp = Util::numToHex(i*256);
+            QString lbl = as->NewLabel("charsetcopy");
+            as->Asm("ldy #$00");
+            as->Label(lbl);
+            as->Asm("lda $D000 + "+mp+",y");
+            as->Asm("sta ("+ptr+"),y");
+            as->Asm("dey");
+            as->Asm("bne "+lbl);
+            if (i<7)
+                as->Asm("inc "+ptr+"+1");
+        }
     }
     else {
-        as->Term("sta ");
-        m_node->m_params[0]->Accept(m_codeGen);
-        as->Term("+"+mp+",y", true);
+        QString lbl = as->NewLabel("charsetcopy");
+        as->Asm("ldy #$00");
+        as->Label(lbl);
+        for (int i=0;i<8;i++) {
+            QString mp = Util::numToHex(i*256);
+            as->Asm("lda $D000 + "+mp+",y");
+            as->Term("sta ");
+            m_node->m_params[0]->Accept(m_codeGen);
+            as->Term("+"+mp+",y", true);
+        }
+        as->Asm("dey");
+        as->Asm("bne "+lbl);
     }
-    }
-    //as->Asm("sta (zeropage1),y");
-    as->Asm("dey");
-    as->Asm("bne "+lbl);
 
     as->Asm("lda #$37");
     as->Asm("sta $01");
@@ -6345,10 +6392,12 @@ void Methods6502::CopyImageColorData(Assembler *as)
     QString addBank="0";
     if (bank->m_val==1)
         addBank="$4000";
-    if (bank->m_val==2)
+    else if (bank->m_val==2)
         addBank="$8000";
-    if (bank->m_val==3)
+    else if (bank->m_val==3)
         addBank="$c000";
+    else
+        ErrorHandler::e.Error("CopyImageColorData : bank must be 1, 2, or 3", m_node->m_op.m_lineNumber);
 
     QString lbl = as->NewLabel("copyimageloop");
 
@@ -7641,11 +7690,34 @@ void Methods6502::MinMax(Assembler *as, bool isMin)
     LoadVar(as,0);
     if (!m_node->m_params[1]->isPure())
         ErrorHandler::e.Error("Min/max : parameter 1 must be variable or constant", m_node->m_op.m_lineNumber);
-    as->Asm("cmp " +m_node->m_params[1]->getValue(as));
-    if (isMin)
-        as->Asm("bcs "+lbl);
-    else
-        as->Asm("bcc "+lbl);
+
+    // Bug 2.48 fix: a plain cmp/bcs/bcc branches on the unsigned-borrow
+    // carry flag alone, which gets a signed pair straddling the sign
+    // boundary wrong (e.g. -1's bit pattern $FF reads as unsigned-bigger
+    // than 1). Mirror CodeGen6502::PrintCompare/BuildToCmp's signed path
+    // instead: sec/sbc for a real V flag, then the classic bvc/eor #$80
+    // correction, then branch on the corrected sign bit (bpl/bmi) rather
+    // than carry.
+    if (m_node->m_params[0]->isSigned(as) || m_node->m_params[1]->isSigned(as)) {
+        as->Asm("sec");
+        as->Asm("sbc " +m_node->m_params[1]->getValue(as)+" ; signed compare");
+        QString lblCorrect = as->NewLabel("minmaxsign");
+        as->Asm("bvc " + lblCorrect);
+        as->Asm("eor #$80");
+        as->Label(lblCorrect);
+        as->PopLabel("minmaxsign");
+        if (isMin)
+            as->Asm("bpl "+lbl);
+        else
+            as->Asm("bmi "+lbl);
+    }
+    else {
+        as->Asm("cmp " +m_node->m_params[1]->getValue(as));
+        if (isMin)
+            as->Asm("bcs "+lbl);
+        else
+            as->Asm("bcc "+lbl);
+    }
     as->Asm("lda "+m_node->m_params[1]->getValue(as));
     as->Asm("jmp "+lblCont);
     as->Label(lbl);

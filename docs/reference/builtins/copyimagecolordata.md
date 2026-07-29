@@ -1,6 +1,8 @@
 # `CopyImageColorData`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+silently treated an out-of-range `<bank>` as bank `0`; SANE raises a
+compile error instead.
 
 Unpacks an image asset's combined char/color data (as produced by TRSE's
 own image export tools) into screen memory and color RAM for a chosen VIC
@@ -42,8 +44,13 @@ the same folder)
 
 ## Known limitations
 
-`<bank>` is only meaningful as `1`, `2`, or `3`. Passing any other value
-(`0`, or `4` and above) compiles and assembles without any error or
-warning, but silently produces the exact same addresses as bank `0`
-(`$0400`), not an error and not the address that bank number would
+`<bank>` is only meaningful as `1`, `2`, or `3`. In vanilla TRSE, passing
+any other value (`0`, or `4` and above) compiles and assembles without any
+error or warning, but silently produces the exact same addresses as bank
+`0` (`$0400`), not an error and not the address that bank number would
 suggest.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+an out-of-range `<bank>` now raises a compile error ("bank must be 1, 2,
+or 3") instead of silently defaulting to bank 0's address.

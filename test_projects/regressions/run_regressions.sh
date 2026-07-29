@@ -439,7 +439,7 @@ for name in "${names[@]}"; do
 
 	sed -i "s|\$DIR|$SCRIPT_DIR|g" "$symfile"
 
-	timeout "$VICE_TIMEOUT" "$X64SC" +sound -autostartprgmode 1 -moncommands "$symfile" "$prgfile" >/dev/null 2>&1
+	timeout "$VICE_TIMEOUT" "$X64SC" -sound -autostartprgmode 1 -moncommands "$symfile" "$prgfile" >/dev/null 2>&1
 
 	if [[ ! -f "$resultfile" ]]; then
 		echo "  ERROR: VICE did not produce results.bin (breakpoint never hit?)"

@@ -1,6 +1,8 @@
 # `CreateInteger`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+built this value with the low/high bytes swapped relative to the
+documented parameter order; SANE fixes it.
 
 Builds a 16-bit value from two separate byte expressions, one for the low
 byte and one for the high byte, so it can be assigned straight into an
@@ -35,6 +37,18 @@ end.
 
 ## Known limitations
 
-See [`CreatePointer`](createpointer.md): it's implemented as the exact
-same routine as `CreateInteger`, not a distinct one, despite the
-different name.
+See [`CreatePointer`](createpointer.md): in vanilla TRSE, it's implemented
+as the exact same routine as `CreateInteger`, not a distinct one, despite
+the different name; SANE gives it a small addition of its own (also
+loading the result into X), while `CreateInteger` itself is unchanged.
+
+Separately, in vanilla TRSE, this builtin actually builds its result with
+the low and high byte positions swapped relative to the documented
+`(loByte, hiByte)` order: `CreateInteger(10, 20)` does **not** equal
+`5130` as the example above's comment claims; `CreateInteger(20, 10)`
+does.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the low/high byte order now matches the documented `(loByte, hiByte)`
+parameters, so the example above is accurate on SANE.

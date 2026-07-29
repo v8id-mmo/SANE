@@ -8,6 +8,33 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `CreateInteger`/`CreatePointer` building their result with the low
+  and high byte positions swapped relative to their own documented
+  `(loByte, hiByte)` order: `CreateInteger(10, 20)` never actually equaled
+  `5130` as their own doc examples claimed. Found while fixing the next
+  item below.
+- Fixed `CreatePointer` compiling to byte-for-byte identical assembly as
+  `CreateInteger`, never actually using the X register despite the name:
+  it now also loads its result's high byte into X.
+- Fixed `min`/`max` comparing `byte` operands as plain unsigned values,
+  with no `signed byte` awareness at all: a pair straddling the sign
+  boundary (e.g. `min(-1, 1)`) returned the wrong one.
+- Fixed `PrintNumber`/`PrintDecimal` failing to assemble ("unknown
+  operation") unless `MoveTo`/`PrintString`/`Tile` also appeared somewhere
+  else in the same compile; both are now themselves part of the auto-init
+  trigger that declares the screen-memory symbol they depend on.
+- Fixed `FillFast` writing one byte more than its `count` parameter said,
+  every time; a runtime count of `0` now also correctly writes zero bytes
+  instead of wrapping into a 256-byte pass.
+- Fixed `CopyImageColorData` silently treating an out-of-range bank
+  number (anything other than 1, 2, or 3) as bank 0 with no warning; it
+  now raises a compile error instead.
+- Fixed `CopyCharsetFromRom` only copying part of the 2KB character ROM
+  font (a wrong page stride made its 8 copy chunks overlap and stop
+  short). Also fixed a second, more severe bug in the same function found
+  while verifying the fix against a `pointer` destination (the type every
+  real caller uses): the destination never advanced past the first
+  256-byte page at all, so only the last chunk's data ever survived.
 - Fixed `CopyBytesShift`'s rotate-right mode (mode 3) never actually
   rotating: it silently behaved exactly like plain shift-right (mode 1) at
   every shift amount, discarding the wraparound bit instead of carrying it

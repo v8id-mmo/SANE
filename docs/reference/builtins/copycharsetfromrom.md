@@ -52,7 +52,18 @@ heavily overlap and the last one only reaches byte offset 955 of the full
 past the first 956 bytes) is never copied at all, while the bytes that
 are covered get redundantly copied more than once. Anything relying on
 this to seed a full custom charset from the stock ROM font will end up
-with a RAM copy missing most of its second half.
+with a RAM copy missing most of its second half. With a `pointer`
+destination (the only kind this builtin actually accepts, see the bullet
+above), vanilla TRSE's bug is worse than the stride alone suggests: the
+destination store never advances between chunks either, so in practice
+only the very last chunk's 256 bytes ever survive in RAM, not even the
+956 bytes the stride math implies.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the copy loop now uses the correct 256-byte stride, and the destination
+pointer's high byte is advanced between chunks, so the full 2048-byte ROM
+font is copied correctly.
 
 **In vanilla TRSE, it disables interrupts and never re-enables them.**
 `CopyCharsetFromRom` executes `sei` to safely bank out the KERNAL/BASIC
