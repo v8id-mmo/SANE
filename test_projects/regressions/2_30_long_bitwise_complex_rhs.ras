@@ -31,11 +31,11 @@ begin
 
 	complex_result := a & (b + d);
 	// RHS is a non-trivial expression (b+d = $0F0F10); correct result:
-	// $123456 & $0F0F10 = $02040A. Buggy: top byte not ANDed at all (just
+	// $123456 & $0F0F10 = $020410. Buggy: top byte not ANDed at all (just
 	// overwritten with (b+d)'s own top byte, $0F), and the middle byte can
 	// be off by one from leftover carry state.
 	Vars::text := "2.30b";
-	if (complex_result = $02040A) then Common::PASS() else Common::FAIL();
+	if (complex_result = $020410) then Common::PASS() else Common::FAIL();
 
 	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
 	addbreakpoint();

@@ -224,7 +224,7 @@ void CodeGen6502::HandleVarBinopB16bit(QSharedPointer<Node> node) {
 
     as->Term();
     //    as->Asm("sta " +lbl);
-    QString lbl = as->StoreInTempVar("rightvarInteger", "word");
+    QString lbl = as->StoreInTempVar("rightvarInteger", v->isLong(as) ? "long" : "word");
     //    as->Asm("sty " +lbl+"+1");
     //        qDebug() << as->m_term;
     as->Term();
@@ -238,6 +238,18 @@ void CodeGen6502::HandleVarBinopB16bit(QSharedPointer<Node> node) {
         as->BinOP(node->m_op.m_type);
         as->Term(lbl+"+1", true);
         as->Asm("tay");
+        if (v->isLong(as)) {
+            // Top (third) byte was never combined at all before this fix
+            // (bug 2.30): mirror the middle-byte handling just above,
+            // one byte further up, so a 24-bit `long` gets the same
+            // per-byte and/ora/eor/adc/sbc its word-width sibling already
+            // gets instead of silently passing the RHS's own top byte
+            // through untouched.
+            as->Asm("lda " + getValue(v) + "+2");
+            as->BinOP(node->m_op.m_type);
+            as->Term(lbl+"+2", true);
+            as->Asm("tax");
+        }
         //    qDebug() << getValue(v) << v->m_op.getType();
         //  exit(1);
         if (v->getType(as)==TokenType::POINTER || (v->m_op.m_type!=TokenType::ADDRESS && !v->m_fake16bit) )
@@ -307,11 +319,16 @@ void CodeGen6502::HandleVarBinopB16bit(QSharedPointer<Node> node) {
     as->Term(lbl,true);
     //        as->Asm("sta " + varName);
 
+    // This carry-based correction only means anything for +/-: and/ora/eor
+    // don't produce a meaningful carry out of the low byte, so applying it
+    // unconditionally (bug 2.30) reads whatever carry state was left over
+    // from evaluating the right-hand side and can flip the high byte's
+    // bitwise result by one.
     if (node->m_op.m_type==TokenType::PLUS) {
         as->Asm("bcc "+lblword);
         as->Asm("iny");
     }
-    else {
+    else if (node->m_op.m_type==TokenType::MINUS) {
         as->Asm("bcs "+lblword);
         as->Asm("dey");
     }
@@ -967,15 +984,21 @@ void CodeGen6502::dispatch(QSharedPointer<NodeNumber>node)
 
 //    as->Comment("Forcetype: "+TokenType::getType(node->getLoadType()));
     QString val = getValue(node);
-    if ((node->getStoreType()==TokenType::INTEGER ||node->getLoadType()==TokenType::INTEGER || node->getLoadType()==TokenType::LONG) && node->m_val<=255) {
+    // These magnitude shortcuts are only valid for a truly small, non-negative
+    // constant: `m_val<=255`/`<=65535` alone is also (wrongly) true for any
+    // negative value, which used to force the high byte(s) to 0 instead of
+    // the sign-extended value a negative long/integer constant actually
+    // needs (found while fixing bug 2.35: `lv := -100000;` stored complete
+    // garbage into a `long` variable before even reaching abs()).
+    if ((node->getStoreType()==TokenType::INTEGER ||node->getLoadType()==TokenType::INTEGER || node->getLoadType()==TokenType::LONG) && node->m_val>=0 && node->m_val<=255) {
         as->Asm("ldy #0   ; Force integer assignment, set y = 0 for values lower than 255");
     }
-    if (node->getLoadType()==TokenType::LONG && node->m_val<=65535) {
+    if (node->getLoadType()==TokenType::LONG && node->m_val>=0 && node->m_val<=65535) {
         as->Asm("ldx #0   ; Force long");
     }
 
     //    as->Comment("Value assignment : " + Util::numToHex(node->m_val) + " "+ val + " " +QString::number(node->getValueAsInt(as)));
-    if (((node->m_op.m_type==TokenType::INTEGER_CONST && node->m_val>255) || node->isReference()) && as->m_term=="") {
+    if (((node->m_op.m_type==TokenType::INTEGER_CONST && (node->m_val>255 || node->m_val<0)) || node->isReference()) && as->m_term=="") {
         as->Comment("Integer constant assigning");
         Load16bitVariable(node,"y");
         return;

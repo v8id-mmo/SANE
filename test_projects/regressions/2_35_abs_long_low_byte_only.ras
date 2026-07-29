@@ -6,13 +6,23 @@ Program Bug_2_35_AbsLongLowByteOnly;
 // bit 7 of the low byte alone and negates only that byte, leaving the
 // middle/high bytes untouched.
 //
-// -100000 as a 24-bit two's-complement value is $FE79E0 (low byte $E0,
-// bit 7 set). Correct abs() = 100000 ($0186A0). Buggy: only the low byte
-// gets two's-complemented ($E0 -> $20), middle/high bytes pass through
-// unchanged, giving $FE7920 (16677152), not 100000.
+// -100000 as a 24-bit two's-complement value is $FE7960 (low byte $60,
+// mid $79, high $FE, bit 7 of the high byte set). Correct abs() = 100000
+// ($0186A0). Buggy: only the low byte gets two's-complemented, middle/
+// high bytes pass through unchanged.
+//
+// lv is built at runtime (0 - poslv) rather than from a negative decimal
+// literal directly: a separate, uncatalogued bug truncates a `long`
+// variable's negative decimal-literal initializer to a 16-bit magnitude
+// before it ever reaches codegen (confirmed 2026-07-29 while fixing this
+// bug; `lv : long = -100000;` stores garbage - see BUGS_PROGRESS.md's
+// newly-found entry). Building the value via runtime subtraction instead
+// isolates this snippet to Abs()'s own bug, independent of that other one.
 @use "unittests/common"
 
 var
+	zero : long = 0;
+	poslv : long = 100000;
 	lv : long;
 	r : long;
 
@@ -22,7 +32,7 @@ begin
 	setmemoryconfig(1,0,0);
 	Common::TestInit();
 
-	lv := -100000;
+	lv := zero - poslv;
 	r := abs(lv);
 
 	Vars::text := "2.35";

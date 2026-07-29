@@ -1,6 +1,8 @@
 # `not`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+only complements the low byte of a `not` on an `integer`/`long`
+plain-variable operand; SANE fixes it.
 
 Two related uses: negates a boolean value or condition (true becomes
 false and vice versa), and bitwise-complements a numeric value (every bit
@@ -54,11 +56,16 @@ end.
 in the example above) work correctly, and so does `not` on a plain
 `byte` value (also shown above: `not $0F` correctly gives `$F0`).
 
-- **`not` on an `integer`/`long` value only complements the low byte; the
-  upper byte(s) pass straight through unchanged.** `not` on an `integer`
-  holding `$00FF` should give `$FF00`, but the upper byte is left as `$00`
-  and the actual result comes out `$0000`. Stick to `not` on `byte`
-  values, or on a plain boolean, until this is fixed.
+- **In vanilla TRSE, `not` on an `integer`/`long` value only complements
+  the low byte; the upper byte(s) pass straight through unchanged.** `not`
+  on an `integer` holding `$00FF` should give `$FF00`, but the upper byte
+  is left as `$00` and the actual result comes out `$0000`.
+
+    :material-check-decagram:
+    **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+    `not` on an `integer`/`long` plain-variable operand now correctly
+    complements every byte. `not` on a more complex expression (not a
+    plain variable) still only complements the low byte.
 - **`not` can't negate a comparison the way it looks like it should.**
   Writing `not (a > 5)`, with the comparison in parentheses, fails to
   compile at all. Writing it without the parentheses, `not a > 5`, does

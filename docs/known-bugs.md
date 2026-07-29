@@ -170,14 +170,15 @@ instead for an early exit from inside an `interrupt` procedure.
 
 ### `ReturnValue` fails on a function that returns `long`
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `ReturnValue` now handles a `long`
+return value the same way it already handled `byte`/`integer`/`boolean`.
 
 `ReturnValue` correctly sets and returns a `byte`, `integer`, or
-`boolean` value. On a function declared to return `long`, it fails to
-assemble instead: the build stops with an error at the point this
+`boolean` value. On a function declared to return `long`, it used to fail
+to assemble instead: the build stopped with an error at the point this
 builtin's code would run. The plain `<functionName> := <value>;` form
-works correctly for a `long`-returning function; only `ReturnValue`
-itself is affected.
+worked correctly for a `long`-returning function; only `ReturnValue`
+itself was affected.
 
 *Reference page:* [`ReturnValue`](reference/builtins/returnvalue.md)
 
@@ -589,16 +590,18 @@ produces `124` instead of the mathematically correct `-4`.
 
 ### `long` bitwise AND/OR/XOR silently miscompute the result with a non-trivial right-hand operand
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the top byte is now combined correctly,
+and the middle byte no longer picks up leftover carry state from the
+right-hand side.
 
 `&`, `|`, and `xor`/`^` between two 24-bit `long` values work correctly
 when the right-hand side is a plain variable. As soon as the right-hand
 side is a more complex expression (an addition, for example), two
-separate things go wrong at once: the top byte of the result isn't
-combined with the operator at all, it's simply overwritten with the
-right-hand expression's own top byte; and the middle byte can come out
-one off from the correct value, because of leftover state from evaluating
-the right-hand expression bleeding into the result.
+separate things used to go wrong at once: the top byte of the result
+wasn't combined with the operator at all, it was simply overwritten with
+the right-hand expression's own top byte; and the middle byte could come
+out one off from the correct value, because of leftover state from
+evaluating the right-hand expression bleeding into the result.
 
 *Reference pages:* [`&`](reference/operators/bitwise-and.md),
 [`|`](reference/operators/bitwise-or.md), [`xor`](reference/operators/xor.md)
@@ -624,13 +627,16 @@ conditions.
 
 ### `not` on a wider-than-byte value only complements the low byte
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `not` on an `integer` or `long`
+plain-variable operand now flips every byte, not just the low one.
 
 `not` on an `integer` or `long` value should flip every bit, but only the
-low byte actually gets flipped; the upper byte(s) pass straight through
+low byte actually got flipped; the upper byte(s) passed straight through
 unchanged instead of being complemented too. `not` on an `integer`
-holding `$00FF` should give `$FF00`, but actually gives `$0000`. `not` on
-a plain `byte` is unaffected and works correctly.
+holding `$00FF` used to give `$0000` instead of the correct `$FF00`. `not`
+on a plain `byte` was unaffected and already worked correctly. The fix
+covers a plain variable operand (the common case); `not` on a more
+complex expression still falls back to the old byte-width behavior.
 
 *Reference page:* [`not`](reference/operators/not.md)
 
@@ -656,31 +662,39 @@ correctly.
 
 ### `Lo`, `Hi`, and `bankbyte` are all a silent no-op on a `long` value
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** all three now correctly return the
+requested byte of a `long` value too, the same as they already did for
+`pointer`.
 
 `Lo`, `Hi`, and `bankbyte` correctly return the low, high, and third
 (bits 16-23) byte of a `pointer` value. On a `long` value, this fork's
-other 24-bit type, all three produce no code at all: the destination
-variable ends up holding whatever was already in the processor's
-accumulator at that point in the program, not any byte of the `long`
-value. There's no error or warning, the assignment just silently does the
-wrong thing. All three share one underlying implementation, so this isn't
-three separate bugs, just one gap that happens to surface under three
-different names.
+other 24-bit type, all three used to produce no code at all: the
+destination variable ended up holding whatever was already in the
+processor's accumulator at that point in the program, not any byte of the
+`long` value. There was no error or warning, the assignment just silently
+did the wrong thing. All three share one underlying implementation, so
+this wasn't three separate bugs, just one gap that happened to surface
+under three different names.
 
 *Reference pages:* [`Lo`](reference/builtins/lo.md),
 [`Hi`](reference/builtins/hi.md), [`bankbyte`](reference/builtins/bankbyte.md)
 
 ### `Abs` only negates the low byte of a `long` value
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `Abs` now has a dedicated `long` path
+that checks the correct (top) byte's sign and negates all three bytes
+with real carry propagation between them. A related, previously
+uncatalogued gap in the existing `integer` path (the low byte's own
+carry-out was never propagated into the high byte, so `Abs` of a
+negative multiple of 256 came out wrong too) was found and fixed in the
+same pass.
 
 `Abs` correctly returns the absolute value of a negative `byte` or
-`integer`. On a `long` value it silently falls back to the plain `byte`
-logic: it checks the sign bit of the wrong byte (the low byte instead of
-the high byte, where a 24-bit value's sign actually lives) and, even when
-that happens to trigger, only negates that one byte, leaving the other two
-completely unchanged.
+`integer`. On a `long` value it used to silently fall back to the plain
+`byte` logic: it checked the sign bit of the wrong byte (the low byte
+instead of the high byte, where a 24-bit value's sign actually lives)
+and, even when that happened to trigger, only negated that one byte,
+leaving the other two completely unchanged.
 
 *Reference page:* [`Abs`](reference/builtins/abs.md)
 

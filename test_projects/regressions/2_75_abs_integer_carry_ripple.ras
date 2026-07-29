@@ -1,0 +1,42 @@
+Program Bug_2_75_AbsIntegerCarryRipple;
+// Bug 2.75: `abs()` on a 16-bit `integer` never propagated the low byte's
+// own carry-out into the high byte. Methods6502::Abs's word path
+// (methods6502.cpp, the isWord() branch) negates the high byte and low
+// byte independently (invert both bytes, then `clc`/`adc #$01` on the low
+// byte alone to complete the two's complement), but never checks whether
+// that `adc #$01` itself carried out - which it must, whenever the
+// original value's low byte was $00 (e.g. -256, -512, ...), since
+// inverting $00 gives $FF and adding 1 wraps back to $00 with a carry
+// that has to increment the high byte to keep the two's complement
+// correct.
+//
+// Found 2026-07-29 while fixing bug 2.35 (`abs()` on `long`, same file,
+// same shape one byte wider): confirmed abs(-256) returned 0 instead of
+// 256 on the *word* path even before touching the `long` path.
+@use "unittests/common"
+
+var
+	iv : integer = -256;
+	iresult : integer;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	iresult := abs(iv);
+	// correct abs(-256) = 256; buggy: low byte negation wraps ($00 -> $FF
+	// -> +1 -> $00 with an unhandled carry), and the untouched high byte
+	// negation stays $FF's own two's-complement ($00), giving 0 overall
+	if (iresult = 256) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

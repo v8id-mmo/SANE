@@ -1,6 +1,8 @@
 # `&` (Bitwise AND)
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+miscomputes `&` on a `long` value when the right-hand side is a complex
+expression; SANE fixes it.
 
 Combines two values bit by bit: each result bit is `1` only where both
 inputs have a `1` in that position. Commonly used to mask off (clear) a
@@ -48,14 +50,18 @@ is always the mathematically correct thing to do for AND, since the
 result of ANDing anything with an 8-bit value can never need more than 8
 bits).
 
-- **On a `long` (24-bit) value, `&` only works correctly when the
-  right-hand side is a plain variable or literal.** As soon as the
-  right-hand side is a more complex expression (an addition, for
+- **In vanilla TRSE, on a `long` (24-bit) value, `&` only works correctly
+  when the right-hand side is a plain variable or literal.** As soon as
+  the right-hand side is a more complex expression (an addition, for
   example), two things silently go wrong at once: the top byte of the
   result isn't ANDed at all, it's simply overwritten with whatever the
   right-hand expression's own top byte happened to be, and the middle
   byte can come out one off from the correct value, because of leftover
   state from evaluating the right-hand expression bleeding into the
-  result. Keep the right-hand side of a `long &` a plain variable (or
-  copy a complex expression into a temporary `long` variable first) to
-  avoid this.
+  result.
+
+    :material-check-decagram:
+    **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+    `&` on a `long` value now correctly combines the top byte too, and no
+    longer picks up leftover carry state on the middle byte, regardless of
+    how complex the right-hand side is.

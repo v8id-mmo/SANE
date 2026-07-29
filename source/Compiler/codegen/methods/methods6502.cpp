@@ -3225,7 +3225,7 @@ void Methods6502::LoHi(Assembler *as, int type)
             as->Asm("lda #^" + m_node->m_params[0]->getAddress());
         return;
     }
-    if (m_node->m_params[0]->getType(as)==TokenType::INTEGER) {
+    if (m_node->m_params[0]->getType(as)==TokenType::INTEGER || m_node->m_params[0]->getType(as)==TokenType::LONG) {
         if (type==0)
             as->Asm("lda " + m_node->m_params[0]->getValue(as));
         if (type==1)
@@ -3984,6 +3984,41 @@ void Methods6502::InitZeroPage(Assembler* as) {
 void Methods6502::Abs(Assembler *as)
 {
 
+    if (m_node->m_params[0]->isLong(as)) {
+
+        as->Comment("abs(x) long");
+        as->ClearTerm();
+        m_node->m_params[0]->Accept(m_codeGen);
+        as->Term();
+        QString l = as->NewLabel("abslabel");
+        QString lripple = as->NewLabel("abslabel_ripple");
+        as->Asm("cpx #127"); // sign lives in bit 7 of the top (third) byte
+        as->Asm("bcc " + l);
+        as->Asm("pha");
+        as->Asm("txa");
+        as->Asm("eor #$ff"); // negate top byte
+        as->Asm("tax");
+        as->Asm("tya");
+        as->Asm("eor #$ff"); // negate middle byte
+        as->Asm("tay");
+        as->Asm("pla");
+        as->Asm("eor #$ff"); // negate low byte
+        as->Asm("clc");
+        as->Asm("adc #$01");
+        as->Asm("bcc " + lripple); // low byte didn't wrap, nothing to carry
+        as->Asm("iny");
+        as->Asm("bne " + lripple); // middle byte didn't wrap either
+        as->Asm("inx");
+        as->Label(lripple);
+
+        as->Label(l);
+
+        as->PopLabel("abslabel_ripple");
+        as->PopLabel("abslabel");
+
+
+        return;
+    }
     if (m_node->m_params[0]->isWord(as)) {
 
         as->Comment("abs(x) integer");
@@ -3991,6 +4026,7 @@ void Methods6502::Abs(Assembler *as)
         m_node->m_params[0]->Accept(m_codeGen);
         as->Term();
         QString l = as->NewLabel("abslabel");
+        QString lripple = as->NewLabel("abslabel_ripple");
         as->Asm("cpy #127");
         as->Asm("bcc " + l);
         as->Asm("pha");
@@ -4002,9 +4038,18 @@ void Methods6502::Abs(Assembler *as)
         as->Asm("eor #$ff"); // negate lo
         as->Asm("clc");
         as->Asm("adc #$01");
+        // Low byte's own carry-out never used to ripple into the high byte
+        // before this fix (found alongside 2.35's `long` fix, same file):
+        // abs() of a negative value whose low byte is $00 (e.g. -256) came
+        // out wrong (0 instead of 256) since the high byte's negation was
+        // never incremented to account for the +1 above wrapping.
+        as->Asm("bcc " + lripple);
+        as->Asm("iny");
+        as->Label(lripple);
 
         as->Label(l);
 
+        as->PopLabel("abslabel_ripple");
         as->PopLabel("abslabel");
 
 
@@ -6909,6 +6954,20 @@ void Methods6502::LoadVar(Assembler *as, int paramNo, QString reg, QString lda)
         as->Asm("lda #" + Util::numToHex(node->getValueAsInt(as)&0xff));
         as->Asm("ldy #" + Util::numToHex((node->getValueAsInt(as)>>8)&0xff));
         (static_cast<CodeGen6502*>(m_codeGen))->Enable16bit();
+        return;
+    }
+    if (node->isLong(as)) {
+        // A `long` variable's own dispatch (CodeGen6502::dispatch(NodeVar))
+        // always emits a complete, self-contained lda/ldy/ldx sequence via
+        // direct Asm() calls, unlike the byte/word cases below which rely
+        // on leaving a pending "lda <value>" string in as->m_term for this
+        // function to finish/flush itself. Seeding that pending term first
+        // (as the code below does) left it stranded, unconsumed, flushing
+        // as a bare operand-less "lda" afterward and failing to assemble
+        // (bug 2.53, seen via ReturnValue on a long-returning function).
+        as->ClearTerm();
+        m_node->m_params[paramNo]->Accept(m_codeGen);
+        as->Term();
         return;
     }
     bool disable16bit = true;

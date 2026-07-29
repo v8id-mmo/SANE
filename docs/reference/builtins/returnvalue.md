@@ -1,6 +1,8 @@
 # `ReturnValue`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble `ReturnValue` on a `long`-returning function; SANE
+fixes it.
 
 Sets a [`function`](../keywords/function.md)'s return value and exits
 immediately, in one call. This differs from the normal
@@ -55,9 +57,14 @@ end.
 
 ## Known limitations
 
-`ReturnValue` correctly returns a `byte`, `integer`, or `boolean` value.
-On a `function` declared to return `long`, it fails to assemble instead
-of returning the value: the build stops with an "opcode not implemented
-or illegal" error at the `lda` this builtin emits. The plain
-`<functionName> := <value>;` form works correctly for `long` return
-values; only `ReturnValue` specifically is affected.
+**In vanilla TRSE, `ReturnValue` correctly returns a `byte`, `integer`, or
+`boolean` value. On a `function` declared to return `long`, it fails to
+assemble instead of returning the value: the build stops with an "opcode
+not implemented or illegal" error at the `lda` this builtin emits. The
+plain `<functionName> := <value>;` form works correctly for `long` return
+values; only `ReturnValue` specifically is affected.**
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`ReturnValue` now handles a `long` return value correctly, the same as
+`byte`/`integer`/`boolean`.

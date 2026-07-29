@@ -1,0 +1,48 @@
+Program Bug_2_76_LongNegativeLiteralTruncated;
+// Bug 2.76 (OPEN, not yet fixed): a negative decimal literal initializer
+// for a `long` variable is truncated to a 16-bit magnitude before it ever
+// reaches codegen, silently storing the wrong value.
+//
+// Found 2026-07-29 while fixing bug 2.35 (`abs()` on `long`): the
+// original regression for 2.35 used `lv := -100000;` directly and kept
+// failing even after Abs() itself was fixed. `CodeGen6502::dispatch(NodeNumber)`
+// (codegen_6502.cpp) reads the constant's own `m_val` correctly (confirmed
+// via NodeNumber::getValue8bit, which masks/shifts `m_val` correctly for
+// any 24-bit value, negative included) - so the corruption happens earlier,
+// before the NodeNumber node's `m_val` is even set, somewhere in the
+// lexer/parser's handling of a negative numeric literal wider than 16 bits.
+// Root cause not yet traced past this point.
+//
+// -100000's correct 24-bit two's complement is $FE7960; this snippet
+// checks the round trip on three values spanning the 16-bit boundary,
+// since the exact wrong value observed ($86A0, i.e. -100000 mod 65536)
+// suggests a 16-bit-wide truncation step specifically.
+@use "unittests/common"
+
+var
+	lv1 : long = -100000;
+	lv2 : long = -1;
+	lv3 : long = -70000;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	Vars::text := "2.76a";
+	if (lv1 = -100000) then Common::PASS() else Common::FAIL();
+	Vars::text := "2.76b";
+	if (lv2 = -1) then Common::PASS() else Common::FAIL();
+	Vars::text := "2.76c";
+	if (lv3 = -70000) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

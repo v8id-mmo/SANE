@@ -8,6 +8,24 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed a cluster of `long` (24-bit) codegen gaps where an existing
+  `integer`-width special case had never been extended to `long`: `&`/
+  `|`/`xor`/`^` silently failed to combine the top byte (and could throw
+  the middle byte off by one) when the right-hand side was a non-trivial
+  expression; `not` on an `integer`/`long` plain-variable operand only
+  complemented the low byte; `Lo`/`Hi`/`bankbyte` were a silent no-op on
+  `long`; `Abs` silently fell back to plain-byte logic on `long`, checking
+  the wrong byte for the sign and only negating one of three bytes; and
+  `ReturnValue` failed to assemble entirely for a `long`-returning
+  function. Also fixed two bugs found alongside this cluster: `Abs` on a
+  plain `integer` never propagated the low byte's own carry into the high
+  byte (`abs(-256)` returned `0` instead of `256`); and a regression
+  snippet's own expected value had an arithmetic error, corrected in the
+  same pass. Not fixed: a negative decimal-literal initializer for a
+  `long`/`integer` variable gets truncated to a 16-bit magnitude somewhere
+  before codegen (found while testing the `Abs`/`long` fix above, traced
+  as far as ruling out every codegen file this batch of fixes touched, not
+  further).
 - Fixed `@exportblackwhite`/`@exportframe` silently writing a zero-byte
   output file, with no error, when pointed at any asset type other than
   the one each directive actually supports; both now stop compilation

@@ -1,6 +1,8 @@
 # `Lo`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+silently generates no code at all for `Lo`/`Hi` on a `long` value; SANE
+adds a `long`-aware case so it works there too.
 
 Returns the low byte (bits 0-7) of a 16-bit value. [`Hi`](hi.md) is the
 counterpart for the high byte, and [`bankbyte`](bankbyte.md) reads the
@@ -47,12 +49,15 @@ end.
 
 ## Known limitations
 
-`Lo` (and `Hi`) work correctly on `pointer`, `address`, and `integer`
-values, as in the example above. On a `long` variable, this fork's other
-24-bit type, both are a **silent no-op**: no code at all is generated for
-the call, so the destination variable ends up holding whatever was
-already in the accumulator at that point in the program, not any byte of
-the `long` value. This is the same underlying gap as `bankbyte`'s known
-limitation on `long`. If you need a byte out of a `long` value, read it
-directly instead (e.g. via an overlapping `array[3] of byte` at the same
-address) rather than through `Lo`/`Hi`/`bankbyte`.
+**In vanilla TRSE, `Lo` (and `Hi`) work correctly on `pointer`, `address`,
+and `integer` values, as in the example above. On a `long` variable, this
+fork's other 24-bit type, both are a silent no-op: no code at all is
+generated for the call, so the destination variable ends up holding
+whatever was already in the accumulator at that point in the program, not
+any byte of the `long` value. This is the same underlying gap as
+`bankbyte`'s known limitation on `long`.**
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`Lo`/`Hi`/`bankbyte` now correctly return the requested byte of a `long`
+value too, the same as they already did for `pointer`/`integer`.

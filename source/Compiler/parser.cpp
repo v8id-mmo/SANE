@@ -2935,8 +2935,23 @@ QSharedPointer<Node> Parser::Factor() {
             return NodeFactory::CreateNumber(t, 1);
         }
         //      }
-        return NodeFactory::CreateBinop(t, TokenType::XOR, Factor(),
-                                        NodeFactory::CreateNumber(t, 255));
+        QSharedPointer<Node> operand = Factor();
+        // `not <expr>` lowers to `<expr> xor <all-ones mask>`; the mask has
+        // to be as wide as the operand or the upper byte(s) pass straight
+        // through unflipped (bug 2.32): HandleVarBinopB16bit treats a #0
+        // high byte on the xor's right-hand side as a no-op shortcut, which
+        // is correct for +/- but not for xor.
+        int mask = 255;
+        QSharedPointer<Symbol> operandSymbol = getSymbol(operand);
+        if (operandSymbol != nullptr) {
+            TokenType::Type operandType = operandSymbol->getTokenType();
+            if (operandType == TokenType::LONG)
+                mask = 0xFFFFFF;
+            else if (operandType == TokenType::INTEGER || operandType == TokenType::POINTER || operandType == TokenType::ADDRESS)
+                mask = 0xFFFF;
+        }
+        return NodeFactory::CreateBinop(t, TokenType::XOR, operand,
+                                        NodeFactory::CreateNumber(t, mask));
     }
 
     // string cast

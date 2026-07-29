@@ -1,6 +1,8 @@
 # `bankbyte`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+silently generates no code at all for `bankbyte` on a `long` value; SANE
+adds a `long`-aware case so it works there too.
 
 Returns the third byte (bits 16-23, sometimes called the "bank byte") of
 a wide, 24-bit-addressable value. [`Hi`](hi.md) and [`Lo`](lo.md) are the
@@ -44,11 +46,13 @@ end.
 `bankbyte` works correctly on a `pointer` variable (as in the example
 above), emitting a plain `lda ptr+2`.
 
-It is a **silent no-op on a `long` variable**, this fork's other 24-bit
-type. `b := bankbyte(longvar)` lowers straight to a bare store
-instruction with no load before it anywhere in the routine, so `b` ends
-up holding whatever was already in the accumulator at that point in the
-program, not any byte of `longvar` at all. If you need the top byte of a
-`long` value, read it directly instead (e.g. by declaring an overlapping
-`array[3] of byte` at the same address, or via pointer arithmetic) rather
-than through `bankbyte`.
+**In vanilla TRSE, it is a silent no-op on a `long` variable**, this
+fork's other 24-bit type. `b := bankbyte(longvar)` lowers straight to a
+bare store instruction with no load before it anywhere in the routine, so
+`b` ends up holding whatever was already in the accumulator at that point
+in the program, not any byte of `longvar` at all.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`bankbyte`/`Hi`/`Lo` now correctly return the requested byte of a `long`
+value too, the same as they already did for `pointer`.
