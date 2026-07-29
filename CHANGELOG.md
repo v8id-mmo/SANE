@@ -8,6 +8,22 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed the settings-file key `optimizer_remove_unused_symbols` having no
+  effect at all; it now enables unused-symbol removal too, alongside the
+  existing project-file `remove_unused_symbols` key.
+- Fixed every shipped C64 project template (including the downloadable
+  project bundle used on the documentation site) spelling two of their
+  own settings keys wrong (`exomize_toggle`,
+  `override_target_settings_ignore_sys`/`_ignore_prg`), so setting them
+  by hand had no effect; every template now uses the correct key names
+  (`exomizer_toggle`, `override_target_settings_sys`/`_prg`).
+- Fixed `output_file=` being silently ignored in the normal `op=project`
+  compile mode (it only ever worked in the standalone `op=orgasm`
+  assemble mode); it now renames the produced `.prg` in project mode too,
+  as long as the project's build output type is left at its default.
+- Fixed a missing/unreadable settings file reporting a successful (`0`)
+  exit code even though nothing was compiled; it now reports a nonzero
+  exit code like any other compile failure.
 - Fixed `CreateInteger`/`CreatePointer` building their result with the low
   and high byte positions swapped relative to their own documented
   `(loByte, hiByte)` order: `CreateInteger(10, 20)` never actually equaled

@@ -1209,7 +1209,8 @@ twice the code size and twice the execution time it needs to be.
 
 ### A missing settings file reports a successful exit code
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** this case now reports a nonzero exit
+code, the same as any other compile failure.
 
 Compiling with no `settings=` argument, when the CLI's own fallback
 location for a settings file also doesn't have one, prints an error and
@@ -1222,7 +1223,11 @@ the printed output, would report this as a passing build.
 
 ### `output_file=` has no effect in the normal project compile mode
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `output_file=` now renames the
+produced `.prg` in the normal project compile mode too, as long as the
+project's build output type is left at its default (a `crt`/`d64` build
+produces its own separately-named artifact from the intermediate `.prg`
+and is unaffected).
 
 `output_file=` is meant to rename the produced binary. It only actually
 does that when assembling a `.asm` file directly, outside of a full
@@ -1234,7 +1239,9 @@ that it had no effect.
 
 ### Shipped C64 project templates spell two of their own settings wrong
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** every shipped template, including the
+downloadable project bundle used on this site, now uses the correct key
+names.
 
 Every general-purpose C64 project template this fork ships (including
 the downloadable project bundle used to compile examples on this site)
@@ -1253,7 +1260,8 @@ isn't affected by this.
 
 ### A settings-file key that looks like it removes unused symbols does nothing
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the settings-file key now enables
+unused-symbol removal too, alongside the project-file key.
 
 The settings file (as opposed to the project file) contains a key that
 reads exactly like the on/off switch for removing unused

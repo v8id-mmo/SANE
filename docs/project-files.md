@@ -220,12 +220,18 @@ CLI prints an explanation and stops without compiling anything, but
 still reports a successful exit code, the same one an actual successful
 compile returns. A build script or CI job that only checks the exit
 code, rather than reading the output, would see this as a passing build.
+**Fixed in SANE:** this case now reports a nonzero exit code, the same
+as any other compile failure.
 
 `output_file=` only renames the produced file in the standalone
 `op=orgasm` assemble mode. In the normal `op=project` compile mode, it's
 accepted on the command line but silently has no effect at all; the
 output keeps the source file's own base name regardless of what
-`output_file=` was set to.
+`output_file=` was set to. **Fixed in SANE:** `output_file=` now renames
+the produced `.prg` in `op=project` mode too, as long as `output_type`
+is left at its default (`crt`/`d64` builds produce their own
+differently-named artifact from the intermediate `.prg` and are
+unaffected by this).
 
 Every general-purpose C64 project template this fork ships (including
 the downloadable project bundle used to compile the examples on this
@@ -244,9 +250,14 @@ compression and all four overrides do work there. Setting either value
 through [`@projectsettings`](reference/directives/projectsettings.md)
 from inside a program's source, rather than hand-editing the project
 file, always uses the correct key name and isn't affected by this.
+**Fixed in SANE:** every shipped template (including the downloadable
+project bundle) now uses the correct key names.
 
 In the settings file, `optimizer_remove_unused_symbols` looks like the
 on/off switch for removing unused variables and procedures from a
 build, but it's never actually read anywhere. The real switch,
 `remove_unused_symbols`, is a project-file key instead, not a
 settings-file one (see [Optimizer settings](#optimizer-settings) above).
+**Fixed in SANE:** `optimizer_remove_unused_symbols` is now wired up too,
+enabling unused-symbol removal if either it or the project-file
+`remove_unused_symbols` is set.

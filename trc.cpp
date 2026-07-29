@@ -85,7 +85,7 @@ int ClascExec::Perform()
                     m_settings->Load(iniFileName);
                 else {
                     Out("Could not load TRSE settings! Please make sure you have started TRSE as a windowed application at least once before using the CLI.");
-                    return false;
+                    return 1;
                 }
             }
             // Set some settings params
@@ -141,8 +141,19 @@ int ClascExec::CompileFromProject(QString sourceFile, bool assemble)
             m_failure = !m_builder->m_assembleSuccess;
         }
     }
-//    if (m_outputFile!="")
-  //      QFile::rename(m_builder->m_filename+".asm", m_outputFile);
+    if (!m_failure && assemble && m_outputFile!="") {
+        // Only the default (unset/"prg") output_type produces a plain
+        // .prg as its own final artifact; "crt"/"d64" post-process the
+        // .prg further into a different file (or files) of their own, so
+        // renaming it out from under them would just misname an
+        // intermediate rather than the real output.
+        QString outputType = m_project->getString("output_type");
+        if (outputType=="" || outputType=="prg") {
+            QString producedPrg = m_builder->m_filename+".prg";
+            if (QFile::exists(producedPrg))
+                QFile::rename(producedPrg, m_outputFile);
+        }
+    }
     if (m_failure) {
         QTextDocument doc;
         doc.setHtml( m_builder->getOutput() );

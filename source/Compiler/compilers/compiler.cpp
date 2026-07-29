@@ -68,7 +68,8 @@ void Compiler::Parse(QString text, QStringList lst, QString fname)
     SymbolTable::s_ignoreUnusedSymbolWarning.clear();
     // MAIN parser
     try {
-        m_tree = m_parser.Parse( m_projectIni->getdouble("remove_unused_symbols")==1.0 &&
+        m_tree = m_parser.Parse( (m_projectIni->getdouble("remove_unused_symbols")==1.0 ||
+                                   m_ini->getdouble("optimizer_remove_unused_symbols")==1.0) &&
                                  Syntax::s.m_currentSystem->m_system!=AbstractSystem::NES
                                  ,m_parser.m_vicMemoryConfig,
                                  Util::fromStringList(m_projectIni->getStringList("global_defines")),
