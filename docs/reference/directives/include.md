@@ -2,8 +2,9 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
 can't `@include` a file generated earlier in the same compile by
-`@bin2inc`/`@vbmcompilechunk`; SANE fixes this, see Known limitations
-below.
+`@bin2inc`/`@vbmcompilechunk`, and its standard-library fallback lookup
+inside a `.tru` unit only works when the compiler happens to be invoked
+from the repository root; SANE fixes both, see Known limitations below.
 
 A build-time directive that splices the contents of another file directly
 into the source, at the exact point `@include` appears, as if it had been
@@ -59,3 +60,22 @@ limitations section for the full writeup.
 **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 `@include` can now pick up a file generated earlier in the same compile;
 the workaround is no longer needed.
+
+**In vanilla TRSE, `@include`'s standard-library fallback (used once the
+file isn't found in the current project's own directory) is only found
+correctly when the compiler is invoked with the repository's own root as
+the current working directory.** This mostly surfaces from inside a
+[`unit`](../keywords/unit.md) (`.tru` file) that itself does `@include`
+against the shared standard library, since `@use`'s own unit lookup isn't
+affected and resolves correctly regardless of the working directory. The
+ordinary, documented way of invoking the compiler ('cd'd into the
+project's own directory, passing relative paths) triggers this: the
+fallback silently looks in the wrong place and the compile fails with
+"Could not open file for inclusion", even though the file genuinely
+exists in the standard library.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`@include`'s standard-library fallback is now anchored the same
+working-directory-independent way `@use`'s unit lookup already was, so it
+resolves correctly no matter where the compiler is invoked from.

@@ -1,0 +1,15 @@
+program PathtoolDemo;
+var
+
+@pathtool "pathtool_input.txt" "pathtool_out_" 4 8
+	pathX : incbin("pathtool_out_x.bin");
+	i : byte;
+
+begin
+	clearscreen(key_space,screen_char_loc);
+	moveto(0,0,hi(screen_char_loc));
+	printstring("x0:",0,40);
+	moveto(4,0,hi(screen_char_loc));
+	printdecimal(pathX[0],3);
+	loop();
+end.

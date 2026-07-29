@@ -322,6 +322,25 @@ longer needed.
 
 *Reference page:* [`@vbmcompilechunk`](reference/directives/vbmcompilechunk.md)
 
+### `@include`'s standard-library fallback only resolves from the repository root
+
+**Status:** Fixed · **Fixed in:** the fallback lookup now anchors to the
+same working-directory-independent location `@use`'s own unit lookup
+already used, instead of a value that was never actually set on Linux.
+
+`@include` first checks the current project's own directory, then falls
+back to the shared standard library (used from inside a `.tru` unit that
+`@include`s another standard-library file). That fallback used to only
+find the right file when the compiler happened to be invoked with the
+repository's own root as the current working directory; the ordinary,
+documented way of invoking the compiler ('cd'd into the project's own
+directory) made the fallback look in the wrong place entirely, failing
+with "Could not open file for inclusion" even though the file genuinely
+existed in the standard library. `@use`'s own unit lookup was never
+affected, only `@include`'s fallback.
+
+*Reference page:* [`@include`](reference/directives/include.md)
+
 ### `@donotprefix <symbol>` never compiles
 
 **Status:** Fixed · **Fixed in:** the directive's symbol-name argument is
@@ -466,14 +485,17 @@ compiled output. There is currently no target this fork ships with where
 
 ### `@pathtool` never compiles, in any configuration
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the code-generation-phase pass was
+consuming one token fewer than `@pathtool` actually has, desyncing
+everything parsed afterward; it now consumes all of the directive's
+tokens, matching what its real handler already consumed.
 
 The directive's own work (fitting a curve through the input points and
-writing the three output files) runs successfully, but something
-afterward leaves the parser out of sync with the rest of the file. The
-resulting error is reported far from the actual problem, worded as if a
+writing the three output files) ran successfully, but something
+afterward left the parser out of sync with the rest of the file. The
+resulting error was reported far from the actual problem, worded as if a
 `begin` were missing rather than pointing at the `@pathtool` line. This
-happens no matter where the directive is placed.
+happened no matter where the directive was placed.
 
 *Reference page:* [`@pathtool`](reference/directives/pathtool.md)
 

@@ -8,6 +8,17 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `@include`'s standard-library fallback lookup (used once a file
+  isn't found in the current project's own directory) only resolving
+  correctly when the compiler happened to be invoked with the repository
+  root as the current working directory; this mostly affected `@include`
+  reached from inside a `.tru` unit, since `@use`'s own unit lookup was
+  never affected. It now resolves the same way regardless of the working
+  directory the compiler is invoked from.
+- Fixed `@pathtool` never compiling in any configuration: the
+  code-generation pass was consuming one fewer token than the directive
+  actually has, desyncing everything parsed afterward and surfacing a
+  confusing, misplaced error. It now compiles cleanly.
 - Fixed the settings-file key `optimizer_remove_unused_symbols` having no
   effect at all; it now enables unused-symbol removal too, alongside the
   existing project-file `remove_unused_symbols` key.
