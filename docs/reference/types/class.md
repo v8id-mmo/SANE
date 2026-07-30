@@ -100,7 +100,12 @@ implementation for either `record` or `class` members; see
 [`private`](../keywords/private.md)'s Known limitations. Every field and
 method declared here is effectively public.
 
-Whole-instance assignment (`hero2 := hero;` for two variables of the same
-class type) always fails to compile the same way it does for a plain
-[`record`](record.md); see that page's Known limitations for the full
-finding. Copy fields individually instead.
+**Whole-instance assignment (`hero2 := hero;`, for two variables of the
+same class type) compiles without any error, but silently doesn't copy
+any fields.** Unlike a plain [`record`](record.md), where the same
+shape of assignment used to be a compile error (now fixed, see that
+page's Known limitations), a `class` was never blocked from compiling
+here - it just doesn't do the copy, and gives no warning that it didn't.
+This is a genuinely open defect, not a documented restriction. Copy
+fields individually instead (`hero2.hp := hero.hp;` etc.) until this is
+fixed.

@@ -8,6 +8,30 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `ToggleBit` with a compile-time-constant bit index generating and
+  running its work twice (a fast direct set/clear, then the full
+  variable-index version right after it, recomputing and reapplying the
+  same change again); the constant-index fast path now returns once it's
+  done, roughly halving this builtin's code size and execution time for
+  the common case of a literal bit index.
+- Fixed `unroll` on a `fori` loop always treating the end value as
+  exclusive, silently dropping the loop's last, inclusive pass that a
+  non-unrolled `fori` loop always includes.
+- Fixed a non-`const` `address` variable declaration (`var y : address;`)
+  failing with a confusing codegen-time error ("Could not find variable
+  'ADDRESS'"); it's now rejected at parse time with a clear message
+  naming the actual constraint (`address` must be `const`). This doesn't
+  add support for a mutable `address` variable, only clarifies the
+  diagnostic.
+- Fixed whole-record assignment (`b := a;`, no field selector on either
+  side, for two variables of the same plain `record` type) always failing
+  to compile with "Cannot assign a record... to a single variable," even
+  though a correct, working field-by-field copy already existed in the
+  compiler and just needed to be reachable; an earlier, overly broad
+  validation check was rejecting the assignment before that code ever
+  ran. This fix doesn't cover `class`: whole-class assignment was never
+  blocked by this check, but was found (while fixing this bug) to
+  silently do nothing instead of copying fields - see the open bugs list.
 - Fixed three separate `onpage`/`offpage` gaps: forcing either keyword on
   a `case` statement parsed without error but had no effect on the
   generated code; `until <condition> onpage;`/`offpage` failed to parse

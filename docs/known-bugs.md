@@ -259,15 +259,16 @@ same way; see each page for its own fix.
 
 ### `unroll` always treats a `fori` loop's end value as exclusive
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `unroll` on a `fori` loop now includes
+the end value, matching a non-unrolled `fori` loop.
 
 Adding `unroll` to a `for` loop expands it into repeated, literal copies
 of the body at compile time instead of a runtime loop. On a `fori` loop,
-which is normally inclusive of its end value, `unroll` silently switches
-it back to `for`'s exclusive behavior: `fori i:=0 to 3 unroll do ...`
-only emits copies for `i = 0, 1, 2`, dropping the `i = 3` pass a
-non-unrolled `fori` loop always runs. A plain, non-unrolled `fori` loop is
-unaffected and correctly includes the end value.
+which is normally inclusive of its end value, `unroll` used to silently
+switch it back to `for`'s exclusive behavior: `fori i:=0 to 3 unroll do
+...` only emitted copies for `i = 0, 1, 2`, dropping the `i = 3` pass a
+non-unrolled `fori` loop always runs. A plain, non-unrolled `fori` loop
+was unaffected and always correctly included the end value.
 
 *Reference page:* [`unroll`](reference/keywords/unroll.md)
 
@@ -553,14 +554,34 @@ currently no way to mark one private.
 
 ### Whole-record assignment always fails
 
+**Status:** Fixed · **Fixed in:** assigning one `record` variable
+directly to another of the same type now compiles and copies every field.
+
+Assigning one record variable directly to another of the same type, with
+no field selector on either side, used to always fail to compile with an
+error saying a record can't be assigned to a single variable, even though
+a correct, working field-by-field copy already existed in the compiler
+and just needed to be reachable. An earlier, overly broad validation check
+rejected the assignment before that code ever ran. Field-by-field
+assignment (copying each field individually) still works too. This fix
+only covers plain `record` variables, not `class`: whole-class assignment
+was never blocked by this same check, but see the next entry for what it
+does instead.
+
+*Reference page:* [`record`](reference/types/record.md)
+
+### A whole-class assignment silently does nothing instead of copying fields
+
 **Status:** Open · **Fixed in:** not yet fixed
 
-Assigning one record (or class) variable directly to another of the same
-type, with no field selector on either side, always fails to compile
-with an error saying a record can't be assigned to a single variable.
-This happens for every record/class shape, not just ones with array
-fields. Field-by-field assignment works and is the only way around it for
-now: copy each field individually instead of the whole value at once.
+Assigning one `class` variable directly to another of the same type, with
+no field selector on either side, compiles cleanly with no error or
+warning, but doesn't actually copy any fields: the destination variable's
+fields are left unchanged. This is a genuinely different, and worse,
+failure mode than plain `record` assignment used to have (a clear compile
+error): there's nothing here to signal that the assignment did nothing.
+Field-by-field assignment (copying each field individually) is unaffected
+and is the only reliable way to copy a `class` for now.
 
 *Reference page:* [`record`](reference/types/record.md)
 
@@ -568,13 +589,18 @@ now: copy each field individually instead of the whole value at once.
 
 ### A non-`const` `address` variable is completely unusable
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** declaring a non-`const` `address`
+variable now stops compilation with a clear error instead of failing
+later with a confusing one.
 
-Every real usage of the `address` type declares it as a `const`. Declaring
-one as a plain `var` instead fails to compile with a codegen error, with
-or without an initial value, and whether or not the variable is ever
-referenced anywhere in the program. Reading it, writing to it, and
-passing it to a builtin all fail the same way. Use `const` for a fixed
+Every real usage of the `address` type declares it as a `const`.
+Declaring one as a plain `var` instead used to fail to compile with a
+confusing codegen error ("Could not find variable 'ADDRESS'"), with or
+without an initial value, and whether or not the variable was ever
+referenced anywhere in the program. It's still not possible to declare a
+non-`const` `address` (that would need giving it real, mutable 2-byte
+storage, which this fix doesn't do), but the error now names the actual
+constraint at the declaration line instead. Use `const` for a fixed
 memory location, or `pointer` for something that genuinely needs to
 change at runtime.
 
@@ -1311,17 +1337,19 @@ least once" shape showed up elsewhere in this fork too (`FOR`/`FORI`,
 
 ### `ToggleBit` with a constant bit index runs its work twice
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the constant-bit-index fast path now
+stops once it's done, instead of also falling through into the general
+path.
 
 `ToggleBit` has two internal code paths: a fast one for when the bit
 index is a compile-time constant, and a slower general one for when it's
-a variable or expression. When the bit index actually is a constant, the
-compiler generates the fast path correctly, but then falls through and
-also generates the slow path right after it, recomputing and reapplying
-the same set/clear a second time. The end result is still correct
-(setting or clearing the same bit twice has no further effect), but
-every call with a literal bit index, the common case, ends up roughly
-twice the code size and twice the execution time it needs to be.
+a variable or expression. When the bit index actually was a constant, the
+compiler generated the fast path correctly, but then fell through and
+also generated the slow path right after it, recomputing and reapplying
+the same set/clear a second time. The end result was still correct
+(setting or clearing the same bit twice has no further effect), but every
+call with a literal bit index, the common case, ended up roughly twice the
+code size and twice the execution time it needed to be.
 
 *Reference page:* [`ToggleBit`](reference/builtins/togglebit.md)
 

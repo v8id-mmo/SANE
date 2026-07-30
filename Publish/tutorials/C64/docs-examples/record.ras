@@ -13,10 +13,8 @@ begin
 	p1.x := 10;
 	p1.y := 20;
 
-	// whole-record assignment (p2 := p1;) isn't supported, so copy
-	// field by field instead (see Known limitations below)
-	p2.x := p1.x;
-	p2.y := p1.y;
+	// whole-record assignment: copies every field at once
+	p2 := p1;
 
 	for i:=0 to 2 do
 	begin

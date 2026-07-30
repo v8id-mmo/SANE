@@ -1,24 +1,26 @@
 Program Bug_2_66_AddressVarUnusable;
-// Bug 2.66: a non-`const` `address` variable is completely unusable.
-// `CodeGen6502::LoadVariable` (codegen_6502.cpp ~1965-1985) routes any
-// TokenType::ADDRESS symbol through the same compile-time-constant
-// byte-blob path as STRING/CSTRING/INCBIN (CodeGen6502::LoadByteArray).
-// A `const ... : address = $NNNN` declaration fits that shape (the
-// "data" is just the one address value, substituted like a label), but
-// a plain `var` declaration has no backing blob and no compile-time
-// constant index to look up, so codegen fails with "Could not find
-// variable 'ADDRESS'." This happens unconditionally, even for a
-// completely unused declaration.
+// Bug 2.66 FIXED (2026-07-30): a non-`const` `address` variable was
+// completely unusable. `CodeGen6502::LoadVariable` (codegen_6502.cpp
+// ~1965-1985) routes any TokenType::ADDRESS symbol through the same
+// compile-time-constant byte-blob path as STRING/CSTRING/INCBIN
+// (CodeGen6502::LoadByteArray). A `const ... : address = $NNNN`
+// declaration fits that shape (the "data" is just the one address
+// value, substituted like a label), but a plain `var` declaration has no
+// backing blob and no compile-time constant index to look up, so codegen
+// used to fail with the confusing "Could not find variable 'ADDRESS'."
 //
-// Same shape as bug 2.53 in batch 4: this is a compile-time failure, not
-// a wrong-runtime-value bug, so pre-fix this snippet is expected to be
-// COMPILE_ERROR (no .prg produced, nothing to run through VICE). Once
-// fixed (either given real 2-byte storage like `pointer`, per
-// KNOWN_BUGS.md's "real fix" direction), the assignment/read/Poke usage
-// below should compile and run correctly, exercised the same way
-// docs-examples/address.ras exercises a const address (Poke/Peek through
-// a named address instead of a bare literal, per bug 2.37's own literal-
-// address workaround).
+// Fix direction taken: the smaller/safer of the two KNOWN_BUGS.md
+// offered - reject a non-const `address` at parse time with a clear
+// message (`Parser::TypeSpec`, parser.cpp), rather than giving `address`
+// real 2-byte mutable storage. Same shape/precedent as 2.15/2.16/2.24:
+// this stays permanently COMPILE_ERROR either way, so this snippet's
+// outcome is unchanged by the fix (no .prg produced, nothing to run
+// through VICE) - only the error message and the point at which it fires
+// changed, from an obscure codegen-time failure to a clear parse-time
+// one naming the actual constraint. The assignment/read/Poke usage below
+// is deliberately left in place: it documents what a non-const `address`
+// still cannot do, matching a real, working `const address` at
+// docs-examples/address.ras.
 @use "unittests/common"
 
 var

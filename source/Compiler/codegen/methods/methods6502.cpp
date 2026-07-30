@@ -6876,6 +6876,7 @@ void Methods6502::ToggleBit(Assembler *as)
             as->Asm("ora #%"+QString::number((uchar)v,2));
             SaveVar(as,0);
         }
+        return;
     }
     m_node->m_params[1]->Accept(m_codeGen);
     as->Term();

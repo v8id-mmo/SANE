@@ -1,6 +1,8 @@
 # `unroll`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's `unroll` always treats the end value as exclusive, even on a
+`fori` loop; SANE's now matches `fori`'s own inclusive semantics.
 
 A [`for`](for.md)/[`fori`](fori.md) loop modifier that expands the loop at
 compile time instead of generating a runtime loop: the body is emitted
@@ -40,16 +42,17 @@ end.
 
 ## Known limitations
 
-**On `fori`, `unroll` always treats the end value as exclusive, silently
-dropping the loop's last, inclusive pass.** [`fori`](fori.md)'s whole
-point versus plain `for` is that `fori i:=0 to 3 do ...` runs with
-`i = 0, 1, 2, 3` (the end value included). Adding `unroll` to a `fori`
-loop breaks that guarantee: `fori i:=0 to 3 unroll do screen_bg_col := i;`
-only emits 3 copies of the body (for `0`, `1`, `2`), not 4. Unrolling
-doesn't look at
-whether the loop was written as `for` or `fori` at all, it always expands
-`<start>` up to, but not including, `<end>`. A plain (non-unrolled)
-`fori` loop is unaffected and correctly includes the end value. If the
-last value needs to be covered on an unrolled `fori` loop, write the end
-value one past what's actually wanted (or add one extra copy of the body
-by hand) until this is fixed.
+**In vanilla TRSE, on `fori`, `unroll` always treats the end value as
+exclusive, silently dropping the loop's last, inclusive pass.**
+[`fori`](fori.md)'s whole point versus plain `for` is that
+`fori i:=0 to 3 do ...` runs with `i = 0, 1, 2, 3` (the end value
+included). Adding `unroll` to a `fori` loop there breaks that guarantee:
+`fori i:=0 to 3 unroll do screen_bg_col := i;` only emits 3 copies of the
+body (for `0`, `1`, `2`), not 4. Unrolling doesn't look at whether the
+loop was written as `for` or `fori` at all, it always expands `<start>`
+up to, but not including, `<end>`. A plain (non-unrolled) `fori` loop is
+unaffected and always correctly includes the end value.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`unroll` on a `fori` loop now includes the end value, matching a
+non-unrolled `fori` loop.

@@ -1,21 +1,27 @@
 Program Bug_2_67_WholeRecordAssignmentFails;
-// Bug 2.67: whole-record assignment (`b := a;`, no field selector on
-// either side) always fails to compile with "Cannot assign a record of
-// type '<name>' to a single variable", for any record or class type.
-// `AbstractCodeGen::AssignVariable` calls
+// Bug 2.67 FIXED (2026-07-30): whole-record assignment (`b := a;`, no
+// field selector on either side) always failed to compile with "Cannot
+// assign a record of type '<name>' to a single variable", for a plain
+// `record`. `AbstractCodeGen::AssignVariable` calls
 // `AbstractCodeGen::ValidateAssignStatement` first, which unconditionally
-// rejects any RHS that resolves to a record type, before the function
-// ever reaches its own `AbstractCodeGen::AssignPureRecords` branch a few
+// rejected any RHS that resolves to a record type, before the function
+// ever reached its own `AbstractCodeGen::AssignPureRecords` branch a few
 // dozen lines further down - a real, working field-by-field copy
-// implementation that already exists but is unreachable dead code, since
-// the earlier validation always throws first.
+// implementation that already existed but was unreachable dead code,
+// since the earlier validation always threw first.
 //
-// Same shape as bug 2.53/2.66: this is a compile-time failure, not a
-// wrong-runtime-value bug, so pre-fix this snippet is expected to be
-// COMPILE_ERROR (no .prg produced, nothing to run through VICE). Once
-// `ValidateAssignStatement`'s blanket rejection is narrowed enough to
-// actually reach `AssignPureRecords`, the whole-record assignment below
-// should compile and copy both fields correctly.
+// Correction: this entry originally (inaccurately) claimed the same
+// failure applied "for any record or class type" - it doesn't. A `class`
+// right-hand side was never blocked by this check (it already required
+// the RHS NOT be a class to fire at all) both before and after this fix;
+// see bug 2.80 (`2_80_class_assignment_silent_noop.ras`) for what a
+// `class` actually does instead (silently compiles to a no-op, a
+// separate, still-open bug).
+//
+// Fixed by narrowing `ValidateAssignStatement`'s rejection to exempt the
+// exact case `AssignPureRecords` already handles (left-hand side also a
+// plain, non-class record of matching type), so this snippet now PASSes
+// (was COMPILE_ERROR pre-fix): `b := a;` compiles and copies both fields.
 @use "unittests/common"
 
 var

@@ -55,12 +55,19 @@ end.
 
 **`address` only works declared as a `const`.** Declaring one as a plain
 `var`, with or without an initial value, and whether or not it's ever
-referenced anywhere in the program, fails to compile with a codegen error
-("Could not find variable 'ADDRESS'"). Every real usage of this type,
-including in this fork's own tutorials, declares it as `const`; there is
-currently no working way to have a mutable, runtime-assignable `address`
-variable. If a location genuinely needs to change at runtime, use a
-`pointer` instead, which supports normal assignment.
+referenced anywhere in the program, is a compile error. Every real usage
+of this type, including in this fork's own tutorials, declares it as
+`const`; there is currently no working way to have a mutable,
+runtime-assignable `address` variable. If a location genuinely needs to
+change at runtime, use a `pointer` instead, which supports normal
+assignment.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+vanilla TRSE's error for this case is a confusing codegen-time failure
+("Could not find variable 'ADDRESS'"); SANE catches it at parse time
+instead, right at the declaration, with a clear message naming the actual
+constraint. The underlying limitation (no working non-`const` `address`)
+is unchanged - only the diagnostic is fixed.
 
 Separately, a bare numeric literal address passed directly to several
 builtins ([`Call`](../builtins/call.md),

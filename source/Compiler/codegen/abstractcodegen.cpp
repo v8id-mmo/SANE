@@ -181,7 +181,7 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeForLoop> node) {
     as->Comment("Unrolled loop");
     auto num = NodeFactory::CreateNumber(v->m_op, 0);
     node->m_block->ReplaceVariable(as, v->getValue(as), num);
-    for (int i = from; i < cnt; i++) {
+    for (int i = from; node->m_inclusive ? i <= cnt : i < cnt; i++) {
       // replace all "var" with numerical values
       num->m_val = i;
       node->m_block->Accept(this);
@@ -400,8 +400,17 @@ void AbstractCodeGen::ValidateAssignStatement(QSharedPointer<NodeAssign> node) {
       as->Comment("Assigning pointer to record/class");
     }
   }
+  // Whole-record assignment (b := a;) between two plain (non-class) record
+  // variables of the same shape is handled by AssignPureRecords, a few
+  // dozen lines further down AssignVariable's own dispatch - only reject
+  // here when the left-hand side isn't itself a matching plain record (e.g.
+  // assigning a record to an array element or a byte/integer variable),
+  // mirroring the exact gate AssignVariable itself uses to route into
+  // AssignPureRecords.
   if (node->m_right->isRecord(as) && (!node->m_right->isRecordData(as)) &&
-      !node->m_right->isClass(as)) {
+      !node->m_right->isClass(as) &&
+      !(node->m_left->isRecord(as) && !node->m_left->isRecordData(as) &&
+        !node->m_left->isClass(as))) {
     //        if (!Syntax::s.m_currentSystem->m_allowRecordPointers)
     ErrorHandler::e.Error("Cannot assign a record of type '" +
                               node->m_right->getTypeText(as) +

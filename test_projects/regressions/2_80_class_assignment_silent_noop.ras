@@ -1,0 +1,64 @@
+Program Bug_2_80_ClassAssignmentSilentNoop;
+// Bug 2.80: whole-class assignment (`b := a;`, both `class` variables, no
+// field selector on either side) compiles cleanly with exit code 0 and
+// produces a working .prg - no error, no warning - but doesn't actually
+// copy any fields. Found while fixing/re-verifying bug 2.67 (whole-
+// record assignment)'s own scope: 2.67's original catalogue entry
+// claimed the same "Cannot assign a record..." compile error applied to
+// both `record` and `class`, but that was never true -
+// `ValidateAssignStatement`'s rejection (abstractcodegen.cpp) already
+// required the right-hand side NOT be a class before it fired at all,
+// confirmed against the unmodified pre-2.67-fix source directly.
+//
+// Root cause: every intentional record/class-assignment branch in
+// AbstractCodeGen::AssignVariable (both ValidateAssignStatement's
+// rejection and the later "RECORDS AND CLASSES DIRECT ASSIGNMENT" gate
+// that routes into AssignPureRecords) explicitly excludes a `class` on
+// either side. AssignPureRecords itself does contain a real dispatch to
+// HandleNodeAssignCopyClass for a class, but that function's entire
+// body is commented out ("NOT IMPLEMENTED, SEE PARSER FOR COPYING") and
+// unreachable besides. With every intentional path excluding classes,
+// execution falls through to the generic scalar assignment path, which
+// treats `a`/`b` as ordinary single-value variables instead of doing a
+// per-field copy.
+//
+// Deliberately not fixed yet - needs a real design decision (implement
+// HandleNodeAssignCopyClass's commented-out body vs. make this a hard
+// compile error, see KNOWN_BUGS.md), not a narrow one-line fix. Pre-fix,
+// this snippet is expected to be COMPILE_OK (exit 0, .prg produced) but
+// FAIL at runtime (the copy silently didn't happen) - the opposite shape
+// from 2.67's own pre-fix COMPILE_ERROR.
+@use "unittests/common"
+
+var
+	Point = class
+		x, y : byte;
+	end;
+
+	a, b : Point;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	a.x := 10;
+	a.y := 20;
+	b.x := 0;
+	b.y := 0;
+
+	b := a;
+
+	Vars::text := "2.80";
+	if ((b.x = 10) and (b.y = 20)) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

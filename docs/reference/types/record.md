@@ -1,6 +1,8 @@
 # `record`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE always fails to compile a whole-record assignment (`p2 := p1;`);
+SANE fixes it for plain `record` (see Known limitations below).
 
 A fixed collection of named fields grouped under one type, like a
 Pascal record or a C struct. The base for [`class`](class.md) (a `record`
@@ -42,10 +44,8 @@ begin
 	p1.x := 10;
 	p1.y := 20;
 
-	// whole-record assignment (p2 := p1;) isn't supported, so copy
-	// field by field instead (see Known limitations below)
-	p2.x := p1.x;
-	p2.y := p1.y;
+	// whole-record assignment: copies every field at once
+	p2 := p1;
 
 	for i:=0 to 2 do
 	begin
@@ -71,14 +71,24 @@ end.
 
 ## Known limitations
 
-**Whole-record assignment always fails.** `p2 := p1;` (no field selector
-on either side, for two variables of the same record type) fails to
-compile with "Cannot assign a record of type '&lt;name&gt;' to a single
-variable," for any record shape, `class` included. This isn't a
+**In vanilla TRSE, whole-record assignment always fails.** `p2 := p1;`
+(no field selector on either side, for two variables of the same record
+type) fails to compile there with "Cannot assign a record of type
+'&lt;name&gt;' to a single variable," for any `record` shape. This isn't a
 deliberate restriction: working field-by-field copy code exists in the
 compiler for exactly this case, but an earlier, unconditional check
-rejects the assignment before that code is ever reached. Copy each field
-individually instead, as the example above does.
+rejects the assignment before that code is ever reached. Copying each
+field individually, as `p2.x := p1.x; p2.y := p1.y;`, works there too, and
+remains the only way to copy a `class` (see below).
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+whole-record assignment now compiles and copies every field, for a plain
+`record` (used in the example above). This fix doesn't cover `class`:
+`p2 := p1;` for two `class` variables compiles without error in both
+vanilla TRSE and SANE, but silently does nothing - it does not copy any
+fields, and there is no warning that it didn't. This is a separate, still
+open, defect; copy each field individually for a `class`, the same way a
+`record` needed to before this fix.
 
 **A pointer field inside a record/class isn't allowed** on this fork's C64
 target; every field must be a plain value type, another record/class

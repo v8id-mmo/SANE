@@ -5244,6 +5244,15 @@ QSharedPointer<Node> Parser::TypeSpec(bool isInProcedure,
     }
 
     Eat();
+    // A non-const 'address' has no working storage: it's only ever backed by
+    // ConstDeclaration()'s compile-time constant path, never by real,
+    // reserved variable storage. Reject here rather than failing later in
+    // codegen with a confusing "Could not find variable" error.
+    if (t.m_type == TokenType::ADDRESS)
+        ErrorHandler::e.Error(
+            "'address' must be declared 'const' (e.g. 'const x : address = "
+            "$C000;'). A non-const 'address' variable has no usable storage.",
+            m_currentToken.m_lineNumber);
     // Is regular single byte / pointer
     QString position = "";
     if (m_currentToken.m_type == TokenType::AT ||
