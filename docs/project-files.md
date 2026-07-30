@@ -14,8 +14,7 @@ a downloaded example; this page is the fuller reference underneath it.
 Both files share the same plain-text format: one `key = value` pair per
 line.
 
-- A value that parses as a plain number is stored as a number (used with
-  `getdouble`-style reads internally); anything else is stored as text.
+- A value that parses as a plain number is stored as a number, anything else is stored as text.
 - A list of several values is written with a leading comma, e.g.
   `zeropages = ,$02, $04, $08`; the leading comma is required and is
   discarded when the list is read back, everything after it is the

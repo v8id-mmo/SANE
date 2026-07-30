@@ -1,6 +1,8 @@
 # `Rand`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never surfaces the deprecation warning below when compiling from the
+command line; SANE fixes this, see Known limitations below.
 
 Generates a random byte in a given inclusive range, using the SID chip's
 noise generator as an entropy source, and stores it in a variable.
@@ -41,12 +43,16 @@ end.
 
 **`Rand` is flagged internally as scheduled for deprecation in favor of
 `Random()`**, a different builtin with its own initialization and
-calling convention (not yet documented on this site). That deprecation
-notice, like every other compiler warning, never actually gets shown
-when compiling from the command line, so nothing about using `Rand`
-today visibly signals this. `Rand` itself still works correctly; this is
-purely a heads-up that its replacement is the recommended long-term
-choice.
+calling convention (not yet documented on this site). `Rand` itself
+still works correctly; this is purely a heads-up that its replacement is
+the recommended long-term choice.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+that deprecation notice, like every other compiler warning, used to
+never get shown when compiling from the command line; a successful CLI
+compile now prints every queued warning at the end of the compile, so
+using `Rand` does now show the deprecation notice.
 
 The smaller the `<low>`-`<high>` range, the slower this builtin runs
 (it retries until it lands a value in range), and generating random

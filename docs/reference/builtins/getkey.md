@@ -1,6 +1,8 @@
 # `getKey`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never surfaces the deprecation warning below when compiling from the
+command line; SANE fixes this, see Known limitations below.
 
 Reads the keyboard matrix directly (not through the KERNAL) and returns a
 raw key code, or `0` if no key is currently pressed.
@@ -35,8 +37,14 @@ end.
 ## Known limitations
 
 The compiler internally flags `getKey` as scheduled for deprecation in
-favor of a newer input-handling unit, but that notice (like every other
-compiler warning issued through the command-line build) never actually
-reaches the terminal or the compiled output. `getKey` compiles and runs
-exactly the same either way; only its long-term future is in question,
-not its current behavior.
+favor of a newer input-handling unit. `getKey` compiles and runs exactly
+the same either way; only its long-term future is in question, not its
+current behavior.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+that notice (like every other compiler warning issued through the
+command-line build) used to never reach the terminal or the compiled
+output; a successful CLI compile now prints every queued warning at the
+end of the compile, so calling `getKey` does now show the deprecation
+notice.

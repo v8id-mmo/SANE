@@ -8,6 +8,11 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed compiler warnings (`@raisewarning`, and the built-in `getKey`/
+  `Rand` deprecation notices) never being shown anywhere when compiling
+  from the command line; a successful CLI compile now prints every
+  warning collected during that compile to the terminal, the same way a
+  failed compile's error message already reached it.
 - Fixed the assembler's opcode table having no entry for `php`/`plp`
   (push/pull processor status): `asm(" php ");`/`asm(" plp ");` failed
   with "Unknown opcode" at the assembly stage, unlike every other legal

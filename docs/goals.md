@@ -82,7 +82,8 @@ down so they don't get lost:
   benefits TRSE users directly, not just SANE's own narrower slice of
   it. Something that depends entirely on the original for its own
   reason to exist, and hands most of its output straight back to that
-  original's users, isn't positioned against it: it's a smaller branch growing out of the same tree, not a rival to it.
+  original's users, isn't positioned against it. It's a smaller branch growing
+  out of the same tree, not a rival to it.
 - **Not aiming to merge back into original TRSE**, or to track it
   release-for-release. SANE is a fork with its own direction; the
   [Compatibility Tags](tags.md) system exists specifically so it stays

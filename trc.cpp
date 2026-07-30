@@ -159,6 +159,16 @@ int ClascExec::CompileFromProject(QString sourceFile, bool assemble)
         doc.setHtml( m_builder->getOutput() );
         Out(doc.toPlainText());
     }
+    else if (!ErrorHandler::e.m_teOut.isEmpty()) {
+        // Warnings (e.g. @raisewarning, the rand/getkey deprecation notices)
+        // are only ever queued into ErrorHandler::e.m_teOut, otherwise
+        // meant for the removed GUI's own output pane; a successful compile
+        // needs its own print here since the failure branch above is the
+        // only other place that ever reads it.
+        QTextDocument doc;
+        doc.setHtml( ErrorHandler::e.m_teOut );
+        Out(doc.toPlainText());
+    }
     return m_failure;
 }
 

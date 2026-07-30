@@ -383,22 +383,24 @@ with the identical, valid address values fails to compile.
 
 ### No compiler warning is ever shown when compiling from the command line
 
-**Status:** Open · **Fixed in:** not yet fixed
-
-This isn't specific to any one directive: every warning the compiler
-produces goes silent when compiled from the command line, not just
+**Status:** Fixed · **Fixed in:** a successful CLI compile now prints
+every warning collected during that compile to the terminal at the end,
+the same way a failed compile's error message already reached it. This
+isn't specific to any one directive: every warning the compiler produces
+used to go silent when compiled from the command line, not just
 `@raisewarning`'s. The directive (or the built-in check that triggers a
-warning) runs and compilation finishes normally, but the warning text is
+warning) ran and compilation finished normally, but the warning text was
 never printed anywhere: not to the terminal, not into the compiled
 output. For example, calling `getKey()` internally queues a deprecation
-notice, but it never surfaces either. It was only ever wired up to be
-read by the old graphical editor's own output pane, which no longer
-exists in this command-line-only fork. `@raiseerror`, by contrast, does
-still show its message and stop compilation, since aborting works
-through a different mechanism.
+notice; that now surfaces too, same as `Rand`'s own deprecation notice.
+It was only ever wired up to be read by the old graphical editor's own
+output pane, which no longer exists in this command-line-only fork.
+`@raiseerror`, by contrast, already showed its message and stopped
+compilation before this fix, since aborting works through a different
+mechanism.
 
 *Reference pages:* [`@raisewarning`](reference/directives/raisewarning.md),
-[`getKey`](reference/builtins/getkey.md)
+[`getKey`](reference/builtins/getkey.md), [`Rand`](reference/builtins/rand.md)
 
 ### `@startblock` doesn't notice a missing or nested `@endblock`
 

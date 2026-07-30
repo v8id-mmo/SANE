@@ -1,6 +1,8 @@
 # `@raisewarning`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+never shows the warning message when compiling from the command line;
+SANE fixes this, see Known limitations below.
 
 Emits a custom compile-time warning without stopping compilation, unlike
 [`@raiseerror`](raiseerror.md)/[`@error`](error.md), which abort. Meant for
@@ -32,13 +34,18 @@ end.
 
 ## Known limitations
 
-**When compiling from the command line, the warning message is never
-actually shown anywhere.** The directive runs and compilation finishes
-normally (this example does compile successfully), but the message text
-itself isn't printed to the terminal, written to a log, or included in the
-compiled output. It was only ever wired up to be read from the original
-graphical editor's own output console, which doesn't exist in this
-command-line-only fork. This is different from `@raiseerror`/`@error`,
-whose abort message does still reach the console, since aborting works
-through a separate mechanism. In practice, `@raisewarning` currently has
-no observable effect at all when compiling via the CLI.
+**When compiling from the command line, the warning message used to never
+be shown anywhere.** The directive ran and compilation finished normally
+(this example does compile successfully), but the message text wasn't
+printed to the terminal, written to a log, or included in the compiled
+output. It was only ever wired up to be read from the original graphical
+editor's own output console, which doesn't exist in this command-line-only
+fork. This was different from `@raiseerror`/`@error`, whose abort message
+does still reach the console, since aborting works through a separate
+mechanism.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a successful CLI compile now prints every queued warning (including
+`@raisewarning`'s own message) to the terminal at the end of the compile,
+the same way a failed compile's error message already reached it.

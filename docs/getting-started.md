@@ -5,8 +5,7 @@ bundled GUI/IDE. The compiler targets the Commodore 64 exclusively.
 
 ## Compiling a downloaded example
 
-Every runnable example on this site (on a keyword, builtin, or operator
-page) links a single downloadable `.ras` source file. The compiler
+Every runnable example on this site links a single downloadable `.ras` source file. The compiler
 doesn't have a single-file compile mode: every compile needs a **project
 file** (`.trse`) and a **settings file** (`.ini`) alongside the source,
 even for a one-off snippet.
