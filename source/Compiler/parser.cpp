@@ -3140,6 +3140,7 @@ QSharedPointer<Node> Parser::RepeatUntil() {
         QSharedPointer<NodeCompound>(new NodeCompound(t));
     Eat(TokenType::UNTIL);
     QSharedPointer<Node> cond = BinaryClause();
+    int forcePage = findPage();
     QVector<QSharedPointer<Node>> decl;
 
     for (QSharedPointer<Node> n : nodes)
@@ -3153,7 +3154,7 @@ QSharedPointer<Node> Parser::RepeatUntil() {
     //    QSharedPointer<Node> block);
 
     return QSharedPointer<Node>(new NodeRepeatUntil(
-        t, false, qSharedPointerDynamicCast<NodeBinaryClause>(cond), block));
+        t, forcePage, qSharedPointerDynamicCast<NodeBinaryClause>(cond), block));
 }
 
 QSharedPointer<Node> Parser::Term() {

@@ -967,8 +967,11 @@ bool AbstractCodeGen::isOffPage(QSharedPointer<Node> node,
   if (node->m_forcePage == 1)
     onPage = false;
 
-  if (node->m_forcePage == 2)
+  if (node->m_forcePage == 2) {
+    if (!onPage)
+      ErrorHandler::e.Error("keyword onpage forces a short relative branch, but this block is too large to fit one; use offpage instead", node->m_op.m_lineNumber);
     onPage = true;
+  }
 
   //    qDebug() << "FORCEPAGE " <<node->m_forcePage;
 
@@ -1826,7 +1829,7 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeCase> node) {
     as->PopLabel("casenext");
     // perform the actual CPU-dependent comparison of the two numbers
     CompareAndJumpIfNotEqual(expr, node->m_conditionals[i], labelNext,
-                             node->m_forcePage);
+                             node->m_forcePage == 1);
     // Print the current statement block
     node->m_statements[i]->Accept(this);
     // Jump to the end, done with case

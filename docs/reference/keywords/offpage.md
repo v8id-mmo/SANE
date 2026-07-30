@@ -1,6 +1,8 @@
 # `offpage`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+had two gaps in forced-page handling on this keyword (no effect at all on
+`case`, not usable on `repeat...until` at all); SANE fixes both.
 
 A manual override on `if`, `while`, `for`, or `case`, forcing the compiler
 to generate a long jump instead of a short relative branch for that
@@ -26,6 +28,17 @@ automatic check already ran.
     for <var> := <start> to <end> [step <n>] offpage do
       ...
 
+    case <expression> offpage of
+      ...
+    end;
+
+    repeat
+      ...
+    until <condition> offpage;
+
+The `case` and `repeat...until` forms only actually take effect on SANE;
+see Known limitations below for their vanilla TRSE behavior.
+
 ## Example
 
 ```pascal
@@ -49,13 +62,23 @@ end.
 
 ## Known limitations
 
-**Has no effect at all on a `case` statement.** `case <expr> offpage of
-...` parses without error, but the generated comparison code is unaffected
-either way; `offpage` on a `case` is a silent no-op on this compiler
-target.
+**In vanilla TRSE, has no effect at all on a `case` statement.** `case
+<expr> offpage of ...` parses without error, but the generated comparison
+code is unaffected either way; `offpage` on a `case` is a silent no-op.
 
-**Not usable on `repeat...until` at all**, even though the code generator
-has dedicated handling for it there. Writing `until <condition> offpage;`
-produces a confusing, misplaced parse error rather than the long-jump
-override actually taking effect; the keyword simply isn't wired up to be
-read at that position.
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`case <expression> offpage of ...` now actually forces the long-jump
+form.
+
+**In vanilla TRSE, not usable on `repeat...until` at all**, even though
+the code generator has dedicated handling for it there. Writing `until
+<condition> offpage;` produces a confusing, misplaced parse error rather
+than the long-jump override actually taking effect; the keyword simply
+isn't wired up to be read at that position.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`until <condition> offpage;` now parses and applies the override
+correctly; the code generator already had full, working support for it,
+it just couldn't be reached from valid source before this fix.

@@ -1,0 +1,33 @@
+program Bug_2_19_RepeatUntilOnpageOffpageDesync;
+// Bug 2.19 (issue 2 of 3 documented under this number; see KNOWN_BUGS.md
+// and 2_19_onpage_offpage_case_no_effect.ras, the sibling snippet for
+// issue 1, `case onpage/offpage`):
+// `until <condition> onpage;` / `until <condition> offpage;` used to fail
+// to parse at all. Parser::RepeatUntil() (parser.cpp) never called
+// findPage() after parsing the loop condition via BinaryClause(), unlike
+// Parser::Conditional() (if/while), which already did. BinaryClause()
+// itself treats a trailing ONPAGE/OFFPAGE token as an implicit "compare
+// against 0" terminator and deliberately does not consume it, relying on
+// its caller to consume it afterward via its own findPage() call (exactly
+// what Conditional() does and RepeatUntil() didn't) - so the token was
+// left dangling in the stream, desyncing everything parsed afterward.
+// Confirmed live pre-fix: fails with "Expected 'END' but found 'ONPAGE'
+// Did you forget a semicolon (;) ?"
+//
+// Method B (compile-time desync), no VICE step. Post-fix, this compiles
+// clean: RepeatUntil() now calls findPage() right after BinaryClause(),
+// mirroring Conditional()'s existing pattern, and passes the parsed value
+// through to NodeRepeatUntil's constructor instead of hardcoding false.
+// The repeat/until code generator itself already had full, correct
+// onpage/offpage handling (including its own misuse-validation error,
+// "keyword onpage can only be used with 1 compare clause"), unreachable
+// from valid source until this fix.
+var
+	i : byte;
+begin
+	i := 0;
+	repeat
+		i := i + 1;
+	until i = 5 onpage;
+	loop();
+end.

@@ -2,14 +2,15 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
 desynced the parser on a `case` statement whose `else` branch was a single
-bare statement; SANE fixes it.
+bare statement, and separately, forcing [`onpage`](onpage.md)/
+[`offpage`](offpage.md) on a `case` had no effect at all; SANE fixes both.
 
 A multi-way branch on a single value, in classic Pascal style: evaluates
 an expression once and runs the statement next to the matching value.
 
 ## Syntax
 
-    case <expression> of
+    case <expression> [onpage | offpage] of
       <value1>: <statement>;
       <value2>: <statement>;
       ...
@@ -18,7 +19,10 @@ an expression once and runs the statement next to the matching value.
     end;
 
 The `else` branch is optional; if omitted, no branch runs when the
-expression doesn't match any listed value.
+expression doesn't match any listed value. `onpage`/`offpage` is also
+optional, forcing the compiler's choice of short relative branch vs. long
+jump for the comparisons; see [`onpage`](onpage.md)/[`offpage`](offpage.md)
+for what that means and their vanilla TRSE behavior on `case`.
 
 ## Example
 
@@ -79,3 +83,15 @@ end;
 a `case` statement's `else` branch can now be a single bare statement or
 a `begin ... end` block, so the workaround above is no longer necessary
 on SANE.
+
+**In vanilla TRSE, forcing `onpage` or `offpage` on a `case` statement had
+no effect at all.** Both keywords parsed without error, and the forced
+flag was threaded all the way through the compiler, but the one concrete
+comparison routine actually generating code for it never read the flag it
+was given, so the same short-branch form was emitted regardless of which
+direction (or neither) was requested.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`onpage`/`offpage` now actually change the generated comparison code on a
+`case` statement, the same as on `if`/`while`/`for`.

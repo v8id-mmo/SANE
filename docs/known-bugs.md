@@ -584,19 +584,28 @@ change at runtime.
 
 ### `onpage`/`offpage` have gaps on `case` and `repeat...until`, and no safety net when forcing `onpage`
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the `case` compare-and-jump routine now
+reads the forced-page flag instead of ignoring it; `repeat...until` now
+parses a trailing `onpage`/`offpage` and passes it through to the code
+generator's already-working handling for it; and forcing `onpage` on an
+`if`/`while`/`for` block too large for a short relative branch now raises
+a clear compile-time error instead of silently letting the assembler
+catch a broken branch later (or not at all).
 
-`onpage`/`offpage` on a `case` statement parse without error but have no
-effect on the generated code either way. Neither keyword can be used on a
-`repeat...until` loop at all: writing one there desyncs the parser instead
-of applying the override, even though the code generator has full,
-working support for both directions in that spot. And on `if`/`while`/
-`for`, forcing `onpage` (the short-branch direction) skips the size check
-that normally decides automatically, so forcing it on a block that turns
-out too large produces a broken branch with no warning.
+`onpage`/`offpage` on a `case` statement used to parse without error but
+have no effect on the generated code either way. Neither keyword could be
+used on a `repeat...until` loop at all: writing one there desynced the
+parser instead of applying the override, even though the code generator
+already had full, working support for both directions in that spot. And
+on `if`/`while`/`for`, forcing `onpage` (the short-branch direction)
+skipped the size check that normally decides automatically, so forcing it
+on a block that turned out too large produced a broken branch caught only
+late, by the assembler, with a confusing error not pointing at the
+`onpage` keyword itself.
 
 *Reference pages:* [`onpage`](reference/keywords/onpage.md),
-[`offpage`](reference/keywords/offpage.md)
+[`offpage`](reference/keywords/offpage.md), [`case`](reference/keywords/case.md),
+[`until`](reference/keywords/until.md)
 
 ## Inline assembler
 

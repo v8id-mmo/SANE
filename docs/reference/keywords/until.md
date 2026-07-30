@@ -1,6 +1,8 @@
 # `until`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+couldn't apply `onpage`/`offpage` to a `repeat...until` loop at all; SANE
+fixes it.
 
 Pairs with [`repeat`](repeat.md) to close a post-condition loop: the
 condition after `until` is checked after each pass through the body, and
@@ -11,7 +13,7 @@ true. Used nowhere else in the language.
 
     repeat
         <statements>
-    until <condition>;
+    until <condition> [onpage | offpage];
 
 ## Example
 
@@ -33,8 +35,14 @@ end.
 
 ## Known limitations
 
-`onpage`/`offpage` cannot be applied to a `repeat...until` loop at all,
-even though the code generator has full working support for both
-directions here; writing either keyword on a `repeat...until` loop
-desyncs the parser instead of applying the override. See
-[`onpage`](onpage.md)'s Known limitations for the full explanation.
+**In vanilla TRSE, `onpage`/`offpage` cannot be applied to a
+`repeat...until` loop at all**, even though the code generator has full
+working support for both directions here; writing either keyword on a
+`repeat...until` loop desyncs the parser instead of applying the
+override. See [`onpage`](onpage.md)'s Known limitations for the full
+explanation.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`until <condition> onpage;` / `offpage` now parse and apply the override
+correctly.

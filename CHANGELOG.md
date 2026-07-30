@@ -8,6 +8,15 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed three separate `onpage`/`offpage` gaps: forcing either keyword on
+  a `case` statement parsed without error but had no effect on the
+  generated code; `until <condition> onpage;`/`offpage` failed to parse
+  at all, desyncing the parser, even though the code generator already
+  had full working support for both directions on `repeat...until`; and
+  forcing `onpage` on an `if`/`while`/`for` block too large for a short
+  relative branch had no compile-time safety net, letting the assembler
+  catch the broken branch late (or not at all) instead of a clear
+  diagnostic pointing at the `onpage` keyword itself.
 - Fixed `@startblock` silently overwriting an already-open fixed-address
   block when a new one was started before the previous one's `@endblock`;
   it now fails to compile with a clear error, matching the reverse

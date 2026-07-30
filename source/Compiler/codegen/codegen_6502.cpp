@@ -3429,11 +3429,24 @@ void CodeGen6502::CompareAndJumpIfNotEqual(QSharedPointer<Node> nodeA, QSharedPo
     as->ClearTerm();
     nodeB->Accept(this);
     as->Term();
+
+    auto branchIfNotEqual = [&]() {
+        if (!isOffPage) {
+            as->Asm("bne " + lblJump);
+        } else {
+            QString skip = as->NewLabel("cmpskip");
+            as->PopLabel("cmpskip");
+            as->Asm("beq " + skip);
+            as->Asm("jmp " + lblJump);
+            as->Label(skip);
+        }
+    };
+
     as->Asm("cmp " + nodeA->getValue(as) +" ;keep");
-    as->Asm("bne " +lblJump);
+    branchIfNotEqual();
     if (nodeA->isWord(as)) {
         as->Asm("cpy " + nodeA->getValue(as) +"+1 ;keep");
-        as->Asm("bne " +lblJump);
+        branchIfNotEqual();
 
     }
     return;

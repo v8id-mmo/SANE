@@ -1,0 +1,95 @@
+program Bug_2_19_Onpage_Oversized_Block_No_Safety_Check;
+// Bug 2.19 (issue 3 of 3 documented under this number; see KNOWN_BUGS.md
+// and the sibling snippets for issues 1/2, 2_19_onpage_offpage_case_no_effect.ras
+// and 2_19_repeatuntil_onpage_offpage_desync.ras):
+// forcing `onpage` on an if/while/for block whose generated code is too
+// large for a short relative branch had no compile-time safety net.
+// AbstractCodeGen::isOffPage() (abstractcodegen.cpp) always measures the
+// block's size via Node::verifyBlockBranchSize() first, but then
+// unconditionally overwrote that measured result whenever a forced
+// direction was given, with no check that a forced ONPAGE (m_forcePage==2)
+// was actually consistent with what the measurement just found.
+//
+// Confirmed live pre-fix: this doesn't compile silently with a broken jump
+// (OrgAsm's own assembler-stage range check already catches an out-of-range
+// relative branch), but it fails late and confusingly, at the assembly
+// stage rather than with a clear diagnostic pointing at the actual `onpage`
+// misuse: "Branch out of range : 360 :bne $985 on line 27 / Please remember
+// that you can use the keyword 'offpage' ..." - the suggested fix is right,
+// but the error is reported against a generated internal label deep in the
+// .asm output, not the source-level `onpage` keyword itself.
+//
+// Method B (compile-time error), no VICE step. Post-fix, this now fails at
+// codegen time with a clear diagnostic pointing at the `onpage` keyword's
+// own line, the same resolution shape RepeatUntil's own onpage/offpage
+// handling (see issue 2) already used for its own analogous misuse case.
+var
+	i : byte;
+
+begin
+	i := 1;
+	if i = 1 onpage then
+	begin
+		i := i + 1;
+		i := i + 2;
+		i := i + 3;
+		i := i + 4;
+		i := i + 5;
+		i := i + 6;
+		i := i + 7;
+		i := i + 8;
+		i := i + 9;
+		i := i + 10;
+		i := i + 11;
+		i := i + 12;
+		i := i + 13;
+		i := i + 14;
+		i := i + 15;
+		i := i + 16;
+		i := i + 17;
+		i := i + 18;
+		i := i + 19;
+		i := i + 20;
+		i := i + 21;
+		i := i + 22;
+		i := i + 23;
+		i := i + 24;
+		i := i + 25;
+		i := i + 26;
+		i := i + 27;
+		i := i + 28;
+		i := i + 29;
+		i := i + 30;
+		i := i + 31;
+		i := i + 32;
+		i := i + 33;
+		i := i + 34;
+		i := i + 35;
+		i := i + 36;
+		i := i + 37;
+		i := i + 38;
+		i := i + 39;
+		i := i + 40;
+		i := i + 41;
+		i := i + 42;
+		i := i + 43;
+		i := i + 44;
+		i := i + 45;
+		i := i + 46;
+		i := i + 47;
+		i := i + 48;
+		i := i + 49;
+		i := i + 50;
+		i := i + 51;
+		i := i + 52;
+		i := i + 53;
+		i := i + 54;
+		i := i + 55;
+		i := i + 56;
+		i := i + 57;
+		i := i + 58;
+		i := i + 59;
+		i := i + 60;
+	end;
+	loop();
+end.
