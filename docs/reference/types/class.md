@@ -1,6 +1,8 @@
 # `class`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+compiles whole-instance class assignment (`b := a;`) but silently copies
+no fields; SANE fixes this.
 
 A `record` that can also declare its own procedures/functions
 alongside its fields, using `this` inside those methods to refer to the
@@ -100,12 +102,18 @@ implementation for either `record` or `class` members; see
 [`private`](../keywords/private.md)'s Known limitations. Every field and
 method declared here is effectively public.
 
-**Whole-instance assignment (`hero2 := hero;`, for two variables of the
-same class type) compiles without any error, but silently doesn't copy
-any fields.** Unlike a plain [`record`](record.md), where the same
-shape of assignment used to be a compile error (now fixed, see that
-page's Known limitations), a `class` was never blocked from compiling
-here - it just doesn't do the copy, and gives no warning that it didn't.
-This is a genuinely open defect, not a documented restriction. Copy
-fields individually instead (`hero2.hp := hero.hp;` etc.) until this is
-fixed.
+**In vanilla TRSE, whole-instance assignment (`hero2 := hero;`, for two
+variables of the same class type) compiles without any error, but
+silently doesn't copy any fields.** Unlike a plain [`record`](record.md),
+where the same shape of assignment used to be a compile error (now
+fixed, see that page's Known limitations), a `class` was never blocked
+from compiling here - vanilla TRSE just doesn't do the copy, and gives no
+warning that it didn't.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`hero2 := hero;` now does a real, whole-object field copy. Unlike a
+record's field-by-field copy, a class instance's fields aren't
+individually named symbols (method calls resolve field access through a
+`this`-pointer offset instead), so this is implemented as a raw byte-for-
+byte copy of the instance's full size rather than a per-field one; the
+observable result is the same either way.

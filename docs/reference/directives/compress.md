@@ -57,3 +57,11 @@ produces the **legacy** LZ4 frame format (magic bytes `$02 $21 $4c
 $18`), while `compressed`'s bundled `CompressLZ4` produces the modern
 LZ4 frame format (magic bytes `$04 $22 $4d $18`). The two aren't
 interchangeable either.
+
+This isn't planned to change: a bundled 6502 LZ4 decompressor (and
+reconciling the two features' different LZ4 containers) is substantial
+new feature work with no existing user demand driving it. `@compress`
+remains useful for shrinking a file's on-disk size for consumption by
+external tooling, just not for a compress-then-decompress-at-runtime
+round trip; use `IncBin` pre-compressed offline with the external
+`exomizer` tool plus `decrunch()` for that.

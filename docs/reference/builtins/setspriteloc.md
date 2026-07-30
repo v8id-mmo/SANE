@@ -53,9 +53,20 @@ with the message it already claimed to enforce, and adds a compile-time
 check rejecting a constant `spriteNum` outside `0`-`7`. A non-constant
 (runtime variable) `spriteNum` still isn't range-checked either way.
 
-Separately, the address this builtin writes to always assumes the
-screen is at its *default* location. If [`SetScreenLocation`](setscreenlocation.md)
-has moved the screen anywhere else, `SetSpriteLoc` still writes to the
-old, default location's sprite-pointer table rather than the real,
-currently active one, so the sprite silently doesn't get pointed at the
-data you asked for.
+**Separately, in vanilla TRSE the address this builtin writes to always
+assumes the screen is at its *default* location.** If
+[`SetScreenLocation`](setscreenlocation.md) has moved the screen anywhere
+else, vanilla TRSE's `SetSpriteLoc` still writes to the old, default
+location's sprite-pointer table rather than the real, currently active
+one, so the sprite silently doesn't get pointed at the data you asked
+for.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`SetSpriteLoc` now tracks whatever screen location the most recent
+[`SetScreenLocation`](setscreenlocation.md) call (if any) actually moved
+the screen to, and computes the sprite-pointer table's address relative
+to that instead of the hardcoded default. This tracking is purely
+compile-time (the same "last call wins, in source order" reasoning
+`RETURN`'s interrupt-awareness fix already relies on), so it can't
+account for a `SetScreenLocation` call reached conditionally at runtime
+in a way that doesn't match its position in the source.

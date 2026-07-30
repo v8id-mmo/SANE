@@ -83,12 +83,11 @@ remains the only way to copy a `class` (see below).
 
 :material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
 whole-record assignment now compiles and copies every field, for a plain
-`record` (used in the example above). This fix doesn't cover `class`:
-`p2 := p1;` for two `class` variables compiles without error in both
-vanilla TRSE and SANE, but silently does nothing - it does not copy any
-fields, and there is no warning that it didn't. This is a separate, still
-open, defect; copy each field individually for a `class`, the same way a
-`record` needed to before this fix.
+`record` (used in the example above). `class` needed a separate fix
+(see [`class`](class.md)'s Known limitations): in vanilla TRSE,
+`p2 := p1;` for two `class` variables compiles without error but
+silently does nothing - it does not copy any fields, and there is no
+warning that it didn't; SANE now does a real whole-object copy there too.
 
 **A pointer field inside a record/class isn't allowed** on this fork's C64
 target; every field must be a plain value type, another record/class

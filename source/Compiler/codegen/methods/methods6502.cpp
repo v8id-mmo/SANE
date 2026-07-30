@@ -3988,6 +3988,8 @@ void Methods6502::SetScreenLocation(Assembler *as)
         if (!ok)
             ErrorHandler::e.Error("SetScreenLocation parameter must be one of the following values: $0000,$0400,$0800,$0C00.. repeating every $1000 bytes", m_node->m_op.m_lineNumber);
 
+        m_codeGen->m_currentScreenLocationOffset = n;
+
         QString addr = Util::numToHex(as->m_symTab->m_constants["VIC_DATA_LOC"]->m_value->m_fVal);
         as->Asm("lda "+addr);
         as->Asm("and #%00001111");
@@ -4922,9 +4924,6 @@ void Methods6502::SetMemoryConfig(Assembler *as)
         int n1 = m_node->m_params[0]->getValueAsInt(as); // Kernal
         int n2 = m_node->m_params[1]->getValueAsInt(as); // Basic
         int n3 = m_node->m_params[2]->getValueAsInt(as); // IO
-
-        if (n1==1 && n2==0 && n3 == 0)
-            n3=1; // Bit 2 must be toggled
 
         uchar val = n1<<2 | n2<<1 | n3 << 0;
 
@@ -6210,7 +6209,8 @@ void Methods6502::SetSpriteLoc(Assembler *as)
     }
 
 //    SaveVar(as,0,"x");
-    as->Asm("sta $07f8 + "+bank+",x");
+    QString spritePtrTable = "$"+QString::number(m_codeGen->m_currentScreenLocationOffset+0x3F8,16);
+    as->Asm("sta "+spritePtrTable+" + "+bank+",x");
 
 /*    int newLoc = 64*num->m_val;
     QString c = "SPRITE_LOC" +QString::number((int)num2->m_val+1);

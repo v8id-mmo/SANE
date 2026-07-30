@@ -1,6 +1,8 @@
 # `SetMemoryConfig`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+silently substitutes a different `basic` value for exactly one argument
+combination, `(1, 0, 0)`; SANE fixes this.
 
 Configures the CPU's memory-configuration port to bank BASIC and/or
 KERNAL ROM in or out, replacing them with plain RAM, and to make the I/O
@@ -35,13 +37,13 @@ end.
 
 ## Known limitations
 
-For exactly one combination of arguments, `(1, 0, 0)`, which also happens
-to be by far the most common way this builtin gets called in practice,
-the compiler silently substitutes a different value for the `basic`
-argument before computing the byte it writes, rather than using the
-value actually passed in. This particular substitution doesn't change
-which ROM/RAM ends up mapped in, so most programs never notice, but it
-does mean the exact byte value written ends up different from what a
-plain reading of the three arguments would predict. This matters if your
-own code later reads that port back directly and compares it against an
-expected value.
+**Fixed in SANE.** For exactly one combination of arguments, `(1, 0, 0)`,
+which also happens to be by far the most common way this builtin gets
+called in practice, vanilla TRSE silently substitutes a different value
+for the `basic` argument before computing the byte it writes, rather than
+using the value actually passed in. This particular substitution doesn't
+change which ROM/RAM ends up mapped in, so most programs never notice,
+but it does mean the exact byte value written ends up different from
+what a plain reading of the three arguments would predict. This matters
+if your own code later reads that port back directly and compares it
+against an expected value.

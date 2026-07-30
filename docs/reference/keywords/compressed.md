@@ -46,3 +46,11 @@ The [`@compress`](../directives/compress.md) build directive has the exact same 
 same LZ4 container as this flag: `@compress` shells out to an external
 `lz4` tool with the `-l` flag, which produces the **legacy** LZ4 frame
 format (magic `$02 $21 $4c $18`), not the modern one `compressed` uses.
+
+This isn't planned to change: a bundled 6502 LZ4 decompressor (and
+reconciling the two features' different LZ4 containers) is substantial
+new feature work with no existing user demand driving it. `compressed`
+remains useful for its one actually-working purpose, shrinking the data
+embedded in the final `.prg`, just not for a compress-then-decompress-
+at-runtime round trip; use `IncBin` pre-compressed offline with the
+external `exomizer` tool plus `decrunch()` for that.

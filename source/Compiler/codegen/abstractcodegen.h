@@ -63,6 +63,8 @@ protected:
     int m_currentProcedureType = 0;
 public:
 
+    int m_currentScreenLocationOffset = 0x0400;
+
     inline void dontOutputLineNumbers(){m_outputLineNumbers=false;}
     inline void outputLineNumbers(){m_outputLineNumbers=true;}
     inline void useThisNext(QString s){m_useNext=s;}

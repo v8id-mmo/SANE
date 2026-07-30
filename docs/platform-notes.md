@@ -19,9 +19,10 @@ builtin that writes this port; it does a masked read-modify-write, only
 touching the banking bits and leaving the rest of the port's contents
 (used for the datasette lines, among other things) untouched. See that
 page for the exact parameter meaning, and its Known limitations section
-for a specific argument combination that doesn't write quite the byte
-you'd expect (harmless in practice, but worth knowing if you read the
-port back yourself).
+for a vanilla-TRSE quirk SANE fixes (a specific argument combination that
+used to write a byte other than what a plain reading of its arguments
+predicted, harmless in practice but worth knowing if you read the port
+back yourself).
 
 [`EnableAllRam`](reference/builtins/enableallram.md) is the coarser,
 one-call version: it banks out BASIC and KERNAL ROM, but leaves the I/O

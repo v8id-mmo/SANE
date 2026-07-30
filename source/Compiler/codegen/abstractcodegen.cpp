@@ -665,7 +665,16 @@ void AbstractCodeGen::AssignVariable(QSharedPointer<NodeAssign> node) {
   }
 
   // ****** RECORDS AND CLASSES DIRECT ASSIGNMENT
-  if (v->isRecord(as) && !v->isRecordData(as) && !v->isClass(as)) {
+  // For a plain record, field access (p.x) keeps its subNode attached, so
+  // isRecordData() alone tells a whole-object assignment (p := q;) apart
+  // from a field assignment. A class variable's field access is instead
+  // flattened by the parser into a this-pointer + byte-offset expression
+  // (ApplyClassVariable, parser.cpp) and its subNode is cleared either
+  // way, so isRecordData() can't distinguish the two for a class; a
+  // non-null m_expr is what's left of that flattening for a field access,
+  // and is absent for a genuine whole-object reference.
+  if (v->isRecord(as) && !v->isRecordData(as) &&
+      (!v->isClass(as) || v->m_expr == nullptr)) {
     as->Comment("Assigning pure records/classes");
     AssignPureRecords(node);
     return;
@@ -1616,32 +1625,29 @@ void AbstractCodeGen::HandleNodeAssignCopyRecord(
 
 void AbstractCodeGen::HandleNodeAssignCopyClass(
     QSharedPointer<NodeAssign> node) {
-  // Both are records of same type. Set up copy.
+  // Unlike a record, a class variable's fields aren't individually named
+  // symbols (a plain record's HandleNodeAssignCopyRecord builds a
+  // "structVar_fieldName" NodeVar per field); the parser instead resolves
+  // class field access into this-pointer + byte-offset arithmetic
+  // (ApplyClassVariable, parser.cpp), so there's no per-field symbol to
+  // build a copy out of. A class's instance data is otherwise just flat,
+  // contiguous storage (no inheritance, no vtable), so a plain raw-byte
+  // copy of the whole object is correct and simpler. Emitted directly
+  // rather than via the general-purpose MemCpyUnroll builtin: that
+  // builtin's destination-addressing branch assumes either a pure
+  // numeric/address destination or a pointer/array one indexed through Y,
+  // neither of which a bare class variable (a plain named, non-pointer,
+  // non-array symbol) actually is.
   QSharedPointer<SymbolTable> stab =
       as->m_symTab->m_records[node->m_right->getTypeText(as)];
-  as->Comment("Handle assign copy records");
-  // NOT IMPLEMENTED, SEE PARSER FOR COPYING
-  /*   for (QSharedPointer<Symbol> s: stab->m_symbols) {
-
-      QSharedPointer<NodeVar> l = QSharedPointer<NodeVar>(new
-  NodeVar(Token(TokenType::ID,getValue(node->m_left)))); l->m_op.m_lineNumber =
-  node->m_op.m_lineNumber; l->m_expr =
-  qSharedPointerDynamicCast<NodeVar>(node->m_left)->m_expr;
-      QSharedPointer<NodeVar> lp = QSharedPointer<NodeVar>(new
-  NodeVar(Token(TokenType::ID,s->m_name))); l->m_subNode = lp;
-
-      QSharedPointer<NodeVar> r = QSharedPointer<NodeVar>(new
-  NodeVar(Token(TokenType::ID,getValue(node->m_right))));
-      QSharedPointer<NodeVar> rp = QSharedPointer<NodeVar>(new
-  NodeVar(Token(TokenType::ID,s->m_name))); r->m_subNode = rp;
-      r->m_op.m_lineNumber = node->m_op.m_lineNumber;
-      r->m_expr = qSharedPointerDynamicCast<NodeVar>(node->m_right)->m_expr;
-
-      QSharedPointer<NodeAssign> ns = QSharedPointer<NodeAssign>(new
-  NodeAssign(l,node->m_op, r)); ns->Accept(this);
-      //    Node::s_uniqueSymbols[ns] = ns; // Mark for deletion
-
-  }*/
+  as->Comment("Handle assign copy class (raw memcpy)");
+  int size = stab->getSize();
+  QString src = node->m_right->getValue(as);
+  QString dst = node->m_left->getValue(as);
+  for (int i = 0; i < size; i++) {
+    as->Asm("lda " + src + " + " + QString::number(i));
+    as->Asm("sta " + dst + " + " + QString::number(i));
+  }
 }
 
 /*

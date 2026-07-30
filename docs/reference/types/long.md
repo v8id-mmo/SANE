@@ -76,3 +76,16 @@ or wrong specifically for `long`:
 - **`long` multiplication and division aren't supported at all**;
   `*`/`/` on two `long` operands is a compile error, not a silently wrong
   result.
+- **In vanilla TRSE, a negative decimal literal with a magnitude of 65536
+  or higher (needed to fit in 24 bits but not 16) was silently truncated
+  to a 16-bit magnitude**, both as a `var`-declaration initializer
+  (`lv : long = -100000;`) and in ordinary code (`lv := -100000;`),
+  storing the wrong value with no error or warning. :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  both paths now correctly wrap at 24 bits. A separate, smaller gap
+  remains open: a small-magnitude negative literal (one that fits in a
+  single byte, like `-1`) compared directly against a `long` variable
+  still isn't sign-extended for the comparison's upper two bytes, so
+  `if (lv = -1)` can wrongly compare unequal even when `lv` really is
+  `-1`; building the comparison value at runtime (e.g. `zero - one`)
+  works around it.

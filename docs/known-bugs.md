@@ -380,15 +380,19 @@ doesn't change the compiled output in any observable way.
 
 ### `@use KrillsLoader` requires one exact casing/spacing, or it fails
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the directive's line is now located
+case-insensitively, matching every other directive in the language.
 
 After parsing the directive's three address values, the compiler
 regenerates what it considers the "correct" textual form of the line and
-checks whether that exact string appears verbatim in the source file. In
-practice this means the directive name has to be written exactly
-`KrillsLoader` (capitalized just so), even though every other directive in
-the language is matched case-insensitively; a lowercase `krillsloader`
-with the identical, valid address values fails to compile.
+locates that text in the source file, to splice the generated loader/
+installer declarations in at that point. In vanilla TRSE this means the
+directive name has to be written exactly `KrillsLoader` (capitalized just
+so), even though every other directive in the language is matched
+case-insensitively; a lowercase `krillsloader` with the identical, valid
+address values fails to compile there. Spacing still matters (single
+spaces, no extras) even after this fix; only the keyword's letter casing
+was the actual bug.
 
 *Reference page:* [`krillsloader`](reference/keywords/krillsloader.md)
 
@@ -432,7 +436,8 @@ its actual safety.
 
 ### `compressed`/`@compress` output can't be decompressed at runtime
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** By design, not planned · **Fixed in:** not applicable - see
+explanation.
 
 Both the `compressed` variable flag and the `@compress` build directive
 shrink data using LZ4 compression, but there is currently no builtin that
@@ -443,7 +448,17 @@ with. On top of that, `compressed` and `@compress` don't even produce the
 same LZ4 container as each other, so they aren't interchangeable either.
 Right now, the only working "compress at build time, decompress at
 runtime" path is pre-compressing data offline with an external tool and
-loading it with `decrunch()`, not `compressed`/`@compress`.
+loading it with `decrunch()`, not `compressed`/`@compress`. This isn't
+going to change: writing and maintaining a bundled 6502 LZ4 decompressor
+(and reconciling `@compress`'s legacy-frame output against `compressed`'s
+modern-frame output along the way) is real, substantial new feature work
+with no existing user demand driving it, not a narrow fix. Documented
+here and on both features' own reference pages so the constraint is
+clear rather than discovered by trial and error;
+`compressed`/`@compress` remain useful for their one actually-working
+purpose (shrinking on-disk `.prg` size for data consumed by external
+tooling, or via `decrunch()`'s separate Exomizer path), just not for a
+compress-then-decompress-at-runtime round trip.
 
 *Reference pages:* [`compressed`](reference/keywords/compressed.md),
 [`@compress`](reference/directives/compress.md)
@@ -541,16 +556,22 @@ actual exported data can.
 
 ### `private`/`public` are reserved but completely non-functional
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** By design, not planned · **Fixed in:** not applicable - see
+explanation.
 
 Both keywords are reserved (so a field or method can't be named `private`
 or `public`), but neither is actually read anywhere while parsing a
 `class`/`record` body. Writing a visibility section the way the keywords'
 names suggest fails to compile immediately, rather than being accepted
 and ignored. Every class/record member is effectively public; there is
-currently no way to mark one private.
+currently no way to mark one private. This isn't going to change: adding
+real visibility (parsing the keywords, threading a flag through the
+symbol table, and enforcing it against external access) is real feature
+work, not a narrow fix, with no existing user demand driving it.
+Documented on both keywords' own reference pages instead.
 
-*Reference page:* [`private`](reference/keywords/private.md)
+*Reference pages:* [`private`](reference/keywords/private.md),
+[`public`](reference/keywords/public.md)
 
 ### Whole-record assignment always fails
 
@@ -572,18 +593,24 @@ does instead.
 
 ### A whole-class assignment silently does nothing instead of copying fields
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** whole-class assignment now does a real
+raw byte-for-byte copy of the instance's full size.
 
 Assigning one `class` variable directly to another of the same type, with
-no field selector on either side, compiles cleanly with no error or
-warning, but doesn't actually copy any fields: the destination variable's
-fields are left unchanged. This is a genuinely different, and worse,
+no field selector on either side, used to compile cleanly with no error
+or warning, but not actually copy any fields: the destination variable's
+fields were left unchanged. This was a genuinely different, and worse,
 failure mode than plain `record` assignment used to have (a clear compile
-error): there's nothing here to signal that the assignment did nothing.
-Field-by-field assignment (copying each field individually) is unaffected
-and is the only reliable way to copy a `class` for now.
+error): there was nothing to signal that the assignment did nothing.
+Unlike a record's field-by-field copy, a class instance's fields aren't
+individually named symbols (method calls resolve field access through a
+`this`-pointer offset instead), so the fix copies the whole instance's
+raw bytes rather than one field at a time; the observable result is the
+same either way. Field-by-field assignment (copying each field
+individually) still works too.
 
-*Reference page:* [`record`](reference/types/record.md)
+*Reference pages:* [`class`](reference/types/class.md),
+[`record`](reference/types/record.md)
 
 ## Types
 
@@ -605,6 +632,46 @@ memory location, or `pointer` for something that genuinely needs to
 change at runtime.
 
 *Reference page:* [`address`](reference/types/address.md)
+
+### A negative `long` literal with a magnitude of 65536 or higher was truncated to 16 bits
+
+**Status:** Fixed · **Fixed in:** both the `var`-declaration-initializer
+path and the ordinary-expression path now correctly wrap a negative
+literal at 24 bits, whatever its magnitude.
+
+Two independent, unrelated code paths handle a negative decimal literal
+in this compiler, and both hardcoded a two-tier two's-complement
+negation (`256 - x` for a magnitude under 256, `65536 - x` otherwise)
+with no wider tier at all, even though `long` needs 24 bits: `lv : long
+= -100000;` (a `var` declaration's own initializer, evaluated separately
+via a small expression-string evaluator) stored the wrong value at
+runtime with no error, and `lv := -100000;` or `if (lv = -100000)`
+(ordinary code, evaluated via the general expression parser) computed
+the wrong constant the same way. Since `100000` needs 24 bits, both used
+their existing 16-bit tier, wrapping to a completely different number
+(`-100000 mod 65536`) instead of the correct 24-bit value.
+
+*Reference page:* [`long`](reference/types/long.md)
+
+### A small-magnitude negative literal isn't sign-extended when compared against a wider variable
+
+**Status:** Open · **Fixed in:** not yet fixed
+
+Found while fixing the bug above. A negative decimal literal small
+enough to fit in a single byte (like `-1`) is internally stored using
+only as many bytes as its own magnitude needs; when it's compared
+directly against a wider (`long`) variable, the byte(s) beyond what the
+literal itself naturally occupies are read as `$00` instead of being
+sign-extended to `$FF`. Concretely, `if (lv = -1)` for a `long` variable
+genuinely holding `-1` ($FFFFFF) can compare unequal, since the literal
+`-1` on the right-hand side is read back as `$0000FF` for the
+comparison's upper two bytes. Building the comparison value from a
+runtime computation instead of a literal (subtracting two `long`
+variables holding `0` and `1`, for example) avoids the gap, since that's
+evaluated as a real 24-bit subtraction rather than a compile-time
+literal.
+
+*Reference page:* [`long`](reference/types/long.md)
 
 ## Branch optimization
 
@@ -1073,15 +1140,21 @@ else positioning the screen cursor anywhere in the program, hits this.
 
 ### `PlaySound`'s two waveform parameters both write the same register
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** By design, not planned · **Fixed in:** not applicable - see
+explanation.
 
-`PlaySound` takes two separate "waveform" parameters, meant to set the
-sound chip's control register twice: once to trigger the note and once
-to release it. Both are written to the exact same register back to back
-with nothing in between, so the first write is immediately overwritten
-by the second before it can have any effect. Only the second waveform
-parameter's value ever actually reaches the sound chip; the first is
-silently discarded every time.
+`PlaySound` takes two separate "waveform" parameters. Both are written
+to the exact same sound-chip control register back to back with nothing
+in between, so the first write is immediately overwritten by the second
+before it can have any observable effect; only the second waveform
+parameter's value ever actually reaches the chip. This isn't going to be
+changed: no bundled tutorial or template actually calls `PlaySound` at
+all, so there's no real usage to weigh a fix against, and neither the
+"correct" two-write gate-trigger idiom (what delay or second address it
+would actually need) nor the case for removing the dead first write
+outweighs just documenting the parameter's real, current behavior.
+Treated the same way as `LeftBitShift`/`RightBitShift`'s rotate-not-shift
+naming mismatch above: a quirk to document clearly, not a defect to fix.
 
 *Reference page:* [`PlaySound`](reference/builtins/playsound.md)
 
@@ -1179,19 +1252,23 @@ and clearing the raster-compare high bit set up beforehand.
 
 ### `SetMemoryConfig(1, 0, 0)` silently writes a different value than requested
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the dead `n3=1` override removed;
+`SetMemoryConfig` now writes the byte a plain reading of its three
+arguments predicts.
 
 `SetMemoryConfig` takes three arguments and computes a byte value from
 them to write to the CPU's memory-configuration port. For exactly one
 combination of arguments, `(1, 0, 0)`, which also happens to be by far
 the most common way this builtin gets called in practice, the compiler
-silently substitutes a different value for the third argument before
-computing the byte it writes, rather than using the value actually
-passed in. This particular substitution doesn't change which ROM/RAM
-ends up mapped in, so most programs never notice, but it does mean the
-exact byte value ends up different from what a plain reading of the
-three arguments would predict, which matters for any code that reads
-that port back directly and compares it against an expected value.
+used to silently substitute a different value for the third argument
+before computing the byte it writes, rather than using the value
+actually passed in. This particular substitution didn't change which
+ROM/RAM ended up mapped in (with `kernal=0`, the `basic` bit has no
+further effect on the real 6510 port truth table), so most programs
+never noticed, but it did mean the exact byte value ended up different
+from what a plain reading of the three arguments would predict, which
+mattered for any code that read that port back directly and compared it
+against an expected value.
 
 *Reference page:* [`SetMemoryConfig`](reference/builtins/setmemoryconfig.md)
 
@@ -1306,13 +1383,16 @@ diagnostic pointing at the actual missing setting.
 
 ### `SetSpriteLoc` assumes the screen is still at its default location
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `SetSpriteLoc` now computes the
+sprite-pointer table's address relative to whatever screen location the
+most recent `SetScreenLocation` call actually set (compile-time tracked,
+in source order), instead of always assuming the default.
 
 The sprite-pointer table always lives at a fixed offset from wherever
-screen memory currently starts. `SetSpriteLoc` doesn't compute that
+screen memory currently starts. `SetSpriteLoc` used to not compute that
 offset from the screen's actual, currently configured location; it
-always assumes the *default* one. If a program moves the screen with
-`SetScreenLocation` and also uses sprites, `SetSpriteLoc` keeps writing
+always assumed the *default* one. If a program moved the screen with
+`SetScreenLocation` and also used sprites, `SetSpriteLoc` kept writing
 to the old, default location's sprite-pointer table rather than the
 real one, silently leaving sprites pointed at the wrong (or stale)
 shape data, with no error.

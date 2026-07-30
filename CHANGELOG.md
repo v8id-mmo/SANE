@@ -8,6 +8,37 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed a negative `long` literal with a magnitude of 65536 or higher
+  (needing 24 bits, not 16) being silently truncated to a 16-bit
+  magnitude, both as a `var`-declaration initializer and in ordinary code
+  (`lv := -100000;`); two independent, unrelated code paths each had the
+  same missing-24-bit-tier shape and both needed the fix.
+- Fixed `@use KrillsLoader` rejecting its own directive line whenever it
+  wasn't written with the one exact keyword casing `KrillsLoader`, even
+  with otherwise-valid, identical address values (e.g. lowercase
+  `krillsloader` used to fail); the directive's line is now located
+  case-insensitively, matching every other directive in the language.
+  Spacing still matters, only the keyword's casing was the bug.
+- Fixed whole-class assignment (`b := a;`, two variables of the same
+  `class` type, no field selector on either side) compiling clean but
+  silently copying no fields; it now does a real, whole-object copy (a
+  raw byte-for-byte copy of the instance's full size, since a class
+  instance's fields aren't individually named symbols the way a plain
+  record's fields are).
+- Fixed `SetSpriteLoc` always computing the sprite-pointer table's
+  address relative to the screen's *default* location, even after a
+  `SetScreenLocation` call had actually moved the screen elsewhere; it
+  now tracks the most recent `SetScreenLocation` call (compile-time, in
+  source order) and computes the sprite-pointer table's address relative
+  to that instead.
+- Fixed `SetMemoryConfig(1, 0, 0)` (by far the most common invocation in
+  this fork's own tutorials/templates) silently writing `$05` to the CPU
+  port instead of the `$04` a plain reading of its three arguments
+  predicts; a dead override forcing the `basic` argument to `1` for
+  exactly this combination has been removed. The substitution never
+  changed which ROM/RAM was actually mapped in, only the literal byte
+  value written, so this only matters for code that reads `$01` back
+  directly and compares it against an expected constant.
 - Fixed `ToggleBit` with a compile-time-constant bit index generating and
   running its work twice (a fast direct set/clear, then the full
   variable-index version right after it, recomputing and reapplying the

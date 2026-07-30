@@ -1,6 +1,9 @@
 # `krillsloader`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+rejects this directive's own keyword casing (e.g. lowercase
+`krillsloader`) even with otherwise-valid addresses; SANE matches it
+case-insensitively, like every other directive keyword.
 
 A C64-only argument to `@use`, not a directive of its own. It sets up
 Krill's loader, a well-known third-party C64 fastloader/installer, bundling
@@ -15,8 +18,9 @@ has started.
 
     @use KrillsLoader <loaderAddress> <loaderOrgAddress> <installerAddress>
 
-The casing and spacing shown above must be followed exactly; see Known
-limitations.
+The spacing shown above (single spaces, no extras) must be followed
+exactly; see Known limitations. Casing doesn't matter (`krillsloader`
+works too).
 
 ## Parameters
 
@@ -47,20 +51,26 @@ end.
 
 ## Known limitations
 
-**The line has to match a very specific, regenerated form of itself,
-character for character, or the build fails.** After parsing the
-directive's three addresses, the compiler reconstructs what it considers
-the "correct" textual form of the line (fixed capitalization
-`KrillsLoader`, each address as a `$`-prefixed 4-digit hex number, single
-spaces) and checks whether that exact string appears verbatim in the
-source file. If it doesn't, compilation fails with: *"Something went wrong
-with the krill loader implementation: please make sure that the loader
-line is exactly of the following format (including spaces and letter
-cases etc)"*, followed by the one exact form that would be accepted.
+**The line has to match a very specific, regenerated form of itself, or
+the build fails.** After parsing the directive's three addresses, the
+compiler reconstructs what it considers the "correct" textual form of the
+line (each address as a `$`-prefixed hex number, single spaces) and
+locates that exact text in the source file to splice the generated
+loader/installer declarations into. If it can't find a match, compilation
+fails with: *"Something went wrong with the krill loader implementation:
+please make sure that the loader line is exactly of the following format
+(spaces matter, letter case doesn't)"*, followed by the one exact form
+that would be accepted.
 
-Concretely, this means writing the directive with a different (but
-otherwise valid and case-insensitive-everywhere-else) casing, such as
-`@use krillsloader $0200 $2000 $3000` (lowercase `krillsloader`), fails
-outright, even though the three address values are identical to the
-accepted form. Always copy the exact casing and spacing shown in the
-Syntax section above.
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+in vanilla TRSE, that reconstructed form used a fixed capitalization
+(`KrillsLoader`), so writing the directive with any other casing (such as
+`@use krillsloader $0200 $2000 $3000`, lowercase `krillsloader`) failed
+outright even though the three address values were identical to the
+accepted form - the only directive in the language whose keyword wasn't
+matched case-insensitively. SANE now locates the directive's line
+case-insensitively too, matching every other directive.
+
+**Spacing still matters.** The line must still use exactly the spacing
+shown in the Syntax section above (single spaces, no extras) - only the
+keyword's letter casing is tolerant now, not its spacing.

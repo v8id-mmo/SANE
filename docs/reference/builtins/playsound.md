@@ -59,3 +59,10 @@ written and then immediately overwritten by the plain `SID_SAW` that
 follows it, so the gate bit never ends up set. In practice, use the
 final (seventh) parameter for whatever waveform value you actually want
 applied, and don't rely on the sixth parameter having any effect.
+
+This isn't planned to change: no bundled tutorial or template actually
+calls `PlaySound`, so there's no real usage to weigh a fix against, and
+neither the "correct" two-write gate-trigger idiom nor the case for
+simply dropping the dead first write clearly outweighs the other. Same
+resolution shape as `LeftBitShift`/`RightBitShift`'s rotate-not-shift
+naming mismatch: a quirk to document clearly, not a defect to fix.

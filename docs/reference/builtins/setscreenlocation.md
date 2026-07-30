@@ -34,8 +34,9 @@ end.
 
 ## Known limitations
 
-The sprite-pointer table's location always follows the *default* screen
-address, not wherever `SetScreenLocation` actually moves it to. If you
-relocate the screen with `SetScreenLocation` and also use sprites, see
-[`SetSpriteLoc`](setspriteloc.md)'s Known limitations for the resulting
-gotcha.
+In vanilla TRSE, the sprite-pointer table's location always follows the
+*default* screen address, not wherever `SetScreenLocation` actually moves
+it to. **Fixed in SANE:** if you relocate the screen with
+`SetScreenLocation` and also use sprites, see
+[`SetSpriteLoc`](setspriteloc.md)'s Known limitations for the fix and its
+one remaining (compile-time-tracking) caveat.

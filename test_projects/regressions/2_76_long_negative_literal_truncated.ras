@@ -1,28 +1,39 @@
 Program Bug_2_76_LongNegativeLiteralTruncated;
-// Bug 2.76 (OPEN, not yet fixed): a negative decimal literal initializer
-// for a `long` variable is truncated to a 16-bit magnitude before it ever
-// reaches codegen, silently storing the wrong value.
+// Bug 2.76 (FIXED 2026-07-30): a negative decimal literal wider than 16
+// bits (magnitude >= 65536) was truncated to a 16-bit magnitude before it
+// ever reached codegen, silently storing the wrong value. Root cause:
+// Parser::Factor()'s unary-minus handling (parser.cpp) hardcodes a
+// two-tier two's-complement negation (`256 - x` for x<256, `65536 - x`
+// otherwise) with no 24-bit tier at all, so any magnitude >= 65536 wrapped
+// at 16 bits instead of 24. Fixed by adding the missing tier
+// (`16777216 - x` for x>=65536), matching the same 24-bit width `long`
+// uses everywhere else in this fork's codegen.
 //
-// Found 2026-07-29 while fixing bug 2.35 (`abs()` on `long`): the
-// original regression for 2.35 used `lv := -100000;` directly and kept
-// failing even after Abs() itself was fixed. `CodeGen6502::dispatch(NodeNumber)`
-// (codegen_6502.cpp) reads the constant's own `m_val` correctly (confirmed
-// via NodeNumber::getValue8bit, which masks/shifts `m_val` correctly for
-// any 24-bit value, negative included) - so the corruption happens earlier,
-// before the NodeNumber node's `m_val` is even set, somewhere in the
-// lexer/parser's handling of a negative numeric literal wider than 16 bits.
-// Root cause not yet traced past this point.
+// -100000's correct 24-bit two's complement is $FE7960; lv1/lv3 below
+// check the round trip on two values spanning the 16-bit boundary, since
+// the exact wrong value observed pre-fix ($86A0, i.e. -100000 mod 65536)
+// pinpointed a 16-bit-wide truncation step specifically.
 //
-// -100000's correct 24-bit two's complement is $FE7960; this snippet
-// checks the round trip on three values spanning the 16-bit boundary,
-// since the exact wrong value observed ($86A0, i.e. -100000 mod 65536)
-// suggests a 16-bit-wide truncation step specifically.
+// lv2 (-1) is deliberately NOT compared against a raw "-1" literal
+// (unlike lv1/lv3): doing so hits a separate, previously-uncatalogued bug
+// (2.81, found while fixing this one, deferred - see BUGS_PROGRESS.md) -
+// a small-magnitude negative literal (using the untouched 8-bit tier
+// above) isn't sign-extended when its upper bytes are read for a wider
+// `long` comparison, so `if (lv2 = -1)` compares lv2's real $FFFFFF
+// against a wrongly zero-extended $0000FF and fails regardless of
+// whether lv2 itself was stored correctly. Comparing against a
+// runtime-computed `zero - one` instead (a register subtraction, not a
+// compile-time literal comparison) isolates this snippet to 2.76's own
+// fix, same technique already used by 2.35/2.75's own regressions for an
+// analogous reason.
 @use "unittests/common"
 
 var
 	lv1 : long = -100000;
 	lv2 : long = -1;
 	lv3 : long = -70000;
+	zero : long = 0;
+	one : long = 1;
 
 begin
 	disableciainterrupts();
@@ -33,7 +44,7 @@ begin
 	Vars::text := "2.76a";
 	if (lv1 = -100000) then Common::PASS() else Common::FAIL();
 	Vars::text := "2.76b";
-	if (lv2 = -1) then Common::PASS() else Common::FAIL();
+	if (lv2 = (zero - one)) then Common::PASS() else Common::FAIL();
 	Vars::text := "2.76c";
 	if (lv3 = -70000) then Common::PASS() else Common::FAIL();
 

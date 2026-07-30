@@ -865,6 +865,8 @@ int Parser::GetParsedInt(TokenType::Type forceType) {
     if (forceType == TokenType::INTEGER ||
         forceType == TokenType::INTEGER_CONST || forceType == TokenType::ADDRESS)
         return r & 0xFFFF;
+    if (forceType == TokenType::LONG)
+        return r & 0xFFFFFF;
 
     return ret.toInt();
 }
@@ -3088,8 +3090,10 @@ QSharedPointer<Node> Parser::Factor() {
             if (isMinus) {
                 if (t.m_intVal < 256)
                     t.m_intVal = 256 - t.m_intVal;
-                else
+                else if (t.m_intVal < 65536)
                     t.m_intVal = 65536 - t.m_intVal;
+                else
+                    t.m_intVal = 16777216 - t.m_intVal;
             }
             auto n = new NodeNumber(t, t.m_intVal);
             n->setNegative(true);
@@ -6708,25 +6712,38 @@ void Parser::HandleKrillsLoader() {
         replaceLine += "@donotremove " + var + "\n";
     }
     // QString orgL =  m_lexer->m_lines[ln];
+    // The directive's own line is matched case-insensitively (like every
+    // other directive keyword in the language) to find where to splice
+    // the generated declarations in; the parsed loaderPos/loaderOrgPos/
+    // installerPos values themselves (not the source text's casing) are
+    // what actually get validated and used, via the two QFile::exists
+    // checks above. Searched backward from the parser's current position
+    // (right after the directive it just consumed), not from the start
+    // of the file: a forward search from position 0 can match the same
+    // text quoted verbatim inside an earlier comment instead of the real
+    // directive.
     QString orgL = "@use KrillsLoader " + Util::numToHex(loaderPos) + " " +
                    Util::numToHex(loaderOrgPos) + " " +
                    Util::numToHex(installerPos);
-    if (!m_lexer->m_text.contains(orgL)) {
+    int searchFrom = (int)m_lexer->m_pos;
+    int orgLPos = m_lexer->m_text.lastIndexOf(orgL, searchFrom, Qt::CaseInsensitive);
+    if (orgLPos < 0) {
         orgL = "@use KrillsLoader $0" + QString::number(loaderPos, 16) + " " +
                Util::numToHex(loaderOrgPos) + " " + Util::numToHex(installerPos);
+        orgLPos = m_lexer->m_text.lastIndexOf(orgL, searchFrom, Qt::CaseInsensitive);
     }
-    if (!m_lexer->m_text.contains(orgL)) {
+    if (orgLPos < 0) {
         ErrorHandler::e.Error(
             "Something went wrong with the krill loader implementation: please "
             "make sure that the loader line is exactly of the following format "
-            "(including spaces and letter cases etc): '@use KrillsLoader $0200 "
+            "(spaces matter, letter case doesn't): '@use KrillsLoader $0200 "
             "$2000 $3000 '",
             Pmm::Data::d.lineNumber);
     }
 
     //   qDebug() << replaceLine << orgL;
 
-    m_lexer->m_text.replace(orgL, replaceLine + "\n\t");
+    m_lexer->m_text.replace(orgLPos, orgL.length(), replaceLine + "\n\t");
     m_lexer->m_pos -= orgL.length();
 
     //                      qDebug().noquote() <<  m_lexer->m_text;

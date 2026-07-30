@@ -28,3 +28,8 @@ effectively public: there is currently no way to mark a member private.
 
 No working example exists to show here; a broken example would be worse
 than none, so none is included on this page.
+
+This isn't planned to change: adding real visibility (parsing the
+keywords, threading a visibility flag through the symbol table, and
+enforcing it against external access) is real feature work, not a narrow
+fix, with no existing user demand driving it.
