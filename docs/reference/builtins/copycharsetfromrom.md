@@ -2,7 +2,8 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
 left interrupts disabled after this builtin ran and never re-enabled
-them; SANE re-enables interrupts before returning.
+them, and also failed to assemble a bare numeric literal destination;
+SANE fixes both (see Known limitations below).
 
 Copies the built-in character ROM font to RAM, so it can be customized
 afterward.
@@ -13,9 +14,8 @@ afterward.
 
 ## Parameters
 
-- `<destination>`: where to copy the charset to. A `pointer` variable
-  (see Known limitations for why a bare numeric literal doesn't work
-  here).
+- `<destination>`: where to copy the charset to. A `pointer` variable or a
+  bare numeric literal (see Known limitations) both work.
 
 ## Example
 
@@ -37,12 +37,16 @@ end.
 
 This builtin has three separate confirmed issues.
 
-**A bare numeric literal destination fails to assemble**, the same
+**A bare numeric literal destination used to fail to assemble**, the same
 underlying issue as [`Call`](call.md) and [`ClearBitmap`](clearbitmap.md).
-`copycharsetfromrom($3000);` emits `sta #$3000,y`, an invalid
-instruction, and the build fails at the assembly stage. Always route the
+`copycharsetfromrom($3000);` emitted `sta #$3000,y`, an invalid
+instruction, and the build failed at the assembly stage. Routing the
 destination through a `pointer` variable instead (as in the example
-above).
+above) was the workaround.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal destination now assembles correctly too.
 
 **It does not copy the full 2048-byte (2KB) character ROM.** The copy
 loop is built from 8 chunks that are each supposed to cover one 256-byte

@@ -1,0 +1,46 @@
+Program Bug_2_79_PeekLiteralAddressSilentWrongValue;
+// Bug 2.79 (newly-catalogued, found while fixing 2.37): peek() with a bare
+// numeric literal address (e.g. peek(53280,0), no ^, no address constant)
+// used to silently return the wrong value instead of actually reading
+// memory. Methods6502::Peek's constant-folding branch built its operand
+// text via Node::getValue(as) directly, same immediate ("#") formatting
+// issue as 2.37's other affected builtins - but since "lda #<value>" is
+// still legal 6502 syntax (unlike the jsr/sta cases elsewhere in that
+// family), this one didn't fail to assemble; it just silently loaded a
+// constant derived from the address itself instead of reading memory at
+// that address. Poke a known, distinctive value into plain RAM ($4400,
+// scratch RAM under this project's memory config, same address 2.37's own
+// regression already treats as safe) first, then peek it back via a bare
+// literal address and check the value read matches what was poked.
+//
+// (An earlier version of this probe used $d020, a VIC-II register; that
+// was itself a test-design mistake, the same "hardware register doesn't
+// round-trip a full byte" shape already documented for bugs
+// 2.54/2.55/2.56/2.60 - $D020 border color is only a 4-bit register, so a
+// poke-then-peek round trip can't reliably verify a full byte through it.)
+@use "unittests/common"
+
+var v : byte;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	poke(17408,0,$77); // seed a known, distinctive value ($4400 decimal)
+
+	v := peek(17408,0); // read it back through a bare numeric literal address
+
+	Vars::text := "2.79";
+	if (v = $77) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.

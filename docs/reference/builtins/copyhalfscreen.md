@@ -1,6 +1,8 @@
 # `CopyHalfScreen`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble a bare numeric literal address; SANE fixes it (see
+Known limitations below).
 
 Copies a given number of full 40-column screen rows from one address to
 another, column by column. Useful for split-screen effects where only
@@ -23,8 +25,8 @@ screen `CopyFullScreen` copies.
   Must be a literal constant number, not a variable.
 
 `<source>` and `<destination>` accept a `^`-prefixed address literal, a
-named `address` constant, or a `pointer` variable (see Known limitations
-for why a bare numeric literal doesn't work here).
+named `address` constant, a `pointer` variable, or a bare numeric literal
+(see Known limitations).
 
 ## Example
 
@@ -43,14 +45,18 @@ end.
 
 ## Known limitations
 
-A bare numeric literal for `source` or `destination` fails to assemble,
-the same underlying issue as [`Call`](call.md)/
+A bare numeric literal for `source` or `destination` used to fail to
+assemble, the same underlying issue as [`Call`](call.md)/
 [`ClearBitmap`](clearbitmap.md)/[`CopyCharsetFromRom`](copycharsetfromrom.md)/
 [`CopyFullScreen`](copyfullscreen.md). `copyhalfscreen($0400, $4400, 12,
-0, 0);` emits `sta #$4400 + 0 -1 ,x`, an invalid instruction, and the
-build fails at the assembly stage. Always route both addresses through a
+0, 0);` emitted `sta #$4400 + 0 -1 ,x`, an invalid instruction, and the
+build failed at the assembly stage. Routing both addresses through a
 `^`-prefixed literal, a named `address` constant, or a pointer/variable
-instead (as in the example above).
+instead (as in the example above) was the workaround.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal now assembles correctly for either address too.
 
 Separately, although `<lines>`, `<inverted>`, and `<invertedX>` are
 documented as plain byte parameters, all three actually have to be

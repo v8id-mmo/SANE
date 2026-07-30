@@ -1,6 +1,8 @@
 # `CopyFullScreen`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble a bare numeric literal address; SANE fixes it (see
+Known limitations below).
 
 Copies an entire 1000-byte C64 text screen (40x25 characters, or the
 matching color RAM) from one address to another in one call.
@@ -15,8 +17,8 @@ matching color RAM) from one address to another in one call.
 - `<destination>`: where to copy to.
 
 Both parameters accept a `^`-prefixed address literal, a named `address`
-constant, or a `pointer` variable (see Known limitations for why a bare
-numeric literal doesn't work here).
+constant, a `pointer` variable, or a bare numeric literal (see Known
+limitations).
 
 ## Example
 
@@ -37,11 +39,15 @@ end.
 
 ## Known limitations
 
-A bare numeric literal for either `source` or `destination` fails to
-assemble, the same underlying issue as
+A bare numeric literal for either `source` or `destination` used to fail
+to assemble, the same underlying issue as
 [`Call`](call.md)/[`ClearBitmap`](clearbitmap.md)/
 [`CopyCharsetFromRom`](copycharsetfromrom.md).
-`copyfullscreen($0400, $4400);` emits `sta #$4400 + $0,x`, an invalid
-instruction, and the build fails at the assembly stage. Always route both
+`copyfullscreen($0400, $4400);` emitted `sta #$4400 + $0,x`, an invalid
+instruction, and the build failed at the assembly stage. Routing both
 addresses through a `^`-prefixed literal, a named `address` constant, or a
-pointer/variable instead (as in the example above).
+pointer/variable instead (as in the example above) was the workaround.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal now assembles correctly for either parameter too.

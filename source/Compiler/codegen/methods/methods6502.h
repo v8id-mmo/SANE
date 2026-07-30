@@ -84,6 +84,9 @@ public:
 
     void LoadAndStoreInZp(QSharedPointer<Node> n, Assembler* as, QString zp);
 
+    QString AddressValue(QSharedPointer<Node> param, Assembler* as);
+    void AcceptAsAddress(QSharedPointer<Node> param, Assembler* as);
+
     void BcdAdd(Assembler* as);
     void BcdSub(Assembler* as);
     void BcdCompare(Assembler* as);

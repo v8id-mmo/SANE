@@ -1,6 +1,8 @@
 # `TransformColors`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble a bare numeric literal `<screen address>`; SANE fixes
+it (see Known limitations below).
 
 Remaps an entire 1000-byte (40x25) text screen and its matching Color
 RAM in place, through a 16-entry lookup table. Useful for palette-swap
@@ -53,10 +55,14 @@ end.
 
 ## Known limitations
 
-**A bare numeric literal for `<screen address>` fails to assemble**,
-the same known issue that affects [`Call`](call.md),
+**A bare numeric literal for `<screen address>` used to fail to
+assemble**, the same known issue that affects [`Call`](call.md),
 [`ClearBitmap`](clearbitmap.md), and several other builtins: writing
-`transformcolors(#invpal,$0400)` directly produces an invalid
+`transformcolors(#invpal,$0400)` directly produced an invalid
 instruction at the assembly stage. Routing the same address through a
-named `address` constant, as shown in the example above, works
-correctly.
+named `address` constant, as shown in the example above, was the
+workaround.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal `<screen address>` now assembles correctly too.

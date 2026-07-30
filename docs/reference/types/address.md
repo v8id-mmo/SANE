@@ -1,6 +1,8 @@
 # `address`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble a bare numeric literal address passed directly to
+several builtins; SANE fixes it (see Known limitations below).
 
 A 16-bit memory location: a hardware register, a fixed data address, or
 anywhere else in the C64's address space that a program needs to name.
@@ -62,8 +64,13 @@ variable. If a location genuinely needs to change at runtime, use a
 
 Separately, a bare numeric literal address passed directly to several
 builtins ([`Call`](../builtins/call.md),
-[`ClearBitmap`](../builtins/clearbitmap.md), and others) fails to
-assemble; a named `address` constant like the ones above works correctly
-in every one of those cases, which is why this pattern (naming the
-address first, then passing the name) is the safe default rather than
-just a style preference.
+[`ClearBitmap`](../builtins/clearbitmap.md), and others) used to fail to
+assemble; a named `address` constant like the ones above always worked
+correctly in every one of those cases, which is why this pattern (naming
+the address first, then passing the name) remains good practice even now
+that the underlying bug is fixed.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal address now assembles correctly at every one of
+those call sites too, see each builtin's own reference page for detail.

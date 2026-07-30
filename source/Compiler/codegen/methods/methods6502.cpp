@@ -1117,7 +1117,13 @@ void Methods6502::Peek(Assembler* as)
     QSharedPointer<NodeNumber> num = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[1]);
     if (num!=nullptr && m_node->m_params[0]->isPure()) {
         QString add = m_node->m_params[1]->getValue(as);
-        QString org = m_node->m_params[0]->getValue(as);
+        // Bug 2.79: a bare numeric literal address (e.g. peek(53280,0)) used
+        // to keep getValue()'s immediate-form "#" here, silently turning the
+        // read into a load of a constant derived from the address instead of
+        // an actual memory read (still legal 6502 syntax, so it assembled
+        // clean with a silently wrong value, unlike the sibling call sites
+        // in this bug family that fail outright at the assembly stage).
+        QString org = AddressValue(m_node->m_params[0], as);
         as->Asm("lda "+org + " + "+add.remove("#") + ";keep");
 /*        as->ClearTerm();
         as->Term("lda ");
@@ -3295,6 +3301,28 @@ void Methods6502::LoHi(Assembler *as, int type)
 
 }
 
+// Bug 2.37: Node::getValue()/Accept() format a plain NodeNumber literal in
+// immediate ("#") form, correct for a register load but wrong for a memory
+// operand (jsr/sta ...,y or ...,x). A ^-prefixed literal, a named address
+// constant, or a pointer/variable node already format correctly, so only a
+// non-address NodeNumber literal needs its "#" stripped here.
+QString Methods6502::AddressValue(QSharedPointer<Node> param, Assembler *as)
+{
+    QSharedPointer<NodeNumber> num = qSharedPointerDynamicCast<NodeNumber>(param);
+    if (num!=nullptr && !num->isAddress())
+        return num->HexValue();
+    return param->getValue(as);
+}
+
+void Methods6502::AcceptAsAddress(QSharedPointer<Node> param, Assembler *as)
+{
+    QSharedPointer<NodeNumber> num = qSharedPointerDynamicCast<NodeNumber>(param);
+    if (num!=nullptr && !num->isAddress())
+        as->Term(num->HexValue());
+    else
+        param->Accept(m_codeGen);
+}
+
 void Methods6502::LoadAndStoreInZp(QSharedPointer<Node> n, Assembler *as, QString zp)
 {
     as->ClearTerm();
@@ -4835,7 +4863,7 @@ void Methods6502::CopyCharsetFromRom(Assembler *as)
             QString mp = Util::numToHex(i*256);
             as->Asm("lda $D000 + "+mp+",y");
             as->Term("sta ");
-            m_node->m_params[0]->Accept(m_codeGen);
+            AcceptAsAddress(m_node->m_params[0], as);
             as->Term("+"+mp+",y", true);
         }
         as->Asm("dey");
@@ -5467,7 +5495,7 @@ void Methods6502::Call(Assembler *as)
 
 
     as->Term("jsr ");
-    m_node->m_params[0]->Accept(m_codeGen);
+    AcceptAsAddress(m_node->m_params[0], as);
     as->Term();
 
   /*  if (num!=nullptr) {
@@ -6201,7 +6229,7 @@ void Methods6502::ClearBitmap(Assembler *as)
     QString lbl = as->NewLabel("clear");
 
 
-    QString screen = m_node->m_params[0]->getValue(as);
+    QString screen = AddressValue(m_node->m_params[0], as);
 
 
     as->Asm("; Clear bitmap method");
@@ -6487,10 +6515,10 @@ void Methods6502::CopyHalfScreen(Assembler *as)
 
         as->ClearTerm();
         as->Term("lda ");
-        m_node->m_params[0]->Accept(m_codeGen);
+        AcceptAsAddress(m_node->m_params[0], as);
         as->Term(" + "+shift+",x", true);
         as->Term("sta ");
-        m_node->m_params[1]->Accept(m_codeGen);
+        AcceptAsAddress(m_node->m_params[1], as);
         as->Term(" + "+shift+",x", true);
     }
     // Afterwards, copy last 25 bytes
@@ -6622,10 +6650,10 @@ void Methods6502::CopyFullScreen(Assembler *as)
         QString shift = "$"+QString::number(0x100*i,16);
         as->ClearTerm();
         as->Term("lda ");
-        m_node->m_params[0]->Accept(m_codeGen);
+        AcceptAsAddress(m_node->m_params[0], as);
         as->Term(" + "+shift+",x", true);
         as->Term("sta ");
-        m_node->m_params[1]->Accept(m_codeGen);
+        AcceptAsAddress(m_node->m_params[1], as);
         as->Term(" + "+shift+",x", true);
     }
     as->Asm("dex");
@@ -6635,10 +6663,10 @@ void Methods6502::CopyFullScreen(Assembler *as)
     QString shift = "$"+QString::number(0x100*3-1,16);
     as->ClearTerm();
     as->Term("lda ");
-    m_node->m_params[0]->Accept(m_codeGen);
+    AcceptAsAddress(m_node->m_params[0], as);
     as->Term(" + "+shift+",x", true);
     as->Term("sta ");
-    m_node->m_params[1]->Accept(m_codeGen);
+    AcceptAsAddress(m_node->m_params[1], as);
     as->Term(" + "+shift+",x", true);
 
     as->Asm("dex");
@@ -6790,7 +6818,7 @@ void Methods6502::TransformColors(Assembler *as)
         QString shift = " -#1 + #" + QString::number(i*250);
         as->Asm("ldx #250");
         as->Label(loopInner);
-        as->Asm("lda " + num->StringValue() + shift +",x");
+        as->Asm("lda " + AddressValue(num, as) + shift +",x");
         as->Asm("pha");
         as->Asm("and #$F0");
         as->Asm("lsr");
@@ -6810,7 +6838,7 @@ void Methods6502::TransformColors(Assembler *as)
         as->Asm("tay");
         as->Asm("lda " + var->getValue(as)+ ",y");
         as->Asm("ora " + tempVar);
-        as->Asm("sta "+num->StringValue() + shift +",x");
+        as->Asm("sta "+AddressValue(num, as) + shift +",x");
 
         as->Asm("lda $D800"+shift+",x");
         as->Asm("tay");
@@ -6953,10 +6981,18 @@ void Methods6502::SaveVar(Assembler *as, int paramNo, QString reg, QString shift
 
 //    qDebug() << "SAVEVAR: " <<  TokenType::getType(m_node->m_params[paramNo]->getType(as));
 
-    if (!(m_node->m_params[paramNo]->isVariable() || m_node->m_params[paramNo]->isAddress()))
+    // Bug 2.37 (Poke addendum): a bare numeric literal used as a store
+    // target (e.g. poke(53280,0,0)) is neither isVariable() nor
+    // isAddress() (that flag is only set for a ^-prefixed literal), so it
+    // used to be rejected outright here, even though it's just as valid a
+    // memory operand as a named address constant.
+    QSharedPointer<NodeNumber> literalAddr = qSharedPointerDynamicCast<NodeNumber>(m_node->m_params[paramNo]);
+    bool isPureNumericLiteral = literalAddr!=nullptr && !literalAddr->isAddress();
+
+    if (!(m_node->m_params[paramNo]->isVariable() || m_node->m_params[paramNo]->isAddress() || isPureNumericLiteral))
         ErrorHandler::e.Error("Parameter "+QString::number(paramNo) + " must be a variable or address", m_node->m_op.m_lineNumber);
 
-    QString vName = m_node->m_params[paramNo]->getValue(as) + shift;
+    QString vName = (isPureNumericLiteral ? literalAddr->HexValue() : m_node->m_params[paramNo]->getValue(as)) + shift;
     QSharedPointer<NodeVar> v = qSharedPointerDynamicCast<NodeVar>(m_node->m_params[paramNo]);
     as->Term();
 

@@ -776,26 +776,29 @@ in a correct rotate; this builtin used to give `%01000000` instead.
 
 ### A literal numeric address fails for a handful of builtins
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** all affected builtins now format a bare
+numeric literal address as a plain memory operand instead of an immediate
+(register-load) one, so it assembles the same way a named constant always
+did.
 
 Passing a bare numeric address literal (e.g. `$ffea`) directly as an
 argument to `Call`, `ClearBitmap`, `CopyCharsetFromRom`, `CopyFullScreen`,
-`CopyHalfScreen`, or `TransformColors` compiles without any error, but
-fails at the assembly stage right afterward, with an "opcode not
-implemented" error. The
-generated instruction ends up in an invalid form (an addressing mode that
-doesn't exist for that instruction) because the literal gets formatted
-the same way it would be for loading it into a register, not for using it
-as a memory address. Routing the exact same address through a named
-constant, a `^`-prefixed literal, or a pointer/variable works correctly
-in every case.
+`CopyHalfScreen`, or `TransformColors` used to compile without any error,
+but fail at the assembly stage right afterward, with an "opcode not
+implemented" error. The generated instruction ended up in an invalid form
+(an addressing mode that doesn't exist for that instruction) because the
+literal was formatted the same way it would be for loading it into a
+register, not for using it as a memory address. Routing the exact same
+address through a named constant, a `^`-prefixed literal, or a
+pointer/variable worked correctly in every case, and still does.
 
-`Poke` has the same symptom (a bare numeric literal address fails, a
-named constant/`^`-prefixed literal/pointer all work) but fails earlier
-and more clearly, with a plain "must be a variable or address" error at
-compile time rather than a confusing assembly-stage failure. `Peek`, the
-matching read builtin, is unaffected either way: a bare numeric literal
-address works correctly there.
+`Poke` had the same symptom (a bare numeric literal address failed, a
+named constant/`^`-prefixed literal/pointer all worked) but failed
+earlier and more clearly, with a plain "must be a variable or address"
+error at compile time rather than a confusing assembly-stage failure.
+`Peek`, the matching read builtin, was originally believed unaffected,
+but turned out to have a related, differently-shaped bug of its own: see
+the next entry.
 
 *Reference pages:* [`Call`](reference/builtins/call.md),
 [`ClearBitmap`](reference/builtins/clearbitmap.md),
@@ -804,6 +807,25 @@ address works correctly there.
 [`CopyHalfScreen`](reference/builtins/copyhalfscreen.md),
 [`TransformColors`](reference/builtins/transformcolors.md),
 [`Poke`](reference/builtins/poke.md)
+
+### `Peek` silently returns the wrong value for a literal numeric address
+
+**Status:** Fixed · **Fixed in:** `Peek` now formats a bare numeric
+literal address as a plain memory operand too, so it reads the correct
+value.
+
+Passing a bare numeric address literal directly to `Peek` (e.g.
+`peek(53280, 0)`) used to compile and assemble without any error, unlike
+the builtins in the previous entry - but the value it returned wasn't
+actually read from that address; it silently returned a wrong,
+address-derived constant instead. This was the same underlying formatting
+issue as the previous entry's bug, just hidden behind a symptom that
+looked like success, which is why `Peek` was originally (and incorrectly)
+recorded as unaffected by it. Routing the same address through a
+`^`-prefixed literal, a named `address` constant, or a pointer worked
+correctly, and still does.
+
+*Reference page:* [`Peek`](reference/builtins/peek.md)
 
 ### `CopyCharsetFromRom` only copies part of the character ROM
 

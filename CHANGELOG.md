@@ -8,6 +8,19 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `Peek` silently returning the wrong value for a bare numeric
+  literal address (e.g. `peek(53280, 0)`) instead of actually reading
+  memory at that address; unlike the builtins in the entry below, this one
+  compiled and assembled without any error, which is why it was originally
+  missed. A `^`-prefixed literal, a named `address` constant, or a
+  pointer still work as they always did.
+- Fixed a bare numeric literal address failing to assemble (or, for
+  `Poke`, failing to compile at all) when passed directly to `Call`,
+  `ClearBitmap`, `CopyCharsetFromRom`, `CopyFullScreen`, `CopyHalfScreen`,
+  `Poke`, or `TransformColors`; the literal was being formatted as an
+  immediate (register-load) operand instead of a plain memory operand. A
+  `^`-prefixed literal, a named `address` constant, or a pointer/variable
+  already worked correctly and still do.
 - Fixed `RasterIRQWedge` never producing a working build in any mode: the
   small shared routine every use of this builtin pulls in, which
   reschedules the next raster trigger on every interrupt, referenced a

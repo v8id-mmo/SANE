@@ -33,6 +33,7 @@ end.
 
 ## Known limitations
 
-Unlike [`ClearBitmap`](clearbitmap.md) and [`Call`](call.md), a plain
-numeric literal works fine here for the address argument; it isn't
-affected by their invalid-immediate-mode assembly bug.
+A plain numeric literal always worked fine here for the address argument;
+unlike [`ClearBitmap`](clearbitmap.md) and [`Call`](call.md), this
+builtin was never affected by their invalid-immediate-mode assembly bug
+(now fixed on SANE for those too).

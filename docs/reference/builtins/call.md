@@ -1,6 +1,8 @@
 # `Call`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla TRSE
+fails to assemble a bare numeric literal address; SANE fixes it (see
+Known limitations below).
 
 Calls a machine-code routine at a given address and returns to the next
 statement once it executes an `rts`. Unlike calling a TRSE-declared
@@ -13,9 +15,9 @@ KERNAL routine or a routine reached through a function pointer.
 
 ## Parameters
 
-- `<address>`: the routine to call. A named `address` constant or a
-  `pointer` variable (see Known limitations for why a bare numeric
-  literal doesn't work here).
+- `<address>`: the routine to call. A named `address` constant, a
+  `pointer` variable, or a bare numeric literal (see Known limitations)
+  all work.
 
 ## Example
 
@@ -41,9 +43,14 @@ end.
 
 ## Known limitations
 
-**A bare numeric literal address passed directly to `Call` fails to
-assemble.** `call($ffea);` emits `jsr #$ffea`, an invalid instruction
-(`jsr` doesn't have an immediate addressing mode), and the build fails at
+**A bare numeric literal address passed directly to `Call` used to fail
+to assemble.** `call($ffea);` emitted `jsr #$ffea`, an invalid instruction
+(`jsr` doesn't have an immediate addressing mode), and the build failed at
 the assembly stage with an "opcode type not implemented" error rather
-than a clear compiler diagnostic. Wrap the literal in a named `address`
-constant first (as in the example above) to work around this.
+than a clear compiler diagnostic. Wrapping the literal in a named
+`address` constant first (as in the example above) was the workaround.
+
+:material-check-decagram:
+**[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+a bare numeric literal address now assembles correctly too, emitting the
+same `jsr $ffea` form a named constant always did.
