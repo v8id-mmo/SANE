@@ -60,6 +60,7 @@ protected:
     bool m_flag1 = false;
     bool m_isCurrentlyWithinInline = false;
     QString m_useNext="";
+    int m_currentProcedureType = 0;
 public:
 
     inline void dontOutputLineNumbers(){m_outputLineNumbers=false;}

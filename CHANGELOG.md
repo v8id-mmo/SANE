@@ -8,6 +8,28 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `RasterIRQWedge` never producing a working build in any mode: the
+  small shared routine every use of this builtin pulls in, which
+  reschedules the next raster trigger on every interrupt, referenced a
+  nonexistent register name instead of reading the raster line back from
+  the correct hardware register. Found while fixing the KERNAL-vector
+  mode bug below; this means the hardware-vector mode, previously
+  believed to work, never actually assembled successfully either.
+- Fixed `RasterIRQWedge`'s KERNAL-vector mode (`<mode>` of `1`) always
+  failing to compile with "Kernal wedge not implemented"; it now writes
+  the handler's address into the KERNAL's own IRQ vector, the same way
+  `RasterIRQ`'s own KERNAL-vector mode already did.
+- Fixed a plain `return;` used for an early exit partway through an
+  `interrupt` procedure's body exiting the same way a normal procedure
+  does instead of the way an interrupt handler needs to; it's now
+  interrupt-aware and exits correctly, matching what `ReturnInterrupt`
+  already did.
+- Documented `wedge` as an intentional alias for `interrupt` at the
+  procedure-declaration level, rather than a bug: the two compile to
+  identical code, and the compiler's real interrupt-vector-chaining
+  behavior lives entirely in the separate `RasterIRQWedge`/
+  `StartIRQWedge`/`CloseIRQWedge` builtins, unrelated to which keyword
+  declared the procedure.
 - Fixed compiler warnings (`@raisewarning`, and the built-in `getKey`/
   `Rand` deprecation notices) never being shown anywhere when compiling
   from the command line; a successful CLI compile now prints every

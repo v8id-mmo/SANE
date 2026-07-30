@@ -10,7 +10,7 @@ IRQWedgeStartRegular
 	; RasterIRQ : Hook a procedure
 	; 8 bit binop
 	; Add/sub where right value is constant number
-	lda y
+	lda $d012
 	clc
 	adc #1
 	 ; end add / sub var with constant

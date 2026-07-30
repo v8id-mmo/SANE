@@ -331,8 +331,12 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeControlStatement> node) {
           "'Continue' can only be used within a for / while loop",
           node->m_op.m_lineNumber);
   }
-  if (node->m_op.m_type == TokenType::RETURN)
-    as->Asm(getReturn());
+  if (node->m_op.m_type == TokenType::RETURN) {
+    if (m_currentProcedureType == 0)
+      as->Asm(getReturn());
+    else
+      as->Asm(getReturnInterrupt());
+  }
 }
 
 void AbstractCodeGen::Cast(QString from, QString to) {
@@ -1081,7 +1085,10 @@ void AbstractCodeGen::dispatch(QSharedPointer<NodeProcedureDecl> node) {
       b->m_isProcedure = true;
       b->m_initCode = getInitProcedure();
     }
+    int outerProcedureType = m_currentProcedureType;
+    m_currentProcedureType = node->m_type;
     node->m_block->Accept(this);
+    m_currentProcedureType = outerProcedureType;
   }
   // Return value
   if (node->m_returnValue != nullptr) {

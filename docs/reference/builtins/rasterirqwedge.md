@@ -2,7 +2,9 @@
 
 :material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
 TRSE never validated `<procedure>` or `<mode>` before dereferencing them,
-crashing the compiler on a malformed call; SANE adds both checks.
+crashing the compiler on a malformed call; SANE adds both checks. Vanilla
+TRSE also never actually got this builtin to produce a working build in
+any mode; see Known limitations below.
 
 The "wedge" counterpart to [`RasterIRQ`](rasterirq.md): hooks an
 `interrupt` procedure to a raster line the same way, but through the
@@ -58,11 +60,31 @@ end.
 
 ## Known limitations
 
-The `<mode>` parameter only supports `0` (hooking the hardware IRQ
-vector directly). Passing `1` to route through the KERNAL's own IRQ
-vector instead, the way plain `RasterIRQ` supports, is a hard compile
-error: "Kernal wedge not implemented." Every real usage of this builtin,
-in this fork's own bundled tutorials included, passes `0`.
+**In vanilla TRSE, the `<mode>` parameter only supports `0` (hooking the
+hardware IRQ vector directly).** Passing `1` to route through the
+KERNAL's own IRQ vector instead, the way plain `RasterIRQ` supports, is a
+hard compile error: "Kernal wedge not implemented." Every real usage of
+this builtin, in this fork's own bundled tutorials included, passes `0`
+for exactly this reason.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+`<mode>` of `1` now writes the handler's address into the KERNAL's own
+IRQ vector, the same way `RasterIRQ`'s own KERNAL-vector mode already
+did; both modes work now.
+
+**In vanilla TRSE, `RasterIRQWedge` never actually produced a working
+build, in either mode.** Found while fixing the KERNAL-vector-mode gap
+above: every use of this builtin, in any mode, pulls in a small shared
+routine that reschedules the next raster trigger on every interrupt; that
+routine referenced a nonexistent register name instead of the raster-line
+hardware register it actually needed to read back, so assembly failed
+the moment `RasterIRQWedge` was used at all, hardware-vector mode
+included.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the shared rescheduling routine now reads the raster line back from the
+correct hardware register, so both modes assemble and produce a working
+build.
 
 **In vanilla TRSE, neither `<procedure>` nor `<mode>` is actually
 validated before use**: passing something other than an interrupt

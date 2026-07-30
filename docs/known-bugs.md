@@ -140,7 +140,8 @@ a different, unaffected mechanism.
 
 ### `wedge` compiles to exactly the same code as `interrupt`
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** By design, not planned · **Fixed in:** not applicable - see
+explanation.
 
 Declaring a procedure with `wedge` instead of `interrupt` produces
 identical generated assembly: same body, same trailing interrupt-return
@@ -150,20 +151,27 @@ than replacing it, but nothing about the `wedge` declaration keyword
 itself does that; the compiler's actual interrupt-vector-chaining
 behavior lives entirely in a separate, unrelated set of builtin functions
 (`rasterirqwedge()` and friends), usable regardless of which keyword
-declared the procedure they're chaining.
+declared the procedure they're chaining. Treated as an intentional alias
+for `interrupt` at the declaration level, documented clearly rather than
+a defect to fix: giving the keyword itself real chaining behavior would
+duplicate what those builtins already do correctly.
 
 *Reference page:* [`wedge`](reference/keywords/wedge.md)
 
 ### `return` doesn't exit an interrupt handler correctly
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** `return;` now checks whether it's
+inside an `interrupt` procedure and exits the same correct way the
+procedure's own natural `end;` already did, instead of always using the
+plain-procedure exit.
 
 Using a plain `return;` for an early exit partway through an `interrupt`
-procedure's body doesn't leave the interrupt the same way reaching the
-procedure's own closing `end;` does. Every other exit path of the same
-handler, including its natural end, exits correctly; only an explicit
-`return;` used before that point is affected. Use `ReturnInterrupt`
-instead for an early exit from inside an `interrupt` procedure.
+procedure's body used to not leave the interrupt the same way reaching
+the procedure's own closing `end;` did. Every other exit path of the same
+handler, including its natural end, exited correctly; only an explicit
+`return;` used before that point was affected. `ReturnInterrupt` remains
+a valid, equivalent way to do an early exit from inside an `interrupt`
+procedure; `return;` is no longer a worse alternative to it there.
 
 *Reference pages:* [`return`](reference/keywords/return.md),
 [`ReturnInterrupt`](reference/builtins/returninterrupt.md)
@@ -1008,15 +1016,35 @@ silently discarded every time.
 
 ### `RasterIRQWedge`'s KERNAL-vector mode never compiles
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the KERNAL-vector mode now writes the
+handler's address into the KERNAL's own IRQ vector, the same way
+`RasterIRQ`'s own KERNAL-vector mode already did.
 
 `RasterIRQWedge` takes the same hardware-vector-or-KERNAL-vector mode
-parameter `RasterIRQ` does. The hardware-vector mode works; the
-KERNAL-vector mode always fails to compile, with an error stating
-outright that it isn't implemented. Every real usage of this builtin, in
-this fork's own bundled tutorials included, uses the hardware-vector
-mode for exactly this reason. `RasterIRQ` itself has no such gap; both
-modes work there.
+parameter `RasterIRQ` does. The KERNAL-vector mode used to always fail to
+compile, with an error stating outright that it isn't implemented. Every
+real usage of this builtin, in this fork's own bundled tutorials
+included, used the hardware-vector mode for exactly this reason.
+`RasterIRQ` itself never had this gap; both modes worked there already.
+
+*Reference page:* [`RasterIRQWedge`](reference/builtins/rasterirqwedge.md)
+
+### `RasterIRQWedge` never actually worked, in either mode
+
+**Status:** Fixed · **Fixed in:** the shared wedge-chaining routine now
+reads the raster line back from the correct hardware register before
+rescheduling the next trigger.
+
+Found while fixing the KERNAL-vector-mode bug above: even the
+hardware-vector mode, previously believed to work, never actually
+produced a working build either. Every use of `RasterIRQWedge`, in any
+mode, pulls in a small shared routine that reschedules the next raster
+trigger on every interrupt; that routine referenced a nonexistent
+register name instead of the raster-line hardware register it needed to
+read back, so assembly failed the moment `RasterIRQWedge` was used at
+all. This means `RasterIRQWedge` could never have compiled successfully
+before, in any bundled tutorial or otherwise; this fix is the first time
+it actually produces a working build.
 
 *Reference page:* [`RasterIRQWedge`](reference/builtins/rasterirqwedge.md)
 

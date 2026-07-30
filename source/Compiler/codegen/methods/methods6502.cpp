@@ -5943,13 +5943,11 @@ void Methods6502::RasterIRQWedge(Assembler *as)
     }
     else
     {
-            ErrorHandler::e.Error("Error! Kernal wedge not implemented. Nag the developer (leuat).", m_node->m_currentLineNumber);
-/*        as->Asm("sta $d012");
+        as->Asm("sta $d012");
         as->Asm("lda #<"+name);
         as->Asm("sta $0314");
         as->Asm("lda #>"+name);
         as->Asm("sta $0315");
-*/
     }
 
 }
