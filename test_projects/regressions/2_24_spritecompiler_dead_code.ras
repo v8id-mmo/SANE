@@ -6,9 +6,12 @@
 // by anything else in the compiler even when it does hold real text.
 // Compilation succeeds, but nothing about the sprite name ever reaches
 // the generated assembly: no new symbol, no data.
-// Method C (static .asm-check, reusing the existing .asmcheck PRESENT
-// mode): expect the sprite's own name to be entirely absent from the
-// generated .asm pre-fix (FAIL), present post-fix (PASS).
+// Fix direction chosen: raise a clear compile error instead of silently
+// producing no output (same resolution as 2.15/2.16), rather than
+// implementing real sprite-compiler output wiring as new feature work.
+// Method B (compile-time only): pre-fix this compiles clean (COMPILE_OK,
+// FAIL per the harness's inverted expectation for this batch); post-fix
+// it must fail to compile (COMPILE_ERROR, PASS).
 program Bug_2_24_SpriteCompilerDeadCode;
 
 @spritecompiler "sample_sprite.flf" "bug224sprite" 0 0 8 8

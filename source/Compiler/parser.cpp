@@ -1702,8 +1702,8 @@ void Parser::HandlePreprocessorInParsing() {
     qDebug() << Node::m_staticBlockInfo.m_blockPos;
     qDebug() << Node::m_staticBlockInfo.m_blockName;*/
         if (Node::m_staticBlockInfo.m_blockID != -1) {
-            //            ErrorHandler::e.Error("Cannot start a block without ending
-            //            the previous. ",m_currentToken.m_lineNumber);
+            ErrorHandler::e.Error("Cannot start a block without ending the previous.",
+                                  m_currentToken.m_lineNumber);
         }
         m_pass = PASS_OTHER;
         Eat();
@@ -3308,11 +3308,10 @@ void Parser::PreprocessSingle() {
     }
 
     else if (m_currentToken.m_value.toLower() == "ignoresystemheaders") {
+        ErrorHandler::e.Error(
+            "'@ignoresystemheaders' is not supported: it has no effect on this fork's C64-only target.",
+            m_currentToken.m_lineNumber);
         Eat(TokenType::PREPROCESSOR);
-        Syntax::s.m_currentSystem->m_systemParams["ignoresystemheaders"] = "1";
-        Data::data.demomode = true;
-        qDebug()
-            << Syntax::s.m_currentSystem->m_systemParams["ignoresystemheaders"];
     }
 
     else if (m_currentToken.m_value.toLower() == "userdata") {
@@ -5438,6 +5437,13 @@ void Parser::HandleImportChar() {
                               inFile + "'");
     }
 
+    if (dynamic_cast<LImageNES *>(imgB) == nullptr) {
+        ErrorHandler::e.Error(
+            "'@importchar' is not supported for this destination image type: "
+            "its character-copy step is unimplemented on this fork's C64 target.",
+            ln);
+    }
+
     //    qDebug() << "HERE" << param1 << param2;
     imgB->CopySingleChar(imgA, param1, param2);
 
@@ -6742,6 +6748,10 @@ void Parser::HandleSpriteCompiler() {
 
     if (m_pass != PASS_PRE)
         return;
+
+    ErrorHandler::e.Error(
+        "'@spritecompiler' is not supported on this fork: its output is never wired into the generated assembly.",
+        m_currentToken.m_lineNumber);
 
     if (Syntax::s.m_currentSystem->m_system != AbstractSystem::X86)
         id = "drawsprite_";

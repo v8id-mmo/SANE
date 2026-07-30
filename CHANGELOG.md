@@ -8,6 +8,24 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed `@startblock` silently overwriting an already-open fixed-address
+  block when a new one was started before the previous one's `@endblock`;
+  it now fails to compile with a clear error, matching the reverse
+  mistake (`@endblock` with nothing open), which already errored.
+- Fixed `@perlinnoise`'s exported byte data wrapping/truncating outside
+  the 0-255 range at high amplitude/power settings while its `.png`
+  preview stayed clamped and looked clean; the value is now clamped
+  before being stored, so both outputs agree.
+- Fixed `@ignoresystemheaders` silently doing nothing; since it can never
+  have any effect on this fork's C64-only target, using it now stops
+  compilation with a clear error instead.
+- Fixed `@spritecompiler` silently producing no output on every target
+  this fork ships with; using it now stops compilation with a clear error
+  instead.
+- Fixed `@importchar` silently saving its destination asset back
+  unchanged for every asset type this fork can produce; using it on
+  anything but the one (non-C64) asset type that actually implements the
+  copy step now stops compilation with a clear error instead.
 - Fixed `Peek` silently returning the wrong value for a bare numeric
   literal address (e.g. `peek(53280, 0)`) instead of actually reading
   memory at that address; unlike the builtins in the entry below, this one

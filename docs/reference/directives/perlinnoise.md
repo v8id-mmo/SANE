@@ -1,6 +1,8 @@
 # `@perlinnoise`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE stores each noise byte before clamping it to 0-255; SANE clamps
+first, so the exported data matches the `.png` preview.
 
 A build-time directive that fills a raw binary file with 2D coherent
 ("Perlin-style") noise, the same kind of compile-time data generation as
@@ -60,3 +62,8 @@ misleading: it's possible for the `.png` to look completely fine while the
 actual noise data compiled into the program has wrapped-around, incorrect
 values at the same pixels. Keep amplitude/power conservative, and don't
 rely on the preview alone to judge whether the output range is safe.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the value is clamped to 0-255 before it's stored in the exported byte
+buffer, the same way the `.png` preview already was, so both outputs now
+agree at every pixel.

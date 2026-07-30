@@ -1,7 +1,0 @@
-program IgnoreSystemHeadersDemo;
-
-@ignoresystemheaders
-
-begin
-	loop();
-end.

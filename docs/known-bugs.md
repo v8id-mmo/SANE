@@ -366,11 +366,13 @@ parsed afterward, the same failure shape as the `case`/`else` bug above.
 
 ### `@ignoresystemheaders` has no effect
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** since the directive can never have any
+effect on this fork's C64-only target, using it now stops compilation
+with a clear error instead of silently doing nothing.
 
-The directive compiles cleanly and doesn't error, but nothing else in the
-compiler actually reads the flag it sets. Using it doesn't change the
-compiled output in any observable way.
+In vanilla TRSE, the directive compiles cleanly and doesn't error, but
+nothing else in the compiler actually reads the flag it sets. Using it
+doesn't change the compiled output in any observable way.
 
 *Reference page:*
 [`@ignoresystemheaders`](reference/directives/ignoresystemheaders.md)
@@ -412,14 +414,16 @@ mechanism.
 
 ### `@startblock` doesn't notice a missing or nested `@endblock`
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the disabled check is re-enabled, so
+opening a new `@startblock` region while a previous one is still open now
+fails to compile with a clear error instead of silently switching.
 
-Opening a new `@startblock` region while a previous one is still open
-(no `@endblock` in between) is accepted silently: the active
-fixed-address region just switches to the new one, with no error or
-warning. The reverse mistake, an `@endblock` with nothing open to close,
-does raise a clear error, so this asymmetry is easy to trust past its
-actual safety.
+In vanilla TRSE, opening a new `@startblock` region while a previous one
+is still open (no `@endblock` in between) is accepted silently: the
+active fixed-address region just switches to the new one, with no error
+or warning. The reverse mistake, an `@endblock` with nothing open to
+close, does raise a clear error, so this asymmetry is easy to trust past
+its actual safety.
 
 *Reference page:* [`@startblock`](reference/directives/startblock.md)
 
@@ -447,13 +451,18 @@ loading it with `decrunch()`, not `compressed`/`@compress`.
 
 ### `@importchar` never actually copies the character it's asked to
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the directive still only works for
+that one non-C64 asset type; nothing new is now supported. What changed
+is the failure mode: pointing `@importchar` at any other destination
+asset type now stops compilation with a clear error, instead of silently
+saving the output file back unchanged.
 
-`@importchar` compiles without error and both the source and destination
-assets load successfully, but the actual step that copies one character's
-data across is unimplemented for every asset type this fork can produce.
-The destination file is saved back to disk completely unchanged. Only one
-unrelated, non-C64 asset type has a working implementation of this step.
+In vanilla TRSE, `@importchar` compiles without error and both the
+source and destination assets load successfully, but the actual step
+that copies one character's data across is unimplemented for every asset
+type this fork can produce. The destination file is saved back to disk
+completely unchanged. Only one unrelated, non-C64 asset type has a
+working implementation of this step.
 
 *Reference page:* [`@importchar`](reference/directives/importchar.md)
 
@@ -482,15 +491,17 @@ clear compile-time error.
 
 ### `@spritecompiler` never produces any output
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** since this directive can never produce
+any output on this fork's C64-only target, using it now stops compilation
+with a clear error instead of silently doing nothing.
 
-The directive compiles cleanly and validates that its input file exists,
-but never actually generates anything: on a C64 build the underlying
-image-processing step it calls is an empty stub, and even on the handful
-of other targets where that step does generate something, the result is
-computed and then thrown away internally rather than making it into the
-compiled output. There is currently no target this fork ships with where
-`@spritecompiler` does anything useful.
+In vanilla TRSE, the directive compiles cleanly and validates that its
+input file exists, but never actually generates anything: on a C64 build
+the underlying image-processing step it calls is an empty stub, and even
+on the handful of other targets where that step does generate something,
+the result is computed and then thrown away internally rather than making
+it into the compiled output. There is currently no target this fork ships
+with where `@spritecompiler` does anything useful.
 
 *Reference page:* [`@spritecompiler`](reference/directives/spritecompiler.md)
 
@@ -512,13 +523,16 @@ happened no matter where the directive was placed.
 
 ### `@perlinnoise`'s exported data isn't clamped, but its preview image is
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** the value is clamped to 0-255 before
+it's stored in the exported byte buffer, the same way the `.png` preview
+already was, so both outputs now agree at every pixel.
 
-With a high enough amplitude/power setting, the raw noise bytes written to
-the output file can wrap or truncate outside the normal 0-255 range at
-some pixels, while the `.png` preview saved alongside it is clamped and
-looks completely clean at those same pixels. The preview can't be trusted
-to catch an out-of-range setting; only the actual exported data can.
+In vanilla TRSE, with a high enough amplitude/power setting, the raw
+noise bytes written to the output file can wrap or truncate outside the
+normal 0-255 range at some pixels, while the `.png` preview saved
+alongside it is clamped and looks completely clean at those same pixels.
+The preview can't be trusted to catch an out-of-range setting; only the
+actual exported data can.
 
 *Reference page:* [`@perlinnoise`](reference/directives/perlinnoise.md)
 

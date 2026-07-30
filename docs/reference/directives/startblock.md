@@ -1,6 +1,8 @@
 # `@startblock`
 
-:material-tag: [**TRSE**](../../tags.md): same behavior as vanilla TRSE.
+:material-tag: [**TRSE (modified in SANE)**](../../tags.md): vanilla
+TRSE's check for a nested/unclosed `@startblock` had its error call
+commented out; SANE re-enables it.
 
 Opens a fixed-address memory region. Everything declared between
 `@startblock <address> "<name>"` and [`@endblock`](endblock.md) is placed
@@ -50,3 +52,9 @@ with a clear error). A forgotten `@endblock`, or a `@startblock` nested
 inside another one, won't be flagged; it just silently changes which
 fixed address everything after it gets placed at, which can be confusing
 to track down if it happens by accident.
+
+:material-check-decagram: **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+the disabled check is re-enabled, so starting a new block before closing
+the previous one now fails to compile with a clear
+"Cannot start a block without ending the previous." error instead of
+silently switching.
