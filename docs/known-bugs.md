@@ -655,21 +655,21 @@ their existing 16-bit tier, wrapping to a completely different number
 
 ### A small-magnitude negative literal isn't sign-extended when compared against a wider variable
 
-**Status:** Open · **Fixed in:** not yet fixed
+**Status:** Fixed · **Fixed in:** a negative literal now remembers how
+many bytes its own two's-complement tier actually covers, and any byte
+read back beyond that width is sign-extended to `$FF` instead of falling
+through to a plain zero.
 
 Found while fixing the bug above. A negative decimal literal small
 enough to fit in a single byte (like `-1`) is internally stored using
-only as many bytes as its own magnitude needs; when it's compared
+only as many bytes as its own magnitude needs; when it was compared
 directly against a wider (`long`) variable, the byte(s) beyond what the
-literal itself naturally occupies are read as `$00` instead of being
+literal itself naturally occupies were read as `$00` instead of being
 sign-extended to `$FF`. Concretely, `if (lv = -1)` for a `long` variable
-genuinely holding `-1` ($FFFFFF) can compare unequal, since the literal
-`-1` on the right-hand side is read back as `$0000FF` for the
-comparison's upper two bytes. Building the comparison value from a
-runtime computation instead of a literal (subtracting two `long`
-variables holding `0` and `1`, for example) avoids the gap, since that's
-evaluated as a real 24-bit subtraction rather than a compile-time
-literal.
+genuinely holding `-1` ($FFFFFF) could compare unequal, since the
+literal `-1` on the right-hand side was read back as `$0000FF` for the
+comparison's upper two bytes. The same gap applied to a `-1` compared
+against an `integer` variable's high byte, not just `long`.
 
 *Reference page:* [`long`](reference/types/long.md)
 

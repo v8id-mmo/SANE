@@ -57,6 +57,11 @@ protected:
     bool m_hasSwapped = false;
     bool m_isUsed = false;
     bool m_isNegative = false;
+    // How many bytes wide a negative literal's own two's-complement tier
+    // covers (1/2/3, set by Parser::Factor()'s unary-minus handling).
+    // getValue8bit uses this to sign-extend bytes beyond that width
+    // instead of returning zero for them.
+    int m_negativeByteWidth = 0;
     QStringList m_isUsedBy;
 
 
@@ -147,6 +152,14 @@ public:
 
     void setNegative(bool b) {
         m_isNegative = b;
+    }
+
+    int negativeByteWidth() {
+        return m_negativeByteWidth;
+    }
+
+    void setNegativeByteWidth(int w) {
+        m_negativeByteWidth = w;
     }
 
     QString getStoreTypesDebug();

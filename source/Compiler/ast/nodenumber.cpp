@@ -86,6 +86,15 @@ QString NodeNumber::getValue8bit(Assembler *as, int isHi) {
 
     if (isAddress()) hash="";
     if (isReference()) hash="#";
+
+    // A negative literal is stored using only as many bytes as its own
+    // magnitude needs (e.g. -1 is stored as a single byte, $FF). Reading
+    // back a byte position beyond that width has to sign-extend with
+    // $FF, not fall through to the plain shift-and-mask below (which
+    // would wrongly return 0 for those upper bytes) - see bug 2.81.
+    if (isNegative() && isHi >= negativeByteWidth())
+        return hash + Util::numToHex(0xFF);
+
     if (isHi==1)
         return hash + Util::numToHex(((int)m_val>>8)&0xFF);
     if (isHi==0)

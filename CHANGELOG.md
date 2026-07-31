@@ -8,6 +8,15 @@ below instead of being grouped by version. Newest at the top, oldest at
 the bottom. Once the project is stable enough for real release tags,
 this switches to that format instead.
 
+- Fixed a small-magnitude negative literal (one that fits in a single
+  byte, like `-1`) not being sign-extended when compared directly against
+  a wider variable; `if (lv = -1)` for a `long` variable genuinely
+  holding `-1` could compare unequal, since the literal's upper bytes
+  were read back as `$00` instead of `$FF`. The same gap applied to a
+  16-bit `integer` comparison, not just `long`. A negative literal now
+  remembers how many bytes its own two's-complement tier covers, and any
+  byte read back beyond that width is sign-extended instead of falling
+  through to zero.
 - Fixed a negative `long` literal with a magnitude of 65536 or higher
   (needing 24 bits, not 16) being silently truncated to a 16-bit
   magnitude, both as a `var`-declaration initializer and in ordinary code

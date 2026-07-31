@@ -82,10 +82,12 @@ or wrong specifically for `long`:
   (`lv : long = -100000;`) and in ordinary code (`lv := -100000;`),
   storing the wrong value with no error or warning. :material-check-decagram:
   **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
-  both paths now correctly wrap at 24 bits. A separate, smaller gap
-  remains open: a small-magnitude negative literal (one that fits in a
-  single byte, like `-1`) compared directly against a `long` variable
-  still isn't sign-extended for the comparison's upper two bytes, so
-  `if (lv = -1)` can wrongly compare unequal even when `lv` really is
-  `-1`; building the comparison value at runtime (e.g. `zero - one`)
-  works around it.
+  both paths now correctly wrap at 24 bits. A separate, smaller gap also
+  existed: a small-magnitude negative literal (one that fits in a single
+  byte, like `-1`) compared directly against a `long` variable wasn't
+  sign-extended for the comparison's upper two bytes, so `if (lv = -1)`
+  could wrongly compare unequal even when `lv` really was `-1`.
+  :material-check-decagram:
+  **[Fixed in SANE](../../tags.md#known-limitation-status-fixed-in-sane)**:
+  the literal is now sign-extended to match the width of whatever it's
+  compared against.

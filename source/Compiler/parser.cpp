@@ -3087,16 +3087,22 @@ QSharedPointer<Node> Parser::Factor() {
             t.m_type = TokenType::INTEGER_CONST;
             t.m_value = "";
             t.m_intVal = expr->getValueAsInt(nullptr);
+            int negativeByteWidth = 3;
             if (isMinus) {
-                if (t.m_intVal < 256)
+                if (t.m_intVal < 256) {
                     t.m_intVal = 256 - t.m_intVal;
-                else if (t.m_intVal < 65536)
+                    negativeByteWidth = 1;
+                } else if (t.m_intVal < 65536) {
                     t.m_intVal = 65536 - t.m_intVal;
-                else
+                    negativeByteWidth = 2;
+                } else {
                     t.m_intVal = 16777216 - t.m_intVal;
+                    negativeByteWidth = 3;
+                }
             }
             auto n = new NodeNumber(t, t.m_intVal);
             n->setNegative(true);
+            n->setNegativeByteWidth(negativeByteWidth);
             return QSharedPointer<NodeNumber>(n);
         }
         return QSharedPointer<NodeUnaryOp>(new NodeUnaryOp(t, expr));

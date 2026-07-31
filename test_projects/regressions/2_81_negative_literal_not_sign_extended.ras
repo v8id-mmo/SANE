@@ -1,0 +1,49 @@
+Program Bug_2_81_NegativeLiteralNotSignExtended;
+// Bug 2.81: a small-magnitude negative decimal literal (magnitude < 256,
+// computed via Parser::Factor()'s narrowest two's-complement tier,
+// `256 - x`) isn't sign-extended when its upper bytes are read back for a
+// wider comparison. Root cause: NodeNumber::getValue8bit (nodenumber.cpp)
+// computes each byte via a plain shift-and-mask on m_val with no
+// awareness of how many bytes the literal's own tier actually covers, so
+// a `long` holding a genuine -1 ($FFFFFF) compares unequal against the
+// literal -1 (its upper two bytes wrongly come out $00, not sign-extended
+// $FF). Found while fixing/verifying 2.76 (see that regression's own
+// comment for why its lv2 check avoids the raw -1 literal).
+//
+// lv/iv are built via a runtime `zero - one` (register subtraction, not a
+// compile-time literal), matching 2.76/2.81's own precedent, so this
+// snippet isolates the compare-against-a-raw-negative-literal step
+// itself rather than depending on literal storage also being correct.
+@use "unittests/common"
+
+var
+	lv : long = 0;
+	iv : integer = 0;
+	zerol : long = 0;
+	onel : long = 1;
+	zeroi : integer = 0;
+	onei : integer = 1;
+
+begin
+	disableciainterrupts();
+	preventirq();
+	setmemoryconfig(1,0,0);
+	Common::TestInit();
+
+	lv := zerol - onel;
+	iv := zeroi - onei;
+
+	Vars::text := "2.81a";
+	if (lv = -1) then Common::PASS() else Common::FAIL();
+	Vars::text := "2.81b";
+	if (iv = -1) then Common::PASS() else Common::FAIL();
+
+	@addmonitorcommand "command 1  \"save \\\"$DIR/results.bin\\\" 0 8000 8000  ; quit \"  "
+	addbreakpoint();
+	moveto(5,24,04);
+	if (peek(^$8000,0)=0) then
+		printstring("PASS",0,40)
+	else
+		printstring("FAIL",0,40);
+	loop();
+end.
