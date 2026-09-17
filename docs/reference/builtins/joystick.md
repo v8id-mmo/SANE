@@ -55,3 +55,23 @@ end.
 ```
 
 [:material-download: Download this example](../../assets/examples/joystick.ras){ .md-button download }
+
+## Known limitations
+
+`Joystick(1)` reads control port 1 through CIA#1 port B (`$DC01`), which
+shares its physical wiring with the keyboard's row lines; port A
+(`$DC00`, the keyboard's column-select lines) is left configured as
+output. If [`getKey`](getkey.md) ran recently, it can have left column
+lines driven low without releasing them before returning, since `getKey`
+never resets `$DC00` back to `$FF`. That leftover state can make
+`Joystick(1)` misread any currently-held key as a phantom direction/button
+press. Workaround: write `$FF` to both `$DC00` and `$DC01` right before
+calling `Joystick`, releasing the lines first:
+
+```pascal
+Poke(^$dc00, 0, $FF);
+Poke(^$dc01, 0, $FF);
+```
+
+Safe regardless of either port's current data-direction setting, see
+[`Poke`](poke.md).

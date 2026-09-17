@@ -612,6 +612,55 @@ individually) still works too.
 *Reference pages:* [`class`](reference/types/class.md),
 [`record`](reference/types/record.md)
 
+### A local variable passed as a class-method call argument isn't found, inside a `.tru` unit with `pascal_settings_use_local_variables` on
+
+**Status:** Open · **Fixed in:** not yet fixed.
+
+Confirmed to require all three of: (1) the project setting
+`pascal_settings_use_local_variables = 1`; (2) the call site is inside a
+`.tru` unit (compiled via the TRU parsing path), not the main `.ras`
+program file; (3) the argument is a plain local variable of the calling
+procedure - a literal, a global, or a `const` all work fine. Dispatch
+style doesn't matter: a direct instance call (`hero.TakeDamage(dmg)`) and
+a pointer call (`heroPtr.TakeDamage(dmg)`, `heroPtr: pointer of Actor`)
+both fail identically once the above three conditions are met. The error
+is always a "Could not find variable" for the argument's exact name, with
+the fuzzy-match "Did you mean" suggestion, when it fires, pointing at
+some other already-declared symbol that happens to share the name (a
+`record`/`class` field, a similarly-named local in another procedure, or
+nothing at all if no such symbol exists).
+
+Root cause, traced to `parser.cpp`: `SymbolTable::SetCurrentProcedure()`
+(`symboltable.h`) only mangles a local variable's real storage name with
+a `"localVariable_"`-prefixed, procedure-scoped name when
+`m_useLocals` (set from `pascal_settings_use_local_variables`) is true;
+with the setting off, local variables fall back to a flatter naming
+scheme that happens not to depend on the mechanism below, which is why
+this was never observed until a project that actually has it enabled.
+`Parser::SubVariable()` (parser.cpp:2076-2124), on recognizing that a
+`.` access is a class-method call, saves and blanks
+`m_symTab->m_gPrefix` (parser.cpp:2094-2096) - the piece that reconstructs
+a local variable's real mangled name at every reference,
+see `Parser::Variable()`, parser.cpp:1925-1928 - then calls
+`FindProcedure()` to parse the call's target *and* its entire argument
+list under that blanked prefix (the argument loop is at
+parser.cpp:3809-3830, each argument parsed with `Expr()`), only restoring
+the real prefix afterward (parser.cpp:2100). Any bare local-variable
+identifier used directly as an argument in that call is therefore looked
+up with no prefix at all, instead of the real one, and isn't found. A
+literal or a global/`const` argument never goes through this
+prefixing branch to begin with (constants resolve earlier, at
+parser.cpp:1833-1834), which is why those still work.
+
+**Workaround:** move the value being passed into a unit-level global
+variable instead of a local one before the call (a global is looked up
+via `m_globalList`, bypassing the broken prefix step entirely), or
+restructure the call so the class method itself computes the value from
+already-non-local inputs rather than receiving it as a locally-computed
+argument.
+
+*Reference page:* [`class`](reference/types/class.md)
+
 ## Types
 
 ### A non-`const` `address` variable is completely unusable
@@ -1048,6 +1097,43 @@ checking the count, so passing a count of 0 didn't skip the effect: the
 counter wrapped around instead, and the step ended up running 256 times.
 
 *Reference page:* [`FLD`](reference/builtins/fld.md)
+
+### `getKey` can leave CIA#1 in a state that makes `Joystick(1)` misread a held key as input
+
+**Status:** Not a compiler defect — hardware port sharing · **Fixed in:**
+not applicable, see workaround below.
+
+CIA#1's two 8-bit ports (`$DC00`/`$DC01`) are shared between the keyboard
+matrix and both control ports: the keyboard's column-select lines and
+control port 2's lines are the same physical pins on port A (`$DC00`);
+the keyboard's row-read lines and control port 1's lines are the same
+physical pins on port B (`$DC01`). `getKey`'s keyboard-matrix scan sets
+port A's data-direction register to output (columns) and drives
+column-select values out through `$DC00`, but never resets `$DC00` back
+to a released (`$FF`) state before returning — in the common case where
+no key is held, it exits with all eight column lines driven low at once;
+if a key is held, it exits with exactly one column line driven low.
+`Joystick(1)` reads control port 1 via `$DC01` (rows) and re-asserts port
+A as output without rewriting what's latched in `$DC00`, so whatever
+`getKey` left driven low is still there: any key held anywhere on the
+keyboard pulls its row line low too, and `Joystick(1)` misreads it as a
+phantom direction/button press. `Joystick(2)` (reads `$DC00` as input)
+isn't affected the same way, since its own setup switches port A back to
+input before the read.
+
+Both builtins behave correctly in isolation; this only shows up from
+combining the two in the same program, which is why it's listed here
+rather than fixed in either builtin. Workaround: write `$FF` to both
+`$DC00` and `$DC01` before calling `Joystick(1)`, releasing the lines
+first:
+
+```pascal
+Poke(^$dc00, 0, $FF);
+Poke(^$dc01, 0, $FF);
+```
+
+*Reference pages:* [`getKey`](reference/builtins/getkey.md),
+[`Joystick`](reference/builtins/joystick.md)
 
 ### `InitKrill` disabled interrupts and never turned them back on
 

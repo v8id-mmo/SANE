@@ -117,3 +117,17 @@ individually named symbols (method calls resolve field access through a
 `this`-pointer offset instead), so this is implemented as a raw byte-for-
 byte copy of the instance's full size rather than a per-field one; the
 observable result is the same either way.
+
+**A local variable of the calling procedure can't be passed directly as
+a method-call argument, when both the project has
+`pascal_settings_use_local_variables = 1` and the call is inside a
+`.tru` unit.** `hero.TakeDamage(dmg)` or `heroPtr.TakeDamage(dmg)`
+(dispatch style doesn't matter) fails to compile with a "Could not find
+variable" error naming the argument, if `dmg` is a plain local variable
+of the procedure making the call. A literal, a global variable, or a
+`const` passed the same way all work fine; only a genuine procedure-local
+variable used directly as an argument triggers it. Workaround: promote
+the value to a unit-level global before the call, or have the method
+compute it from non-local inputs instead of receiving it as an argument.
+Still open. See the [Known Bugs](../../known-bugs.md) page for the full
+mechanism.
